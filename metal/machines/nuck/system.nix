@@ -27,10 +27,12 @@
 
   console.keyMap = "dvorak-programmer";
 
-  # Users
+  # Users - fully declarative, no manual changes allowed
+  users.mutableUsers = false;
   users.users.dylan = {
     isNormalUser = true;
     extraGroups = ["wheel" "docker"];
+    hashedPassword = "!"; # Locked password, SSH key only
   };
 
   # List packages installed in system profile. To search, run:
@@ -66,10 +68,8 @@
     authKeyFile = config.sops.secrets.tailscale_auth_key.path;
   };
 
-  # SSH authorized keys for dylan
-  # Keys managed via sops - the secret is written to authorized_keys.d by sops-nix
+  # SSH authorized keys for dylan (public keys don't need encryption)
   users.users.dylan.openssh.authorizedKeys.keys = [
-    # Fallback key - remove once sops is confirmed working
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIE9aV63mII6UUHP9Shz6zMmGIlAd752I7LzgMTEshkYN dylan@mctiernan.io"
   ];
 
