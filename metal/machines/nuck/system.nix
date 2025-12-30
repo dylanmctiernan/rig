@@ -50,10 +50,21 @@
   services.openssh = {
     enable = true;
     settings = {
-      PermitRootLogin = "no";
       PasswordAuthentication = false;
     };
+    extraConfig = ''
+      # Allow root login only from LAN for emergency access
+      Match Address 192.168.0.0/16,10.0.0.0/8,172.16.0.0/12
+        PermitRootLogin prohibit-password
+      Match All
+        PermitRootLogin no
+    '';
   };
+
+  # Root SSH key for LAN emergency access
+  users.users.root.openssh.authorizedKeys.keys = [
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIE9aV63mII6UUHP9Shz6zMmGIlAd752I7LzgMTEshkYN dylan@mctiernan.io"
+  ];
 
   # Firewall configuration
   networking.firewall = {
