@@ -35,21 +35,18 @@
     fd
   ];
 
-  # environment.variables = { };
+  # SSH configuration
+  services.openssh = {
+    enable = true;
+    settings = {
+      PermitRootLogin = "no";
+      PasswordAuthentication = false;
+    };
+  };
 
-  # Some programs need SUID wrappers, can be configured further or are
-  # started in user sessions.
-  # programs.mtr.enable = true;
-  # programs.gnupg.agent = {
-  #   enable = true;
-  #   enableSSHSupport = true;
-  # };
-
-  # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
+  # Firewall configuration
   networking.firewall = {
-    enable = false;
-
+    enable = true;
     trustedInterfaces = ["tailscale0"];
     allowedUDPPorts = [config.services.tailscale.port];
     allowedTCPPorts = [22];
@@ -58,6 +55,11 @@
   services.tailscale = {
     enable = true;
   };
+
+  # SSH authorized keys for dylan
+  users.users.dylan.openssh.authorizedKeys.keys = [
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIE9aV63mII6UUHP9Shz6zMmGIlAd752I7LzgMTEshkYN dylan@mctiernan.io"
+  ];
 
   virtualisation.docker.enable = true;
 
