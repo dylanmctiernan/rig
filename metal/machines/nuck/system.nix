@@ -12,9 +12,6 @@
     age.sshKeyPaths = ["/etc/ssh/ssh_host_ed25519_key"];
 
     secrets = {
-      dylan_ssh_keys = {
-        mode = "0400";
-      };
       tailscale_auth_key = {};
     };
   };
@@ -69,17 +66,12 @@
     authKeyFile = config.sops.secrets.tailscale_auth_key.path;
   };
 
-  # SSH authorized keys for dylan - loaded from sops secrets
-  # Fallback key kept temporarily to prevent lockout during sops setup
-  users.users.dylan.openssh.authorizedKeys = {
-    keys = [
-      # Fallback - remove once sops is confirmed working
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIE9aV63mII6UUHP9Shz6zMmGIlAd752I7LzgMTEshkYN dylan@mctiernan.io"
-    ];
-    keyFiles = [
-      config.sops.secrets.dylan_ssh_keys.path
-    ];
-  };
+  # SSH authorized keys for dylan
+  # Keys managed via sops - the secret is written to authorized_keys.d by sops-nix
+  users.users.dylan.openssh.authorizedKeys.keys = [
+    # Fallback key - remove once sops is confirmed working
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIE9aV63mII6UUHP9Shz6zMmGIlAd752I7LzgMTEshkYN dylan@mctiernan.io"
+  ];
 
   virtualisation.docker.enable = true;
 
