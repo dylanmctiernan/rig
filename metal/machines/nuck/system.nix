@@ -6,6 +6,18 @@
   pkgs,
   ...
 }: {
+  # Sops secrets configuration
+  sops = {
+    defaultSopsFile = ./secrets.yaml;
+    age.sshKeyPaths = ["/etc/ssh/ssh_host_ed25519_key"];
+
+    secrets = {
+      dylan_ssh_keys = {
+        mode = "0400";
+      };
+      tailscale_auth_key = {};
+    };
+  };
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
@@ -54,12 +66,20 @@
 
   services.tailscale = {
     enable = true;
+    authKeyFile = config.sops.secrets.tailscale_auth_key.path;
   };
 
-  # SSH authorized keys for dylan
-  users.users.dylan.openssh.authorizedKeys.keys = [
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIE9aV63mII6UUHP9Shz6zMmGIlAd752I7LzgMTEshkYN dylan@mctiernan.io"
-  ];
+  # SSH authorized keys for dylan - loaded from sops secrets
+  # Fallback key kept temporarily to prevent lockout during sops setup
+  users.users.dylan.openssh.authorizedKeys = {
+    keys = [
+      # Fallback - remove once sops is confirmed working
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIE9aV63mII6UUHP9Shz6zMmGIlAd752I7LzgMTEshkYN dylan@mctiernan.io"
+    ];
+    keyFiles = [
+      config.sops.secrets.dylan_ssh_keys.path
+    ];
+  };
 
   virtualisation.docker.enable = true;
 
