@@ -7,33 +7,94 @@
 // custom settings, run `zed: open default settings` from the
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
+  "collaboration_panel": {
+    "dock": "right",
+  },
+  "context_servers": {
+    "Tidewave": {
+      "command": "/Users/dylan/Bin/mcp-proxy",
+      "args": ["http://localhost:4000/tidewave/mcp"],
+      "env": {},
+      "settings": {},
+    },
+  },
+  "edit_predictions": {
+    "mode": "subtle",
+    "copilot": {
+      "proxy": null,
+      "proxy_no_verify": null,
+    },
+    "enabled_in_text_threads": false,
+  },
+  "features": {
+    "edit_prediction_provider": "zed",
+  },
+  "icon_theme": "Colored Zed Icons Theme Dark",
+  "ssh_connections": [
+    {
+      "host": "nuck",
+      "username": "root",
+      "args": [],
+      "projects": [
+        {
+          "paths": ["/etc/nixos"],
+        },
+      ],
+    },
+  ],
   "autosave": "on_focus_change",
   "auto_update": true,
-  "load_direnv": "shell_hook",
   "vim_mode": true,
 
   // UI
-  "cursor_shape": "block",
   "cursor_blink": false,
   "tabs": {
     "git_status": true,
-    "file_icons": true
+    "file_icons": true,
   },
   "ui_font_size": 18,
-  "buffer_font_size": 16,
+  "buffer_font_size": 17.0,
+  "agent_ui_font_size": 18,
   "theme": {
     "mode": "dark",
     "light": "One Light",
-    "dark": "JetBrains New Dark"
+    "dark": "JetBrains New Dark",
   },
-  "buffer_font_family": "JetBrains Mono",
+  "buffer_font_family": "JetBrainsMono Nerd Font Mono",
 
   // AI
-  "assistant": {
+  "agent": {
+    "default_profile": "write",
+    "always_allow_tool_actions": true,
     "default_model": {
-      "provider": "openai",
-      "model": "gpt-4o"
+      "provider": "zed.dev",
+      "model": "claude-opus-4-1",
     },
-    "version": "2"
-  }
+  },
+
+  "languages": {
+    "Nix": {
+      "formatter": {
+        "external": {
+          "command": "alejandra",
+          "arguments": ["--quiet", "--"],
+        },
+      },
+    },
+    "Elixir": {
+      "formatter": {
+        "external": {
+          "command": "mix",
+          "arguments": ["format", "--stdin-filename", "{buffer_path}", "-"],
+        },
+      },
+      "language_servers": ["elixir-ls", "!export", "!next-ls", "!lexical"],
+      "format_on_save": "on",
+    },
+  },
+
+  "file_types": {
+    "OpenTofu": ["tf"],
+    "OpenTofu Vars": ["tfvars"],
+  },
 }
