@@ -18,4 +18,20 @@
         ./metal/machines/${machine}
       ];
     };
+
+  # Darwin (macOS) system builder
+  mkDarwin = machine: systemArch:
+    inputs.nix-darwin.lib.darwinSystem {
+      system = systemArch;
+
+      specialArgs = {inherit inputs;};
+
+      modules = [
+        # Home manager for user configuration
+        inputs.home-manager.darwinModules.home-manager
+
+        # Use the specific machine configuration
+        ./metal/machines/${machine}
+      ];
+    };
 }
