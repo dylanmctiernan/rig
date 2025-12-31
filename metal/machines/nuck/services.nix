@@ -32,18 +32,14 @@
         endpoints.authz.forward-auth.implementation = "ForwardAuth";
       };
 
-      # Session configuration - Support both hostname and IP access
-      # Note: For production use, configure Caddy/nginx with HTTPS and proper domain
+      # Session configuration - Use tailnet IP
+      # Access Authelia at http://100.114.41.97:9091 (use IP, not hostname)
+      # For production: set up reverse proxy with HTTPS and proper domain
       session = {
+        domain = "100.114.41.97";
         same_site = "lax";
         expiration = "1h";
         inactivity = "5m";
-        cookies = [
-          {
-            domain = "100.114.41.97";
-            authelia_url = "http://100.114.41.97:9091";
-          }
-        ];
       };
 
       # Storage configuration (local SQLite for simplicity)
