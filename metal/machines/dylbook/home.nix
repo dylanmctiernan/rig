@@ -101,6 +101,5 @@
       vimAlias = true;
       vimdiffAlias = true;
 
-      # Modern Lua config (2025 best practices)
-      # Load Lua config from file
+      # Simple Lua config (converted from init.vim)
       extraLuaConfig = builtins.readFile ./files/neovim/init.lua;
