@@ -20,13 +20,23 @@
         tls /var/lib/caddy/certificates/nuck.finch-atria.ts.net.crt /var/lib/caddy/certificates/nuck.finch-atria.ts.net.key
 
         # Serve Authelia at /authelia path
+        # handle_path strips /authelia from the path before proxying
         handle_path /authelia* {
+          # Rewrite base href in HTML responses
+          header_down Content-Security-Policy `default-src 'self' 'unsafe-inline'; base-uri 'self' https://nuck.finch-atria.ts.net/authelia/`
+
           reverse_proxy localhost:9091 {
             # Pass real IP to backend
             header_up X-Real-IP {remote_host}
             header_up X-Forwarded-For {remote_host}
             header_up X-Forwarded-Proto {scheme}
             header_up X-Forwarded-Host {host}
+
+            # Rewrite response body to fix asset paths
+            @html {
+              header Content-Type text/html*
+            }
+            header_down @html >base "href=\"https://nuck.finch-atria.ts.net/authelia/\""
           }
         }
 
@@ -116,9 +126,8 @@
       };
 
       # Server configuration - Listen on localhost only (behind Caddy)
-      # Using new address format with path
       server = {
-        address = "tcp://127.0.0.1:9091/authelia";
+        address = "tcp://127.0.0.1:9091";
         endpoints.authz.forward-auth.implementation = "ForwardAuth";
       };
 
