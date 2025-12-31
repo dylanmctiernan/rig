@@ -1,9 +1,7 @@
 {inputs}: {
   # Common configuration nixos system builder
-  mkNixos = machine: systemArch:
+  mkNixos = machine:
     inputs.nixpkgs.lib.nixosSystem {
-      system = systemArch;
-
       specialArgs = {inherit inputs;};
 
       modules = [
@@ -20,10 +18,8 @@
     };
 
   # Darwin (macOS) system builder
-  mkDarwin = machine: systemArch:
+  mkDarwin = machine:
     inputs.nix-darwin.lib.darwinSystem {
-      system = systemArch;
-
       specialArgs = {inherit inputs;};
 
       modules = [

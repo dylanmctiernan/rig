@@ -45,12 +45,12 @@
   in {
     # NixOS configurations
     nixosConfigurations = {
-      nuck = lib.mkNixos "nuck" "x86_64-linux";
+      nuck = lib.mkNixos "nuck";
     };
 
     # Darwin (macOS) configurations
     darwinConfigurations = {
-      dylbook = lib.mkDarwin "dylbook" "aarch64-darwin";
+      dylbook = lib.mkDarwin "dylbook";
     };
 
     # Colmena deployment configuration

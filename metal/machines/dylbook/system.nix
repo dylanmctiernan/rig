@@ -72,14 +72,14 @@
   # Nix settings (using Determinate Nix)
   nix.enable = false;
   nix.settings.experimental-features = "nix-command flakes";
+  nixpkgs.config.allowUnfree = true;
 
   # Shell
   programs.zsh.enable = true;
 
-  # System state version
-  system.stateVersion = 6;
-
   # Platform
   nixpkgs.hostPlatform = "aarch64-darwin";
-  nixpkgs.config.allowUnfree = true;
+
+  # System state version
+  system.stateVersion = 6;
 }
