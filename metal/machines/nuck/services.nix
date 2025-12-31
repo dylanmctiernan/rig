@@ -16,6 +16,9 @@
 
     virtualHosts."nuck.finch-atria.ts.net" = {
       extraConfig = ''
+        # Use Tailscale certificates
+        tls /var/lib/tailscale/certs/nuck.finch-atria.ts.net.crt /var/lib/tailscale/certs/nuck.finch-atria.ts.net.key
+
         # Reverse proxy to Authelia
         reverse_proxy localhost:9091 {
           # Pass real IP to backend
@@ -46,10 +49,15 @@
     };
   };
 
-  # Ensure log directory exists
+  # Ensure log directory exists and grant Caddy access to Tailscale certs
   systemd.tmpfiles.rules = [
     "d /var/log/caddy 0750 caddy caddy -"
   ];
+
+  # Grant Caddy read access to Tailscale certificates
+  systemd.services.caddy.serviceConfig = {
+    ReadOnlyPaths = [ "/var/lib/tailscale/certs" ];
+  };
 
   # Open HTTPS port (HTTP port 80 for ACME challenges if needed)
   networking.firewall.allowedTCPPorts = [ 80 443 ];
