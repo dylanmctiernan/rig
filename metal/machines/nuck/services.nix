@@ -116,9 +116,9 @@
       };
 
       # Server configuration - Listen on localhost only (behind Caddy)
+      # Using new address format with path
       server = {
-        address = "tcp://127.0.0.1:9091";
-        path = "authelia";
+        address = "tcp://127.0.0.1:9091/authelia";
         endpoints.authz.forward-auth.implementation = "ForwardAuth";
       };
 
