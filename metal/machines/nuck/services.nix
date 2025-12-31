@@ -19,13 +19,20 @@
         # Use Tailscale certificates (copied to Caddy's directory)
         tls /var/lib/caddy/certificates/nuck.finch-atria.ts.net.crt /var/lib/caddy/certificates/nuck.finch-atria.ts.net.key
 
-        # Reverse proxy to Authelia
-        reverse_proxy localhost:9091 {
-          # Pass real IP to backend
-          header_up X-Real-IP {remote_host}
-          header_up X-Forwarded-For {remote_host}
-          header_up X-Forwarded-Proto {scheme}
-          header_up X-Forwarded-Host {host}
+        # Serve Authelia at /authelia path
+        handle_path /authelia* {
+          reverse_proxy localhost:9091 {
+            # Pass real IP to backend
+            header_up X-Real-IP {remote_host}
+            header_up X-Forwarded-For {remote_host}
+            header_up X-Forwarded-Proto {scheme}
+            header_up X-Forwarded-Host {host}
+          }
+        }
+
+        # Root path - can add other services here
+        handle {
+          respond "Welcome to nuck.finch-atria.ts.net" 200
         }
 
         # Security headers
@@ -111,6 +118,7 @@
       # Server configuration - Listen on localhost only (behind Caddy)
       server = {
         address = "tcp://127.0.0.1:9091";
+        path = "authelia";
         endpoints.authz.forward-auth.implementation = "ForwardAuth";
       };
 
