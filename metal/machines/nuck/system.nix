@@ -26,11 +26,6 @@
         owner = "authelia-main";
         path = "/var/lib/authelia-main/secrets/session";
       };
-      # SSH authorized keys for dylan
-      "ssh/dylan_authorized_keys" = {
-        owner = "dylan";
-        mode = "0600";
-      };
     };
   };
 
@@ -50,7 +45,9 @@
   users.users.dylan = {
     isNormalUser = true;
     extraGroups = ["wheel" "docker"];
-    openssh.authorizedKeys.keyFiles = [config.sops.secrets."ssh/dylan_authorized_keys".path];
+    openssh.authorizedKeys.keys = [
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIE9aV63mII6UUHP9Shz6zMmGIlAd752I7LzgMTEshkYN dylan@mctiernan.io"
+    ];
   };
 
   # Enable passwordless sudo for wheel group
