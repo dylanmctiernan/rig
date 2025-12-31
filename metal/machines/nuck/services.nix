@@ -9,11 +9,14 @@
     virtualHosts."nuck.finch-atria.ts.net" = {
       extraConfig = ''
         reverse_proxy localhost:9091
-        tls {
-          get_certificate tailscale
-        }
+        tls /var/lib/tailscale/certs/nuck.finch-atria.ts.net.crt /var/lib/tailscale/certs/nuck.finch-atria.ts.net.key
       '';
     };
+  };
+
+  # Allow Caddy to access Tailscale certificates
+  systemd.services.caddy.serviceConfig = {
+    SupplementaryGroups = [ "tailscale" ];
   };
 
   # Open HTTPS port
