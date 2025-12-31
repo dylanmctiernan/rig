@@ -14,7 +14,7 @@
       auto_https disable_redirects
     '';
 
-    virtualHosts."auth.finch-atria.ts.net" = {
+    virtualHosts."nuck.finch-atria.ts.net" = {
       extraConfig = ''
         # Reverse proxy to Authelia
         reverse_proxy localhost:9091 {
@@ -39,7 +39,7 @@
 
         # Logging
         log {
-          output file /var/log/caddy/auth.finch-atria.ts.net.log
+          output file /var/log/caddy/nuck.finch-atria.ts.net.log
           format json
         }
       '';
@@ -84,7 +84,7 @@
       };
 
       # Session configuration - Use HTTPS via Caddy
-      # Access via https://auth.finch-atria.ts.net
+      # Access via https://nuck.finch-atria.ts.net
       session = {
         domain = "finch-atria.ts.net";
         same_site = "lax";
