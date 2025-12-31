@@ -7,14 +7,15 @@
   ...
 }: {
   # Sops secrets configuration
-  sops = {
-    defaultSopsFile = ./secrets.yaml;
-    age.sshKeyPaths = ["/etc/ssh/ssh_host_ed25519_key"];
+  # sops = {
+  #   defaultSopsFile = ./secrets.yaml;
+  #   age.sshKeyPaths = ["/etc/ssh/ssh_host_ed25519_key"];
 
-    secrets = {
-      tailscale_auth_key = {};
-    };
-  };
+  #   secrets = {
+  #     tailscale_auth_key = {};
+  #   };
+  # };
+
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
