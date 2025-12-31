@@ -100,6 +100,9 @@
       viAlias = true;
       vimAlias = true;
       vimdiffAlias = true;
+
+      # Load your init.vim directly
+      extraConfig = builtins.readFile ./files/neovim/init.vim;
     };
 
     home.packages = with pkgs; [
@@ -147,10 +150,6 @@
     home.homeDirectory = "/Users/dylan";
 
     xdg.enable = true;
-
-    xdg.configFile = {
-      "nvim/init.vim".source = ./files/neovim/init.vim;
-    };
 
     home.sessionVariables = {
       FX_LANG = "python3";
