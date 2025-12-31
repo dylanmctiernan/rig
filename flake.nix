@@ -65,7 +65,6 @@
         nuck = {name, nodes, ...}: {
           deployment = {
             targetHost = "nuck";
-            targetUser = "dylan";
             buildOnTarget = true;
             # SSH over Tailscale, no keys needed
           };
