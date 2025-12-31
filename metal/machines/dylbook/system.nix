@@ -73,7 +73,7 @@
   system.activationScripts.postActivation.text = ''
     echo "Installing Caddy CA certificate..."
     if ! /usr/bin/security find-certificate -a -c "Caddy Local Authority" /Library/Keychains/System.keychain >/dev/null 2>&1; then
-      /usr/bin/sudo /usr/bin/security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain ${./caddy-ca.crt}
+      /usr/bin/security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain ${./caddy-ca.crt}
       echo "Caddy CA certificate installed successfully"
     else
       echo "Caddy CA certificate already installed"
