@@ -103,3 +103,4 @@
 
       # Simple Lua config (converted from init.vim)
       extraLuaConfig = builtins.readFile ./files/neovim/init.lua;
+    };
