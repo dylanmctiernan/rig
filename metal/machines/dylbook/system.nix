@@ -69,6 +69,11 @@
     nerd-fonts.jetbrains-mono
   ];
 
+  # Trust Caddy CA certificate from nuck for mac.lab domains
+  security.pki.certificateFiles = [
+    ./caddy-ca.crt
+  ];
+
   # Nix settings (using Determinate Nix)
   nix.enable = false;
   nix.settings.experimental-features = "nix-command flakes";
