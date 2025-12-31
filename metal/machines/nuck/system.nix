@@ -56,6 +56,16 @@
     authKeyFile = config.sops.secrets.tailscale_auth_key.path;
   };
 
+  services.forgejo = {
+    enable = true;
+    settings = {
+      server = {
+        DOMAIN = "nuck";
+        HTTP_PORT = 3000;
+      };
+    };
+  };
+
   virtualisation.docker.enable = true;
 
   # Nix configuration
