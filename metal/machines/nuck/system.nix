@@ -8,8 +8,9 @@
 }: {
   # Sops secrets configuration
   sops = {
-    defaultSopsFile = ./secrets.yaml;
-    age.sshKeyPaths = ["/etc/ssh/ssh_host_ed25519_key"];
+    defaultSopsFile = ../../../config/nuck.yaml;
+    # Use age keys instead of SSH host keys
+    age.keyFile = "/var/lib/sops-nix/key.txt";
 
     secrets = {
       # Authelia secrets

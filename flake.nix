@@ -99,6 +99,8 @@
           packages = [
             pkgs.just
             pkgs.colmena
+            pkgs.age
+            pkgs.sops
           ];
         };
     };
