@@ -37,7 +37,6 @@
   environment.systemPackages = with pkgs; [
     neovim
     git
-    devenv
   ];
 
   # Homebrew for GUI applications

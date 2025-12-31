@@ -116,9 +116,7 @@
       trufflehog
 
       # nix
-      nil
       nixd
-      alejandra
     ];
 
     home.username = "dylan";
@@ -128,8 +126,6 @@
 
     xdg.configFile = {
       "nvim/init.vim".source = ./files/neovim/init.vim;
-      "zed/settings.json".source = ./files/zed/settings.json;
-      "ghostty/config".source = ./files/ghostty/config;
     };
 
     home.sessionVariables = {

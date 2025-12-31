@@ -27,12 +27,10 @@
 
   console.keyMap = "dvorak-programmer";
 
-  # Users - fully declarative, no manual changes allowed
-  users.mutableUsers = false;
+  # Users
   users.users.dylan = {
     isNormalUser = true;
     extraGroups = ["wheel" "docker"];
-    hashedPassword = "!"; # Locked password, SSH key only
   };
 
   # List packages installed in system profile. To search, run:
@@ -46,43 +44,17 @@
     fd
   ];
 
-  # SSH configuration
-  services.openssh = {
-    enable = true;
-    settings = {
-      PasswordAuthentication = false;
-    };
-    extraConfig = ''
-      # Allow root login only from LAN for emergency access
-      Match Address 192.168.0.0/16,10.0.0.0/8,172.16.0.0/12
-        PermitRootLogin prohibit-password
-      Match All
-        PermitRootLogin no
-    '';
-  };
-
-  # Root SSH key for LAN emergency access
-  users.users.root.openssh.authorizedKeys.keys = [
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIE9aV63mII6UUHP9Shz6zMmGIlAd752I7LzgMTEshkYN dylan@mctiernan.io"
-  ];
-
   # Firewall configuration
   networking.firewall = {
     enable = true;
     trustedInterfaces = ["tailscale0"];
     allowedUDPPorts = [config.services.tailscale.port];
-    allowedTCPPorts = [22];
   };
 
   services.tailscale = {
     enable = true;
     authKeyFile = config.sops.secrets.tailscale_auth_key.path;
   };
-
-  # SSH authorized keys for dylan (public keys don't need encryption)
-  users.users.dylan.openssh.authorizedKeys.keys = [
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIE9aV63mII6UUHP9Shz6zMmGIlAd752I7LzgMTEshkYN dylan@mctiernan.io"
-  ];
 
   virtualisation.docker.enable = true;
 
