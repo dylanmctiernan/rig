@@ -72,7 +72,7 @@
   # Trust Caddy CA certificate from nuck for mac.lab domains
   system.activationScripts.postActivation.text = ''
     echo "Installing Caddy CA certificate..."
-    if ! /usr/bin/security find-certificate -a -c "Caddy Local Authority" /Library/Keychains/System.keychain >/dev/null 2>&1; then
+    if /usr/bin/security find-certificate -c "Caddy Local Authority" /Library/Keychains/System.keychain 2>&1 | grep -q "SecKeychainSearchCopyNext"; then
       /usr/bin/security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain ${./caddy-ca.crt}
       echo "Caddy CA certificate installed successfully"
     else
