@@ -38,6 +38,7 @@
     determinate,
     nix-darwin,
     home-manager,
+    colmena,
     ...
   } @ inputs: let
     lib = import ./lib.nix {inherit inputs;};
@@ -53,22 +54,53 @@
     };
 
     # Colmena deployment configuration
-    colmena = {
-      meta = {
-        nixpkgs = import nixpkgs {
-          system = "x86_64-linux";
+    colmena = let
+      hive = {
+        meta = {
+          nixpkgs = import nixpkgs {system = "x86_64-linux";};
+          specialArgs = {inherit inputs;};
         };
+
+        # NixOS host (nuck)
+        nuck = {name, nodes, ...}: {
+          deployment = {
+            targetHost = "nuck";
+            targetUser = "dylan";
+            # SSH over Tailscale, no keys needed
+          };
+          imports = [
+            inputs.determinate.nixosModules.default
+            inputs.sops-nix.nixosModules.sops
+            ./metal/machines/nuck
+          ];
+        };
+      };
+    in
+      hive // {
+        processFlake = inputs.colmena.lib.makeHive hive;
       };
 
-      # NixOS host (nuck)
-      nuck = {name, nodes, ...}: {
-        deployment = {
-          targetHost = "nuck";
-          targetUser = "dylan";
-          # SSH over Tailscale, no keys needed
+    # Development shell
+    devShells = {
+      aarch64-darwin.default = let
+        pkgs = import nixpkgs {system = "aarch64-darwin";};
+      in
+        pkgs.mkShell {
+          packages = with pkgs; [
+            just
+            colmena
+          ];
         };
-        imports = self.nixosConfigurations.nuck.config.system.build.toplevel;
-      };
+
+      x86_64-linux.default = let
+        pkgs = import nixpkgs {system = "x86_64-linux";};
+      in
+        pkgs.mkShell {
+          packages = with pkgs; [
+            just
+            colmena
+          ];
+        };
     };
   };
 }

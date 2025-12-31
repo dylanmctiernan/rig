@@ -9,7 +9,3 @@ dylbook-apply:
 # Deploy to a specific host using Colmena over Tailscale
 deploy host:
     colmena apply --on {{ host }}
-
-# Deploy to all hosts using Colmena
-deploy-all:
-    colmena apply
