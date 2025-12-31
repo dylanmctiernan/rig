@@ -60,14 +60,16 @@
     description = "Copy Tailscale certificates for Caddy";
     wantedBy = [ "caddy.service" ];
     before = [ "caddy.service" ];
+    script = ''
+      mkdir -p /var/lib/caddy/certificates
+      cp /var/lib/tailscale/certs/nuck.finch-atria.ts.net.crt /var/lib/caddy/certificates/
+      cp /var/lib/tailscale/certs/nuck.finch-atria.ts.net.key /var/lib/caddy/certificates/
+      chown -R caddy:caddy /var/lib/caddy/certificates
+      chmod 644 /var/lib/caddy/certificates/*.crt
+      chmod 600 /var/lib/caddy/certificates/*.key
+    '';
     serviceConfig = {
       Type = "oneshot";
-      ExecStart = "${pkgs.bash}/bin/bash -c '\
-        cp /var/lib/tailscale/certs/nuck.finch-atria.ts.net.crt /var/lib/caddy/certificates/ && \
-        cp /var/lib/tailscale/certs/nuck.finch-atria.ts.net.key /var/lib/caddy/certificates/ && \
-        chown caddy:caddy /var/lib/caddy/certificates/* && \
-        chmod 644 /var/lib/caddy/certificates/*.crt && \
-        chmod 600 /var/lib/caddy/certificates/*.key'";
     };
   };
 
