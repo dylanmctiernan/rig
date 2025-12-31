@@ -32,13 +32,12 @@
         endpoints.authz.forward-auth.implementation = "ForwardAuth";
       };
 
-      # Session configuration - Using tailnet hostname
+      # Session configuration - Using IP-based domain for tailnet
       session = {
-        domain = "nuck";
         cookies = [
           {
-            domain = "nuck";
-            authelia_url = "http://nuck:9091";
+            domain = "nuck.local";
+            authelia_url = "http://nuck.local:9091";
           }
         ];
       };
@@ -51,7 +50,7 @@
         default_policy = "one_factor";
         rules = [
           {
-            domain = "nuck";
+            domain = "nuck.local";
             policy = "one_factor";
           }
         ];
