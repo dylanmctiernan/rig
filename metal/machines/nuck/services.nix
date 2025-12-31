@@ -45,7 +45,7 @@ in {
 
     ; A records for services
     nuck          IN A ${tailscaleIP}
-    auth          IN A ${tailscaleIP}
+    sso           IN A ${tailscaleIP}
     *.mac.lab.    IN A ${tailscaleIP}
   '';
 
@@ -59,8 +59,8 @@ in {
     '';
 
     virtualHosts = {
-      # Authelia at auth.mac.lab
-      "auth.mac.lab" = {
+      # Authelia at sso.mac.lab
+      "sso.mac.lab" = {
         extraConfig = ''
           # Caddy will auto-generate certs with internal CA
           tls internal
@@ -76,7 +76,7 @@ in {
           }
 
           log {
-            output file /var/log/caddy/auth.mac.lab.log
+            output file /var/log/caddy/sso.mac.lab.log
             format json
           }
         '';
@@ -87,7 +87,7 @@ in {
         extraConfig = ''
           tls internal
 
-          respond "mac.lab Services\n\nAvailable:\n- https://auth.mac.lab - Authelia Authentication" 200
+          respond "mac.lab Services\n\nAvailable:\n- https://sso.mac.lab - Authelia Authentication" 200
 
           log {
             output file /var/log/caddy/nuck.mac.lab.log
