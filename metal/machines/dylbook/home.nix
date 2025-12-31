@@ -114,9 +114,12 @@
       age
       bws
       trufflehog
+      just
 
       # nix
+      nil
       nixd
+      colmena
     ];
 
     home.username = "dylan";

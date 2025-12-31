@@ -25,9 +25,15 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    colmena = {
+      url = "github:zhaofengli/colmena";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {
+    self,
     nixpkgs,
     determinate,
     nix-darwin,
@@ -44,6 +50,25 @@
     # Darwin (macOS) configurations
     darwinConfigurations = {
       dylbook = lib.mkDarwin "dylbook" "aarch64-darwin";
+    };
+
+    # Colmena deployment configuration
+    colmena = {
+      meta = {
+        nixpkgs = import nixpkgs {
+          system = "x86_64-linux";
+        };
+      };
+
+      # NixOS host (nuck)
+      nuck = {name, nodes, ...}: {
+        deployment = {
+          targetHost = "nuck";
+          targetUser = "dylan";
+          # SSH over Tailscale, no keys needed
+        };
+        imports = self.nixosConfigurations.nuck.config.system.build.toplevel;
+      };
     };
   };
 }
