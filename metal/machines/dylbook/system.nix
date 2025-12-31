@@ -56,6 +56,7 @@
       "jetbrains-toolbox"
       "orbstack"
       "ghostty"
+      "tailscale-app"
     ];
     caskArgs = {
       appdir = "~/Applications";
