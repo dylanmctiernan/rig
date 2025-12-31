@@ -32,8 +32,10 @@
         endpoints.authz.forward-auth.implementation = "ForwardAuth";
       };
 
-      # Session configuration - Simplified for tailnet (no HTTPS required when using server.address)
+      # Session configuration - Use domain for local testing
+      # Note: For production use with tailnet, configure Caddy/nginx with HTTPS
       session = {
+        domain = "127.0.0.1"; # IP addresses don't require periods
         same_site = "lax";
         expiration = "1h";
         inactivity = "5m";
