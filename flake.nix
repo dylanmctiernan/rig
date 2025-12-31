@@ -86,9 +86,9 @@
         pkgs = import nixpkgs {system = "aarch64-darwin";};
       in
         pkgs.mkShell {
-          packages = with pkgs; [
-            just
-            colmena
+          packages = [
+            pkgs.just
+            inputs.colmena.packages.aarch64-darwin.colmena
           ];
         };
 
@@ -96,9 +96,9 @@
         pkgs = import nixpkgs {system = "x86_64-linux";};
       in
         pkgs.mkShell {
-          packages = with pkgs; [
-            just
-            colmena
+          packages = [
+            pkgs.just
+            inputs.colmena.packages.x86_64-linux.colmena
           ];
         };
     };
