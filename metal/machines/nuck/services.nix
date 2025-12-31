@@ -85,6 +85,4 @@
     };
   };
 
-  # Open firewall for Authelia on tailnet
-  networking.firewall.allowedTCPPorts = [ 9091 ];
 }
