@@ -32,14 +32,11 @@
         endpoints.authz.forward-auth.implementation = "ForwardAuth";
       };
 
-      # Session configuration - Using IP-based domain for tailnet
+      # Session configuration - Simplified for tailnet (no HTTPS required when using server.address)
       session = {
-        cookies = [
-          {
-            domain = "nuck.local";
-            authelia_url = "http://nuck.local:9091";
-          }
-        ];
+        same_site = "lax";
+        expiration = "1h";
+        inactivity = "5m";
       };
 
       # Storage configuration (local SQLite for simplicity)
