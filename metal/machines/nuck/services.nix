@@ -3,6 +3,22 @@
   pkgs,
   ...
 }: {
+  # Caddy reverse proxy for HTTPS via Tailscale
+  services.caddy = {
+    enable = true;
+    virtualHosts."nuck.finch-atria.ts.net" = {
+      extraConfig = ''
+        reverse_proxy localhost:9091
+        tls {
+          get_certificate tailscale
+        }
+      '';
+    };
+  };
+
+  # Open HTTPS port
+  networking.firewall.allowedTCPPorts = [ 443 ];
+
   # Authelia - Authentication and authorization server
   services.authelia.instances.main = {
     enable = true;
@@ -26,15 +42,14 @@
         format = "text";
       };
 
-      # Server configuration - Listen on all interfaces for tailnet access
+      # Server configuration - Listen on localhost only (behind Caddy)
       server = {
-        address = "tcp://0.0.0.0:9091";
+        address = "tcp://127.0.0.1:9091";
         endpoints.authz.forward-auth.implementation = "ForwardAuth";
       };
 
-      # Session configuration - Use tailscale domain
-      # Access via http://nuck:9091 or http://nuck.finch-atria.ts.net:9091
-      # For production: set up reverse proxy with HTTPS
+      # Session configuration - Use HTTPS via Caddy
+      # Access via https://nuck.finch-atria.ts.net
       session = {
         domain = "finch-atria.ts.net";
         same_site = "lax";
