@@ -126,8 +126,10 @@
 
     xdg.enable = true;
 
-    home.file = {
-      ".config/nvim/init.vim".source = ./files/neovim/init.vim;
+    xdg.configFile = {
+      "nvim/init.vim".source = ./files/neovim/init.vim;
+      "zed/settings.json".source = ./files/zed/settings.json;
+      "ghostty/config".source = ./files/ghostty/config;
     };
 
     home.sessionVariables = {

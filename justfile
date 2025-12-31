@@ -4,61 +4,41 @@
 default:
     @just --list
 
-# Sync config files from running apps to repo
-sync-configs: sync-zed sync-ghostty sync-neovim
+# Backport config files from running apps to repo (for apps that don't support symlinks)
+backport: backport-zed
 
-# Sync Zed settings from running config to repo
-sync-zed:
-    cp ~/.config/zed/settings.json metal/machines/dylbook/files/zed/settings.json
-    @echo "Synced Zed settings"
+# Backport Zed settings to repo (Zed overwrites symlinks, so we copy back)
+backport-zed:
+    cp -L ~/.config/zed/settings.json metal/machines/dylbook/files/zed/settings.json
+    @echo "Backported Zed settings to repo"
 
-# Sync Ghostty config from running config to repo
-sync-ghostty:
-    cp ~/.config/ghostty/config metal/machines/dylbook/files/ghostty/config
-    @echo "Synced Ghostty config"
+# Show diff between running configs and repo
+diff:
+    @echo "=== Zed ==="
+    @diff -u metal/machines/dylbook/files/zed/settings.json ~/.config/zed/settings.json 2>/dev/null || true
+    @echo ""
+    @echo "=== Ghostty ==="
+    @diff -u metal/machines/dylbook/files/ghostty/config ~/.config/ghostty/config 2>/dev/null || true
+    @echo ""
+    @echo "=== Neovim ==="
+    @diff -u metal/machines/dylbook/files/neovim/init.vim ~/.config/nvim/init.vim 2>/dev/null || true
 
-# Sync Neovim config from running config to repo
-sync-neovim:
-    cp ~/.config/nvim/init.vim metal/machines/dylbook/files/neovim/init.vim
-    @echo "Synced Neovim config"
-
-# Apply config files from repo to running apps
-apply-configs: apply-zed apply-ghostty apply-neovim
-
-# Apply Zed settings from repo to running config
-apply-zed:
-    cp metal/machines/dylbook/files/zed/settings.json ~/.config/zed/settings.json
-    @echo "Applied Zed settings"
-
-# Apply Ghostty config from repo to running config
-apply-ghostty:
-    cp metal/machines/dylbook/files/ghostty/config ~/.config/ghostty/config
-    @echo "Applied Ghostty config"
-
-# Apply Neovim config from repo to running config
-apply-neovim:
-    cp metal/machines/dylbook/files/neovim/init.vim ~/.config/nvim/init.vim
-    @echo "Applied Neovim config"
-
-# Build and apply darwin configuration
+# Build and apply darwin configuration from local flake
 darwin-switch:
+    sudo darwin-rebuild switch --flake .#dylbook
+
+# Build and apply darwin configuration from remote
+darwin-switch-remote:
     sudo darwin-rebuild switch --flake github:dylanmctiernan/rig#dylbook
 
 # Build darwin configuration without switching
 darwin-build:
-    darwin-rebuild build --flake github:dylanmctiernan/rig#dylbook
+    darwin-rebuild build --flake .#dylbook
 
 # Build and apply nuck configuration via SSH
 nuck-switch:
     ssh root@nuck "nixos-rebuild switch --flake github:dylanmctiernan/rig#nuck"
 
-# Show diff of local configs vs repo
-diff-configs:
-    @echo "=== Zed ==="
-    @diff -u metal/machines/dylbook/files/zed/settings.json ~/.config/zed/settings.json || true
-    @echo ""
-    @echo "=== Ghostty ==="
-    @diff -u metal/machines/dylbook/files/ghostty/config ~/.config/ghostty/config || true
-    @echo ""
-    @echo "=== Neovim ==="
-    @diff -u metal/machines/dylbook/files/neovim/init.vim ~/.config/nvim/init.vim || true
+# Commit and push changes
+push message:
+    git add -A && git commit -m "{{message}}" && git push
