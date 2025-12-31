@@ -46,7 +46,7 @@
       "dagger"
     ];
     casks = [
-      "firefox"
+      "firefox@developer-edition"
       "google-chrome"
       "transmission"
       "slack"

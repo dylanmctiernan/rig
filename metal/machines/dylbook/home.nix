@@ -78,15 +78,13 @@
       nix-direnv.enable = true;
     };
 
-    programs.firefox = {
-      enable = true;
-      package = pkgs.firefox-devedition-bin;
-
+    # Firefox configuration (Firefox installed via Homebrew on macOS)
+    # Create policies.json to auto-import Caddy CA certificate
+    home.file."Library/Application Support/Firefox/Policies/policies.json".text = builtins.toJSON {
       policies = {
-        # Import Caddy CA certificate for mac.lab domains
         Certificates = {
           Install = [
-            ../../caddy-ca.crt
+            (builtins.readFile ../../caddy-ca.crt)
           ];
         };
       };
