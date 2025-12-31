@@ -32,10 +32,10 @@
         endpoints.authz.forward-auth.implementation = "ForwardAuth";
       };
 
-      # Session configuration - Use domain for local testing
-      # Note: For production use with tailnet, configure Caddy/nginx with HTTPS
+      # Session configuration - Use tailnet IP for session cookies
+      # Note: For production use, configure Caddy/nginx with HTTPS and proper domain
       session = {
-        domain = "127.0.0.1"; # IP addresses don't require periods
+        domain = "100.114.41.97"; # Tailnet IP for nuck
         same_site = "lax";
         expiration = "1h";
         inactivity = "5m";
