@@ -3,8 +3,54 @@
   pkgs,
   ...
 }: {
-  # Open port 9091 for Authelia
-  networking.firewall.allowedTCPPorts = [ 9091 ];
+  # Caddy web server with subdomain routing
+  services.caddy = {
+    enable = true;
+
+    # Global Caddy configuration
+    globalConfig = ''
+      # Disable automatic HTTPS redirects for Tailscale
+      auto_https disable_redirects
+
+      # Enable admin API for runtime config
+      admin localhost:2019
+    '';
+
+    # Virtual hosts - subdomain-based routing
+    virtualHosts = {
+      # Authelia subdomain
+      "auth.nuck.finch-atria.ts.net" = {
+        extraConfig = ''
+          # Use Tailscale HTTPS certificates
+          tls /var/lib/tailscale/certs/nuck.finch-atria.ts.net.crt /var/lib/tailscale/certs/nuck.finch-atria.ts.net.key {
+            protocols tls1.2 tls1.3
+          }
+
+          reverse_proxy localhost:9091
+        '';
+      };
+
+      # Root domain - landing page or dashboard
+      "nuck.finch-atria.ts.net" = {
+        extraConfig = ''
+          tls /var/lib/tailscale/certs/nuck.finch-atria.ts.net.crt /var/lib/tailscale/certs/nuck.finch-atria.ts.net.key
+
+          respond "nuck.finch-atria.ts.net - Services available" 200
+        '';
+      };
+    };
+  };
+
+  # Grant Caddy access to Tailscale certificates
+  systemd.services.caddy.serviceConfig = {
+    # Allow reading Tailscale certs
+    ReadOnlyPaths = [ "/var/lib/tailscale/certs" ];
+    # Run as caddy user with supplementary groups
+    SupplementaryGroups = [ ];
+  };
+
+  # Open ports
+  networking.firewall.allowedTCPPorts = [ 80 443 9091 ];
 
   # Authelia - Authentication and authorization server
   services.authelia.instances.main = {
@@ -29,9 +75,9 @@
         format = "json";
       };
 
-      # Server configuration - Listen on all interfaces
+      # Server configuration - Listen on localhost only (behind Caddy)
       server = {
-        address = "tcp://0.0.0.0:9091";
+        address = "tcp://127.0.0.1:9091";
         endpoints.authz.forward-auth.implementation = "ForwardAuth";
       };
 
