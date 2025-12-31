@@ -3,31 +3,12 @@
   pkgs,
   ...
 }: {
-  # Caddy reverse proxy for HTTPS via Tailscale
+  # Caddy reverse proxy for HTTPS - manages certificates automatically
   services.caddy = {
     enable = true;
-    virtualHosts."nuck.finch-atria.ts.net" = {
+    virtualHosts."auth.finch-atria.ts.net" = {
       extraConfig = ''
         reverse_proxy localhost:9091
-        tls /var/lib/caddy/certs/nuck.finch-atria.ts.net.crt /var/lib/caddy/certs/nuck.finch-atria.ts.net.key
-      '';
-    };
-  };
-
-  # Copy Tailscale certificates for Caddy to access
-  systemd.services.caddy-cert-copy = {
-    description = "Copy Tailscale certificates for Caddy";
-    wantedBy = [ "caddy.service" ];
-    before = [ "caddy.service" ];
-    serviceConfig = {
-      Type = "oneshot";
-      ExecStart = pkgs.writeShellScript "copy-tailscale-certs" ''
-        mkdir -p /var/lib/caddy/certs
-        cp /var/lib/tailscale/certs/nuck.finch-atria.ts.net.crt /var/lib/caddy/certs/
-        cp /var/lib/tailscale/certs/nuck.finch-atria.ts.net.key /var/lib/caddy/certs/
-        chown -R caddy:caddy /var/lib/caddy/certs
-        chmod 644 /var/lib/caddy/certs/*.crt
-        chmod 600 /var/lib/caddy/certs/*.key
       '';
     };
   };
