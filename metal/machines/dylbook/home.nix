@@ -78,6 +78,20 @@
       nix-direnv.enable = true;
     };
 
+    programs.firefox = {
+      enable = true;
+      package = pkgs.firefox-devedition-bin;
+
+      policies = {
+        # Import Caddy CA certificate for mac.lab domains
+        Certificates = {
+          Install = [
+            ../../caddy-ca.crt
+          ];
+        };
+      };
+    };
+
     programs.neovim = {
       enable = true;
       defaultEditor = true;
