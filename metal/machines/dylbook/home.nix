@@ -90,22 +90,9 @@
       };
     };
 
-    # Sops configuration - link age keys and config
-    home.file.".config/sops/age/keys.txt" = {
-      text = ''
-        # Personal age key for mac.lab infrastructure
-        # created: 2025-12-31T16:59:43-05:00
-        # public key: age1fzrthms7a20xu8s05p8904tneet5xzeh4jkkq724q0mxz9wtau0s3gwfga
-        AGE-SECRET-KEY-1QUW7PSKKSW7SQXL0QRSALWA8KDXF2MC22REEQML5HHZ57NLKAMEQHM72E2
-      '';
-      force = true;
-    };
-
-    # Link .sops.yaml to home directory for convenience
-    home.file.".sops.yaml" = {
-      source = ../../../.sops.yaml;
-      force = true;
-    };
+    # Sops: Age key should be manually managed at ~/.config/sops/age/keys.txt
+    # Retrieve from Bitwarden or generate with: age-keygen -o ~/.config/sops/age/keys.txt
+    # The .sops.yaml in repo root will be used when editing config.yaml in the repo
 
     programs.neovim = {
       enable = true;
