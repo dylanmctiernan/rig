@@ -34,6 +34,9 @@
     extraGroups = ["wheel" "docker"];
   };
 
+  # Allow passwordless sudo for wheel group (needed for Colmena deployments)
+  security.sudo.wheelNeedsPassword = false;
+
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
