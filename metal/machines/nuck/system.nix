@@ -7,14 +7,31 @@
   ...
 }: {
   # Sops secrets configuration
-  # sops = {
-  #   defaultSopsFile = ./secrets.yaml;
-  #   age.sshKeyPaths = ["/etc/ssh/ssh_host_ed25519_key"];
+  sops = {
+    defaultSopsFile = ./secrets.yaml;
+    age.sshKeyPaths = ["/etc/ssh/ssh_host_ed25519_key"];
 
-  #   secrets = {
-  #     tailscale_auth_key = {};
-  #   };
-  # };
+    secrets = {
+      # Authelia secrets
+      "authelia/jwt_secret" = {
+        owner = "authelia-main";
+        path = "/var/lib/authelia-main/secrets/jwt";
+      };
+      "authelia/storage_encryption_key" = {
+        owner = "authelia-main";
+        path = "/var/lib/authelia-main/secrets/storage-encryption-key";
+      };
+      "authelia/session_secret" = {
+        owner = "authelia-main";
+        path = "/var/lib/authelia-main/secrets/session";
+      };
+      # SSH authorized keys for dylan
+      "ssh/dylan_authorized_keys" = {
+        owner = "dylan";
+        mode = "0600";
+      };
+    };
+  };
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
@@ -32,6 +49,7 @@
   users.users.dylan = {
     isNormalUser = true;
     extraGroups = ["wheel" "docker"];
+    openssh.authorizedKeys.keyFiles = [config.sops.secrets."ssh/dylan_authorized_keys".path];
   };
 
   # Enable passwordless sudo for wheel group
@@ -48,11 +66,23 @@
     fd
   ];
 
+  # SSH configuration (LAN only - not exposed to internet)
+  services.openssh = {
+    enable = true;
+    settings = {
+      PasswordAuthentication = false;
+      PermitRootLogin = "no";
+      KbdInteractiveAuthentication = false;
+    };
+    openFirewall = true;
+  };
+
   # Firewall configuration
   networking.firewall = {
     enable = true;
     trustedInterfaces = ["tailscale0"];
     allowedUDPPorts = [config.services.tailscale.port];
+    # SSH is allowed via services.openssh.openFirewall
   };
 
   services.tailscale = {

@@ -1,0 +1,28 @@
+# SOPS configuration for mac.lab infrastructure
+# Age keys are used for encryption/decryption
+
+creation_rules:
+  # Secrets for nuck (NixOS server)
+  - path_regex: metal/machines/nuck/secrets\.yaml$
+    key_groups:
+      - age:
+          # nuck's SSH host key (age format)
+          - age1460qzwzslgur0dnkk07trllzs2qulx8p9rzkrp5h4pmhtu8xkqyqns23gn
+          # Dylan's personal age key for editing secrets
+          - age1fzrthms7a20xu8s05p8904tneet5xzeh4jkkq724q0mxz9wtau0s3gwfga
+
+  # Secrets for dylbook (macOS laptop)
+  - path_regex: metal/machines/dylbook/secrets\.yaml$
+    key_groups:
+      - age:
+          # Dylan's personal age key for editing secrets
+          - age1fzrthms7a20xu8s05p8904tneet5xzeh4jkkq724q0mxz9wtau0s3gwfga
+
+  # Global/shared secrets
+  - path_regex: secrets/shared\.yaml$
+    key_groups:
+      - age:
+          # nuck's SSH host key
+          - age1460qzwzslgur0dnkk07trllzs2qulx8p9rzkrp5h4pmhtu8xkqyqns23gn
+          # Dylan's personal age key
+          - age1fzrthms7a20xu8s05p8904tneet5xzeh4jkkq724q0mxz9wtau0s3gwfga

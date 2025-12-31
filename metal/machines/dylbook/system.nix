@@ -72,17 +72,25 @@
   # Trust Caddy CA certificate from nuck for mac.lab domains
   system.activationScripts.postActivation.text = ''
     echo "Installing Caddy CA certificate..."
-    if /usr/bin/security find-certificate -c "Caddy Local Authority" /Library/Keychains/System.keychain 2>&1 | grep -q "SecKeychainSearchCopyNext"; then
-      /usr/bin/security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain ${./caddy-ca.crt}
-      echo "Caddy CA certificate installed successfully"
+
+    # Fetch the latest certificate from nuck
+    CERT_PATH="/tmp/caddy-ca-latest.crt"
+    if ${pkgs.openssh}/bin/ssh -o StrictHostKeyChecking=no root@nuck 'cat /var/lib/caddy/.local/share/caddy/pki/authorities/local/root.crt' > "$CERT_PATH" 2>/dev/null; then
+      # Check if certificate needs to be installed/updated
+      if ! /usr/bin/security find-certificate -c "Caddy Local Authority" /Library/Keychains/System.keychain &>/dev/null; then
+        /usr/bin/security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain "$CERT_PATH"
+        echo "Caddy CA certificate installed successfully"
+      else
+        echo "Caddy CA certificate already installed"
+      fi
+      rm -f "$CERT_PATH"
     else
-      echo "Caddy CA certificate already installed"
+      echo "Warning: Could not fetch Caddy CA certificate from nuck (this is normal on first install)"
     fi
   '';
 
   # Nix settings (using Determinate Nix)
   nix.enable = false;
-  nix.settings.experimental-features = "nix-command flakes";
   nixpkgs.config.allowUnfree = true;
 
   # Shell

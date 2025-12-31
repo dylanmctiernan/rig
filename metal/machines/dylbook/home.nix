@@ -22,7 +22,7 @@
           "mix-fast"
         ];
       };
-      initContent = ''
+      initExtra = ''
         eval "$(/opt/homebrew/bin/brew shellenv)"
       '';
     };
@@ -61,10 +61,15 @@
 
     programs.git = {
       enable = true;
-      signing.signByDefault = true;
-      signing.key = null;
-      settings.user.name = "Dylan McTiernan";
-      settings.user.email = "dylan@mctiernan.io";
+      userName = "Dylan McTiernan";
+      userEmail = "dylan@mctiernan.io";
+      signing = {
+        signByDefault = true;
+        key = "9CC2B68A16FF0C89";
+      };
+      extraConfig = {
+        gpg.program = "${pkgs.gnupg}/bin/gpg";
+      };
     };
 
     programs.direnv = {
