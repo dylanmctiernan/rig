@@ -32,11 +32,11 @@
         endpoints.authz.forward-auth.implementation = "ForwardAuth";
       };
 
-      # Session configuration - Use tailnet IP
-      # Access Authelia at http://100.114.41.97:9091 (use IP, not hostname)
-      # For production: set up reverse proxy with HTTPS and proper domain
+      # Session configuration - Use tailscale domain
+      # Access via http://nuck:9091 or http://nuck.finch-atria.ts.net:9091
+      # For production: set up reverse proxy with HTTPS
       session = {
-        domain = "100.114.41.97";
+        domain = "finch-atria.ts.net";
         same_site = "lax";
         expiration = "1h";
         inactivity = "5m";
@@ -50,7 +50,7 @@
         default_policy = "one_factor";
         rules = [
           {
-            domain = "nuck.local";
+            domain = "finch-atria.ts.net";
             policy = "one_factor";
           }
         ];
