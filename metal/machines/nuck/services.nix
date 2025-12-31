@@ -3,18 +3,56 @@
   pkgs,
   ...
 }: {
-  # Caddy reverse proxy for HTTPS - manages certificates automatically
+  # Caddy reverse proxy for HTTPS
+  # Best practices: Use email for ACME, enable automatic HTTPS
   services.caddy = {
     enable = true;
+    email = "dylan@finch-atria.ts.net"; # For Let's Encrypt/ACME notifications
+
+    # Global options
+    globalConfig = ''
+      auto_https disable_redirects
+    '';
+
     virtualHosts."auth.finch-atria.ts.net" = {
       extraConfig = ''
-        reverse_proxy localhost:9091
+        # Reverse proxy to Authelia
+        reverse_proxy localhost:9091 {
+          # Pass real IP to backend
+          header_up X-Real-IP {remote_host}
+          header_up X-Forwarded-For {remote_host}
+          header_up X-Forwarded-Proto {scheme}
+          header_up X-Forwarded-Host {host}
+        }
+
+        # Security headers
+        header {
+          # Enable HSTS
+          Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+          # Prevent clickjacking
+          X-Frame-Options "DENY"
+          # Prevent MIME sniffing
+          X-Content-Type-Options "nosniff"
+          # Remove server header
+          -Server
+        }
+
+        # Logging
+        log {
+          output file /var/log/caddy/auth.finch-atria.ts.net.log
+          format json
+        }
       '';
     };
   };
 
-  # Open HTTPS port
-  networking.firewall.allowedTCPPorts = [ 443 ];
+  # Ensure log directory exists
+  systemd.tmpfiles.rules = [
+    "d /var/log/caddy 0750 caddy caddy -"
+  ];
+
+  # Open HTTPS port (HTTP port 80 for ACME challenges if needed)
+  networking.firewall.allowedTCPPorts = [ 80 443 ];
 
   # Authelia - Authentication and authorization server
   services.authelia.instances.main = {
@@ -35,18 +73,25 @@
 
       # Logging
       log = {
-        level = "debug";
-        format = "text";
+        level = "info";
+        format = "json";
       };
 
       # Server configuration - Listen on localhost only (behind Caddy)
       server = {
         address = "tcp://127.0.0.1:9091";
         endpoints.authz.forward-auth.implementation = "ForwardAuth";
+
+        # Trust proxy headers from Caddy
+        headers = {
+          x_forwarded_for = "X-Forwarded-For";
+          x_forwarded_proto = "X-Forwarded-Proto";
+          x_forwarded_host = "X-Forwarded-Host";
+        };
       };
 
       # Session configuration - Use HTTPS via Caddy
-      # Access via https://nuck.finch-atria.ts.net
+      # Access via https://auth.finch-atria.ts.net
       session = {
         domain = "finch-atria.ts.net";
         same_site = "lax";
