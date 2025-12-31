@@ -22,7 +22,7 @@
 
       # Logging
       log = {
-        level = "info";
+        level = "debug";
         format = "text";
       };
 
