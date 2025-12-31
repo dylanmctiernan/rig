@@ -104,3 +104,63 @@
       # Simple Lua config (converted from init.vim)
       extraLuaConfig = builtins.readFile ./files/neovim/init.lua;
     };
+
+    home.packages = with pkgs; [
+      # tools
+      xh # http
+      fx # json
+      fd # find
+      sd # sed
+      procs # ps
+      ffmpeg
+      tokei # loc
+      oha # simple load testing
+      wrk # fast simple load testing
+      drill # complex load testing
+      hyperfine # command benchmarking
+
+      # dev
+      nodejs_22
+      pnpm
+      bun
+      claude-code
+      beam28Packages.elixir_1_19
+      beam28Packages.erlang
+      python3
+      uv
+      go
+      postgresql
+      flyctl
+      opentofu
+      gh
+      nodePackages_latest.vercel
+      sops
+      age
+      bws
+      trufflehog
+      just
+
+      # nix
+      nil
+      nixd
+      colmena
+    ];
+
+    home.username = "dylan";
+    home.homeDirectory = "/Users/dylan";
+
+    xdg.enable = true;
+
+    home.sessionVariables = {
+      FX_LANG = "python3";
+      EDITOR = "nvim";
+      ERL_AFLAGS = "-kernel shell_history enabled";
+    };
+
+    home.sessionPath = [];
+
+    home.stateVersion = "25.05";
+
+    programs.home-manager.enable = true;
+  };
+}
