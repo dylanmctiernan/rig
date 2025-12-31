@@ -88,7 +88,7 @@
         pkgs.mkShell {
           packages = [
             pkgs.just
-            inputs.colmena.packages.aarch64-darwin.colmena
+            pkgs.colmena
           ];
         };
 
@@ -98,7 +98,7 @@
         pkgs.mkShell {
           packages = [
             pkgs.just
-            inputs.colmena.packages.x86_64-linux.colmena
+            pkgs.colmena
           ];
         };
     };
