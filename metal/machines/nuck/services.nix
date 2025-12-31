@@ -81,13 +81,6 @@
       server = {
         address = "tcp://127.0.0.1:9091";
         endpoints.authz.forward-auth.implementation = "ForwardAuth";
-
-        # Trust proxy headers from Caddy
-        headers = {
-          x_forwarded_for = "X-Forwarded-For";
-          x_forwarded_proto = "X-Forwarded-Proto";
-          x_forwarded_host = "X-Forwarded-Host";
-        };
       };
 
       # Session configuration - Use HTTPS via Caddy
