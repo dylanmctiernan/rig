@@ -2,62 +2,117 @@
   config,
   pkgs,
   ...
-}: {
-  # Caddy web server with subdomain routing
+}: let
+  # Tailscale IP for nuck
+  tailscaleIP = "100.114.41.97";
+in {
+  # CoreDNS - Custom DNS server for mac.lab domain on tailnet
+  services.coredns = {
+    enable = true;
+    config = ''
+      # mac.lab domain - custom tailnet domain
+      mac.lab {
+        # Static host records
+        file /etc/coredns/mac.lab.zone
+
+        log
+        errors
+      }
+
+      # Forward all other queries to Tailscale DNS and public resolvers
+      . {
+        forward . 100.100.100.100 1.1.1.1
+        log
+        errors
+        cache 30
+      }
+    '';
+  };
+
+  # Create DNS zone file for mac.lab
+  environment.etc."coredns/mac.lab.zone".text = ''
+    $ORIGIN mac.lab.
+    @    3600 IN SOA sns.dns.icann.org. noc.dns.icann.org. (
+                  2024010101 ; serial
+                  7200       ; refresh (2 hours)
+                  3600       ; retry (1 hour)
+                  1209600    ; expire (2 weeks)
+                  3600       ; minimum (1 hour)
+                  )
+
+    ; NS records
+    @    3600 IN NS nuck.mac.lab.
+
+    ; A records for services
+    nuck          IN A ${tailscaleIP}
+    auth          IN A ${tailscaleIP}
+    *.mac.lab.    IN A ${tailscaleIP}
+  '';
+
+  # Caddy web server with mac.lab subdomain routing
   services.caddy = {
     enable = true;
 
-    # Global Caddy configuration
     globalConfig = ''
-      # Disable automatic HTTPS redirects for Tailscale
-      auto_https disable_redirects
-
-      # Enable admin API for runtime config
-      admin localhost:2019
+      # Enable local CA for mac.lab certificates
+      local_certs
     '';
 
-    # Virtual hosts - subdomain-based routing
     virtualHosts = {
-      # Authelia subdomain
-      "auth.nuck.finch-atria.ts.net" = {
+      # Authelia at auth.mac.lab
+      "auth.mac.lab" = {
         extraConfig = ''
-          # Use Tailscale HTTPS certificates
-          tls /var/lib/tailscale/certs/nuck.finch-atria.ts.net.crt /var/lib/tailscale/certs/nuck.finch-atria.ts.net.key {
-            protocols tls1.2 tls1.3
-          }
+          # Caddy will auto-generate certs with internal CA
+          tls internal
 
           reverse_proxy localhost:9091
+
+          # Security headers
+          header {
+            Strict-Transport-Security "max-age=31536000"
+            X-Frame-Options "DENY"
+            X-Content-Type-Options "nosniff"
+            -Server
+          }
+
+          log {
+            output file /var/log/caddy/auth.mac.lab.log
+            format json
+          }
         '';
       };
 
-      # Root domain - landing page or dashboard
-      "nuck.finch-atria.ts.net" = {
+      # Root domain landing page
+      "nuck.mac.lab" = {
         extraConfig = ''
-          tls /var/lib/tailscale/certs/nuck.finch-atria.ts.net.crt /var/lib/tailscale/certs/nuck.finch-atria.ts.net.key
+          tls internal
 
-          respond "nuck.finch-atria.ts.net - Services available" 200
+          respond "mac.lab Services\n\nAvailable:\n- https://auth.mac.lab - Authelia Authentication" 200
+
+          log {
+            output file /var/log/caddy/nuck.mac.lab.log
+            format json
+          }
         '';
       };
     };
   };
 
-  # Grant Caddy access to Tailscale certificates
-  systemd.services.caddy.serviceConfig = {
-    # Allow reading Tailscale certs
-    ReadOnlyPaths = [ "/var/lib/tailscale/certs" ];
-    # Run as caddy user with supplementary groups
-    SupplementaryGroups = [ ];
-  };
+  # Ensure Caddy log directory exists
+  systemd.tmpfiles.rules = [
+    "d /var/log/caddy 0750 caddy caddy -"
+  ];
 
-  # Open ports
-  networking.firewall.allowedTCPPorts = [ 80 443 9091 ];
+  # Firewall - Open DNS and HTTPS ports
+  networking.firewall = {
+    allowedTCPPorts = [ 53 443 ];
+    allowedUDPPorts = [ 53 ];
+  };
 
   # Authelia - Authentication and authorization server
   services.authelia.instances.main = {
     enable = true;
 
-    # Secrets management - IMPORTANT: Keep these out of the nix store
-    # Create these files manually or use sops-nix
     secrets = {
       jwtSecretFile = "/var/lib/authelia-main/secrets/jwt";
       storageEncryptionKeyFile = "/var/lib/authelia-main/secrets/storage-encryption-key";
@@ -65,56 +120,52 @@
     };
 
     settings = {
-      # Theme configuration
       theme = "auto";
       default_2fa_method = "totp";
 
-      # Logging
       log = {
         level = "info";
         format = "json";
       };
 
-      # Server configuration - Listen on localhost only (behind Caddy)
+      # Listen on localhost - behind Caddy
       server = {
         address = "tcp://127.0.0.1:9091";
         endpoints.authz.forward-auth.implementation = "ForwardAuth";
       };
 
-      # Session configuration - Use tailscale domain
+      # Session for mac.lab domain
       session = {
-        domain = "finch-atria.ts.net";
+        domain = "mac.lab";
         same_site = "lax";
         expiration = "1h";
         inactivity = "5m";
       };
 
-      # Storage configuration (local SQLite for simplicity)
       storage.local.path = "/var/lib/authelia-main/db.sqlite3";
 
-      # Access control - Allow access from tailnet
+      # Access control for mac.lab
       access_control = {
         default_policy = "one_factor";
         rules = [
           {
-            domain = "finch-atria.ts.net";
+            domain = "mac.lab";
+            policy = "one_factor";
+          }
+          {
+            domain = "*.mac.lab";
             policy = "one_factor";
           }
         ];
       };
 
-      # Notifier configuration - File-based for now
-      # TODO: Configure SMTP for production use
       notifier.filesystem = {
         filename = "/var/lib/authelia-main/notifications.txt";
       };
 
-      # Authentication backend - File-based for simplicity
-      # TODO: Consider LDAP/AD integration for production
       authentication_backend.file = {
         path = "/var/lib/authelia-main/users.yml";
       };
     };
   };
-
 }
