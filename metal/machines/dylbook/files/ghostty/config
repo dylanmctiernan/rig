@@ -1,9 +1,0 @@
-# Font
-font-size = 16
-
-# Theme (see theme file below)
-theme = jetbrains-new-dark
-
-cursor-style = block
-cursor-style-blink = false
-shell-integration-features = no-cursor
