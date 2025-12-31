@@ -16,8 +16,8 @@
 
     virtualHosts."nuck.finch-atria.ts.net" = {
       extraConfig = ''
-        # Use Tailscale certificates
-        tls /var/lib/tailscale/certs/nuck.finch-atria.ts.net.crt /var/lib/tailscale/certs/nuck.finch-atria.ts.net.key
+        # Use Tailscale certificates (copied to Caddy's directory)
+        tls /var/lib/caddy/certificates/nuck.finch-atria.ts.net.crt /var/lib/caddy/certificates/nuck.finch-atria.ts.net.key
 
         # Reverse proxy to Authelia
         reverse_proxy localhost:9091 {
@@ -49,14 +49,35 @@
     };
   };
 
-  # Ensure log directory exists and grant Caddy access to Tailscale certs
+  # Ensure log and certificate directories exist
   systemd.tmpfiles.rules = [
     "d /var/log/caddy 0750 caddy caddy -"
+    "d /var/lib/caddy/certificates 0750 caddy caddy -"
   ];
 
-  # Grant Caddy read access to Tailscale certificates
-  systemd.services.caddy.serviceConfig = {
-    ReadOnlyPaths = [ "/var/lib/tailscale/certs" ];
+  # Copy Tailscale certificates for Caddy
+  systemd.services.copy-tailscale-certs = {
+    description = "Copy Tailscale certificates for Caddy";
+    wantedBy = [ "caddy.service" ];
+    before = [ "caddy.service" ];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.bash}/bin/bash -c '\
+        cp /var/lib/tailscale/certs/nuck.finch-atria.ts.net.crt /var/lib/caddy/certificates/ && \
+        cp /var/lib/tailscale/certs/nuck.finch-atria.ts.net.key /var/lib/caddy/certificates/ && \
+        chown caddy:caddy /var/lib/caddy/certificates/* && \
+        chmod 644 /var/lib/caddy/certificates/*.crt && \
+        chmod 600 /var/lib/caddy/certificates/*.key'";
+    };
+  };
+
+  # Periodically sync certificates (Tailscale certs renew automatically)
+  systemd.timers.copy-tailscale-certs = {
+    wantedBy = [ "timers.target" ];
+    timerConfig = {
+      OnBootSec = "5min";
+      OnUnitActiveSec = "1d";
+    };
   };
 
   # Open HTTPS port (HTTP port 80 for ACME challenges if needed)
