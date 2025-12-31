@@ -53,7 +53,6 @@
 
   services.tailscale = {
     enable = true;
-    authKeyFile = config.sops.secrets.tailscale_auth_key.path;
   };
 
   virtualisation.docker.enable = true;
