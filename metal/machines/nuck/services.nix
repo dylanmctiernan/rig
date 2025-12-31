@@ -32,13 +32,18 @@
         endpoints.authz.forward-auth.implementation = "ForwardAuth";
       };
 
-      # Session configuration - Use tailnet IP for session cookies
+      # Session configuration - Support both hostname and IP access
       # Note: For production use, configure Caddy/nginx with HTTPS and proper domain
       session = {
-        domain = "100.114.41.97"; # Tailnet IP for nuck
         same_site = "lax";
         expiration = "1h";
         inactivity = "5m";
+        cookies = [
+          {
+            domain = "100.114.41.97";
+            authelia_url = "http://100.114.41.97:9091";
+          }
+        ];
       };
 
       # Storage configuration (local SQLite for simplicity)
