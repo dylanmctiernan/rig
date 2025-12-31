@@ -8,21 +8,21 @@
 }: {
   # Sops secrets configuration
   sops = {
-    defaultSopsFile = ../../../config/nuck.yaml;
+    defaultSopsFile = ../../../config.yaml;
     # Use age keys instead of SSH host keys
     age.keyFile = "/var/lib/sops-nix/key.txt";
 
     secrets = {
       # Authelia secrets
-      "authelia/jwt_secret" = {
+      "nuck/authelia/jwt_secret" = {
         owner = "authelia-main";
         path = "/var/lib/authelia-main/secrets/jwt";
       };
-      "authelia/storage_encryption_key" = {
+      "nuck/authelia/storage_encryption_key" = {
         owner = "authelia-main";
         path = "/var/lib/authelia-main/secrets/storage-encryption-key";
       };
-      "authelia/session_secret" = {
+      "nuck/authelia/session_secret" = {
         owner = "authelia-main";
         path = "/var/lib/authelia-main/secrets/session";
       };

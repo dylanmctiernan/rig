@@ -10,8 +10,8 @@ keys:
   - &recovery age1ssppr4cq5dxqa2fyg2d3ke2yud2dgrvv6js50l7ves0hznx353ts4ak02j
 
 creation_rules:
-  # All configuration files in config/ directory
-  - path_regex: config/.*\.yaml$
+  # Centralized configuration file
+  - path_regex: config\.yaml$
     key_groups:
       - age:
           - *personal

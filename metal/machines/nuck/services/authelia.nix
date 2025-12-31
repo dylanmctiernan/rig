@@ -4,9 +4,9 @@
     enable = true;
 
     secrets = {
-      jwtSecretFile = config.sops.secrets."authelia/jwt_secret".path;
-      storageEncryptionKeyFile = config.sops.secrets."authelia/storage_encryption_key".path;
-      sessionSecretFile = config.sops.secrets."authelia/session_secret".path;
+      jwtSecretFile = config.sops.secrets."nuck/authelia/jwt_secret".path;
+      storageEncryptionKeyFile = config.sops.secrets."nuck/authelia/storage_encryption_key".path;
+      sessionSecretFile = config.sops.secrets."nuck/authelia/session_secret".path;
     };
 
     settings = {
