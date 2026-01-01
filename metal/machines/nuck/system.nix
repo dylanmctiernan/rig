@@ -104,6 +104,11 @@ in {
 
   virtualisation.docker.enable = true;
 
+  # Trust Caddy's internal CA for system-wide HTTPS
+  security.pki.certificateFiles = [
+    "/var/lib/caddy/.local/share/caddy/pki/authorities/local/root.crt"
+  ];
+
   nixpkgs.config.allowUnfree = true;
 
   nixpkgs.hostPlatform = "x86_64-linux";
