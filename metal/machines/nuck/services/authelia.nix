@@ -29,10 +29,15 @@ in {
 
       # Session for ${domain} domain
       session = {
-        domain = domain;
-        same_site = "lax";
-        expiration = "1h";
-        inactivity = "5m";
+        cookies = [
+          {
+            domain = domain;
+            authelia_url = "https://sso.${domain}";
+            same_site = "lax";
+            expiration = "1h";
+            inactivity = "5m";
+          }
+        ];
       };
 
       storage.local.path = "/var/lib/authelia-main/db.sqlite3";
