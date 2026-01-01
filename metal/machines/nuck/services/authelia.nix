@@ -69,16 +69,15 @@ in {
 
       # OpenID Connect (OIDC) configuration
       identity_providers.oidc = {
-        hmac_secret = config.sops.secrets."nuck/authelia/oidc_hmac_secret".path;
-        issuer_private_key = "";  # Using HMAC, no RSA key needed
-
-        access_token_lifespan = "1h";
-        authorize_code_lifespan = "1m";
-        id_token_lifespan = "1h";
-        refresh_token_lifespan = "90m";
-
         enable_client_debug_messages = false;
         enforce_pkce = "public_clients_only";
+
+        lifespans = {
+          access_token = "1h";
+          authorize_code = "1m";
+          id_token = "1h";
+          refresh_token = "90m";
+        };
 
         cors = {
           endpoints = ["authorization" "token" "revocation" "introspection"];
@@ -98,7 +97,7 @@ in {
 
             redirect_uris = ["https://git.${domain}/user/oauth2/authelia/callback"];
 
-            scopes = ["openid" "profile" "groups" "email"];
+            scopes = ["openid" "profile" "groups" "email" "offline_access"];
             response_types = ["code"];
             grant_types = ["refresh_token" "authorization_code"];
             response_modes = ["form_post" "query" "fragment"];
