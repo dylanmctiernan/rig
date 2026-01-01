@@ -52,9 +52,6 @@ in {
       # OpenID Connect (OIDC) configuration will be done via Authelia
       # OAuth2 configuration is handled through web UI or CLI after deployment
     };
-
-    # Use NixOS managed secrets for security
-    mailerPasswordFile = null;  # No email configured initially
   };
 
   # Firewall - Forgejo will be accessed via Caddy reverse proxy
