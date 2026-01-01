@@ -41,6 +41,12 @@ in {
         extraConfig = ''
           tls internal
 
+          # Authelia forward auth
+          forward_auth localhost:9091 {
+            uri /api/authz/forward-auth
+            copy_headers Remote-User Remote-Groups Remote-Email Remote-Name
+          }
+
           reverse_proxy localhost:9898
 
           # Security headers
