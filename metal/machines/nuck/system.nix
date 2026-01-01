@@ -24,10 +24,6 @@ in {
         owner = "authelia-main";
         path = "/var/lib/authelia-main/secrets/storage-encryption-key";
       };
-      "nuck/authelia/session_secret" = {
-        owner = "authelia-main";
-        path = "/var/lib/authelia-main/secrets/session";
-      };
       "nuck/authelia/oidc_hmac_secret" = {
         owner = "authelia-main";
         path = "/var/lib/authelia-main/secrets/oidc-hmac";
