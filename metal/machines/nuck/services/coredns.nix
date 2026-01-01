@@ -5,6 +5,7 @@
   hostname = commonConfig.machines.nuck.hostname;
 in {
   # CoreDNS - Custom DNS server for mac.lab domain on tailnet
+  # Tailscale DNS handles all other queries as fallback
   services.coredns = {
     enable = true;
     config = ''
@@ -15,14 +16,6 @@ in {
 
         log
         errors
-      }
-
-      # Forward all other queries to Tailscale DNS and public resolvers
-      . {
-        forward . 100.100.100.100 1.1.1.1
-        log
-        errors
-        cache 30
       }
     '';
   };
