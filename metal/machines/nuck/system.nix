@@ -5,7 +5,9 @@
   config,
   pkgs,
   ...
-}: {
+}: let
+  commonConfig = import ../../common-config.nix;
+in {
   # Sops secrets configuration
   sops = {
     defaultSopsFile = ../../../secrets.yaml;
@@ -33,7 +35,7 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  networking.hostName = "nuck";
+  networking.hostName = commonConfig.machines.nuck.hostname;
 
   time.timeZone = "America/Toronto";
 
@@ -46,7 +48,7 @@
     isNormalUser = true;
     extraGroups = ["wheel" "docker"];
     openssh.authorizedKeys.keys = [
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIE9aV63mII6UUHP9Shz6zMmGIlAd752I7LzgMTEshkYN dylan@mctiernan.io"
+      commonConfig.dylan.sshPublicKey
     ];
   };
 

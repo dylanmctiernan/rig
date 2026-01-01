@@ -1,16 +1,20 @@
-{...}: {
-  # Caddy web server with mac.lab subdomain routing
+{...}: let
+  commonConfig = import ../../../common-config.nix;
+  domain = commonConfig.network.domain;
+  hostname = commonConfig.machines.nuck.hostname;
+in {
+  # Caddy web server with ${domain} subdomain routing
   services.caddy = {
     enable = true;
 
     globalConfig = ''
-      # Enable local CA for mac.lab certificates
+      # Enable local CA for ${domain} certificates
       local_certs
     '';
 
     virtualHosts = {
-      # Authelia at sso.mac.lab
-      "sso.mac.lab" = {
+      # Authelia at sso.${domain}
+      "sso.${domain}" = {
         extraConfig = ''
           # Caddy will auto-generate certs with internal CA
           tls internal
@@ -26,21 +30,21 @@
           }
 
           log {
-            output file /var/log/caddy/sso.mac.lab.log
+            output file /var/log/caddy/sso.${domain}.log
             format json
           }
         '';
       };
 
       # Root domain landing page
-      "nuck.mac.lab" = {
+      "${hostname}.${domain}" = {
         extraConfig = ''
           tls internal
 
-          respond "mac.lab Services\n\nAvailable:\n- https://sso.mac.lab - Authelia Authentication" 200
+          respond "${domain} Services\n\nAvailable:\n- https://sso.${domain} - Authelia Authentication" 200
 
           log {
-            output file /var/log/caddy/nuck.mac.lab.log
+            output file /var/log/caddy/${hostname}.${domain}.log
             format json
           }
         '';

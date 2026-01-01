@@ -1,4 +1,7 @@
-{config, ...}: {
+{config, ...}: let
+  commonConfig = import ../../../common-config.nix;
+  domain = commonConfig.network.domain;
+in {
   # Authelia - Authentication and authorization server
   services.authelia.instances.main = {
     enable = true;
@@ -24,9 +27,9 @@
         endpoints.authz.forward-auth.implementation = "ForwardAuth";
       };
 
-      # Session for mac.lab domain
+      # Session for ${domain} domain
       session = {
-        domain = "mac.lab";
+        domain = domain;
         same_site = "lax";
         expiration = "1h";
         inactivity = "5m";
@@ -34,16 +37,16 @@
 
       storage.local.path = "/var/lib/authelia-main/db.sqlite3";
 
-      # Access control for mac.lab
+      # Access control for ${domain}
       access_control = {
         default_policy = "one_factor";
         rules = [
           {
-            domain = "mac.lab";
+            domain = domain;
             policy = "one_factor";
           }
           {
-            domain = "*.mac.lab";
+            domain = "*.${domain}";
             policy = "one_factor";
           }
         ];
