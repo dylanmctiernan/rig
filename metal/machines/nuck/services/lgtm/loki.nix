@@ -64,7 +64,6 @@ in {
 
       limits_config = {
         retention_period = "744h"; # 31 days
-        enforce_metric_name = false;
         reject_old_samples = true;
         reject_old_samples_max_age = "168h";
         ingestion_rate_mb = 4;
