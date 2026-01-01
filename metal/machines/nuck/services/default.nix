@@ -5,5 +5,6 @@
     ./authelia.nix
     ./backrest.nix
     ./forgejo.nix
+    ./lgtm
   ];
 }
