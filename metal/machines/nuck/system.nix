@@ -8,7 +8,7 @@
 }: {
   # Sops secrets configuration
   sops = {
-    defaultSopsFile = ../../../config.yaml;
+    defaultSopsFile = ../../../secrets.yaml;
     # Use age keys instead of SSH host keys
     age.keyFile = "/var/lib/sops-nix/key.txt";
 

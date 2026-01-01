@@ -1,4 +1,17 @@
-{pkgs, ...}: {
+{
+  pkgs,
+  config,
+  inputs,
+  ...
+}: let
+  # Load shared configuration
+  commonConfig = import ../../common-config.nix;
+
+  # Configuration values
+  gitUserName = commonConfig.dylan.name;
+  gitUserEmail = commonConfig.dylan.email;
+  sshSigningKey = commonConfig.dylan.sshPublicKey;
+in {
   # Home manager configuration
   home-manager.useGlobalPkgs = true;
   home-manager.useUserPackages = true;
@@ -8,6 +21,24 @@
     config,
     ...
   }: {
+    imports = [
+      inputs.sops-nix.homeManagerModules.sops
+    ];
+
+    # Sops configuration for dylbook (in home-manager)
+    # Only secrets from secrets.yaml - public config is in common-config.nix
+    sops = {
+      defaultSopsFile = ../../../secrets.yaml;
+      age.keyFile = "${config.xdg.configHome}/sops/age/keys.txt";
+
+      # Place SSH private key at default path
+      secrets = {
+        "dylan/ssh/private_key" = {
+          path = "${config.home.homeDirectory}/.ssh/id_ed25519";
+          mode = "0600";
+        };
+      };
+    };
     programs.zsh = {
       enable = true;
       dotDir = "${config.xdg.configHome}/zsh";
@@ -55,22 +86,27 @@
       enable = true;
     };
 
-    programs.gpg = {
-      enable = true;
-    };
+
 
     programs.git = {
       enable = true;
-      userName = "Dylan McTiernan";
-      userEmail = "dylan@mctiernan.io";
+      userName = gitUserName;
+      userEmail = gitUserEmail;
       signing = {
         signByDefault = true;
-        key = "9CC2B68A16FF0C89";
+        key = sshSigningKey;
       };
       extraConfig = {
-        gpg.program = "${pkgs.gnupg}/bin/gpg";
+        init.defaultBranch = "main";
+        gpg.format = "ssh";
+        gpg.ssh.allowedSignersFile = "${config.home.homeDirectory}/.ssh/allowed_signers";
       };
     };
+
+    # Create allowed_signers file for SSH signing verification
+    home.file.".ssh/allowed_signers".text = ''
+      ${gitUserEmail} ${sshSigningKey}
+    '';
 
     programs.direnv = {
       enable = true;
@@ -147,7 +183,7 @@
     ];
 
     home.username = "dylan";
-    home.homeDirectory = "/Users/dylan";
+    home.homeDirectory = "/Users/${config.home.username}";
 
     xdg.enable = true;
 
