@@ -51,7 +51,6 @@ in {
 
       memberlist = {
         abort_if_cluster_join_fails = false;
-        bind_addr = "127.0.0.1";
         bind_port = mimir.memberlistPort;
         join_members = [];
       };
