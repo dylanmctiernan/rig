@@ -51,6 +51,7 @@ in {
 
       memberlist = {
         abort_if_cluster_join_fails = false;
+        bind_addr = "127.0.0.1";
         bind_port = mimir.memberlistPort;
         join_members = [];
       };
@@ -58,6 +59,7 @@ in {
       ingester = {
         ring = {
           instance_addr = "127.0.0.1";
+          instance_interface_names = ["lo"];
           kvstore = {
             store = "inmemory";
           };
@@ -67,6 +69,8 @@ in {
 
       store_gateway = {
         sharding_ring = {
+          instance_addr = "127.0.0.1";
+          instance_interface_names = ["lo"];
           replication_factor = 1;
           kvstore = {
             store = "inmemory";
@@ -77,6 +81,8 @@ in {
       ruler = {
         rule_path = "/var/lib/mimir/rules";
         ring = {
+          instance_addr = "127.0.0.1";
+          instance_interface_names = ["lo"];
           kvstore = {
             store = "inmemory";
           };
