@@ -65,46 +65,10 @@ in {
       authentication_backend.file = {
         path = "/var/lib/authelia-main/users.yml";
       };
-
-      # OpenID Connect (OIDC) configuration
-      identity_providers.oidc = {
-        enable_client_debug_messages = false;
-        enforce_pkce = "public_clients_only";
-
-        lifespans = {
-          access_token = "1h";
-          authorize_code = "1m";
-          id_token = "1h";
-          refresh_token = "90m";
-        };
-
-        cors = {
-          endpoints = ["authorization" "token" "revocation" "introspection"];
-          allowed_origins_from_client_redirect_uris = true;
-        };
-
-        # Forgejo OIDC client
-        clients = [
-          {
-            client_id = "forgejo";
-            client_name = "Forgejo";
-            # Using $plaintext$ prefix - Authelia will hash it on startup
-            # Secret stored in sops: nuck/authelia/forgejo_client_secret
-            client_secret = "$plaintext$b87067421779d30d7ba8a78a4028fe3c0105eb433f16612bb37fc39866f4b43b";
-            public = false;
-            authorization_policy = "one_factor";
-
-            redirect_uris = ["https://git.${domain}/user/oauth2/authelia/callback"];
-
-            scopes = ["openid" "profile" "groups" "email" "offline_access"];
-            response_types = ["code"];
-            grant_types = ["refresh_token" "authorization_code"];
-            response_modes = ["form_post" "query" "fragment"];
-
-            userinfo_signed_response_alg = "none";
-          }
-        ];
-      };
     };
   };
 }
+
+  # TODO: Add OIDC configuration for Forgejo SSO
+  # Requires proper RSA key generation and JWKS configuration
+  # For now, Forgejo will use local authentication
