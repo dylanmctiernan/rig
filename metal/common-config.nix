@@ -39,6 +39,7 @@
     mimir = {
       httpPort = 9009;
       grpcPort = 9095;
+      memberlistPort = 7947;
     };
     alloy = {
       httpPort = 12345;
