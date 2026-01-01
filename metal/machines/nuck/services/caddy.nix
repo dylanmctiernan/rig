@@ -36,12 +36,34 @@ in {
         '';
       };
 
+      # Backrest at backup.${domain}
+      "backup.${domain}" = {
+        extraConfig = ''
+          tls internal
+
+          reverse_proxy localhost:9898
+
+          # Security headers
+          header {
+            Strict-Transport-Security "max-age=31536000"
+            X-Frame-Options "SAMEORIGIN"
+            X-Content-Type-Options "nosniff"
+            -Server
+          }
+
+          log {
+            output file /var/log/caddy/backup.${domain}.log
+            format json
+          }
+        '';
+      };
+
       # Root domain landing page
       "${hostname}.${domain}" = {
         extraConfig = ''
           tls internal
 
-          respond "${domain} Services\n\nAvailable:\n- https://sso.${domain} - Authelia Authentication" 200
+          respond "${domain} Services\n\nAvailable:\n- https://sso.${domain} - Authelia Authentication\n- https://backup.${domain} - Backrest Backup UI" 200
 
           log {
             output file /var/log/caddy/${hostname}.${domain}.log
