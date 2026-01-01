@@ -4,5 +4,6 @@
     ./caddy.nix
     ./authelia.nix
     ./backrest.nix
+    ./forgejo.nix
   ];
 }

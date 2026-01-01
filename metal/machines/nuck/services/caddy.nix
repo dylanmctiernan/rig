@@ -64,12 +64,34 @@ in {
         '';
       };
 
+      # Forgejo at git.${domain}
+      "git.${domain}" = {
+        extraConfig = ''
+          tls internal
+
+          reverse_proxy localhost:3000
+
+          # Security headers
+          header {
+            Strict-Transport-Security "max-age=31536000"
+            X-Frame-Options "SAMEORIGIN"
+            X-Content-Type-Options "nosniff"
+            -Server
+          }
+
+          log {
+            output file /var/log/caddy/git.${domain}.log
+            format json
+          }
+        '';
+      };
+
       # Root domain landing page
       "${hostname}.${domain}" = {
         extraConfig = ''
           tls internal
 
-          respond "${domain} Services\n\nAvailable:\n- https://sso.${domain} - Authelia Authentication\n- https://backup.${domain} - Backrest Backup UI" 200
+          respond "${domain} Services\n\nAvailable:\n- https://sso.${domain} - Authelia Authentication\n- https://backup.${domain} - Backrest Backup UI\n- https://git.${domain} - Forgejo Git Repository" 200
 
           log {
             output file /var/log/caddy/${hostname}.${domain}.log

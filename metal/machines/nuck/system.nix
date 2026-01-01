@@ -28,6 +28,14 @@ in {
         owner = "authelia-main";
         path = "/var/lib/authelia-main/secrets/session";
       };
+      "nuck/authelia/oidc_hmac_secret" = {
+        owner = "authelia-main";
+        path = "/var/lib/authelia-main/secrets/oidc-hmac";
+      };
+      "nuck/authelia/forgejo_client_secret" = {
+        owner = "authelia-main";
+        path = "/var/lib/authelia-main/secrets/forgejo-client";
+      };
     };
   };
 
