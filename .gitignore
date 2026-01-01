@@ -24,3 +24,6 @@ secrets.yaml
 # Allow sops-encrypted secrets (these are safe to commit)
 !**/secrets.yaml
 !secrets/*.yaml
+
+# Intellij
+.idea
