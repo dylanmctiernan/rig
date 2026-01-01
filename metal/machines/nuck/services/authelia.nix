@@ -72,6 +72,15 @@ in {
         enable_client_debug_messages = false;
         enforce_pkce = "public_clients_only";
 
+        # JWKS configuration - using HMAC for token signing
+        jwks = [
+          {
+            key_id = "main";
+            algorithm = "HS512";
+            use = "sig";
+          }
+        ];
+
         lifespans = {
           access_token = "1h";
           authorize_code = "1m";
