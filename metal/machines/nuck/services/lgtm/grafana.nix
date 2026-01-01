@@ -28,6 +28,32 @@ in {
         secret_key = "$__file{/var/lib/grafana/secret_key}";
       };
 
+      # Authelia OIDC SSO
+      "auth.generic_oauth" = {
+        enabled = true;
+        name = "Authelia";
+        client_id = "grafana";
+        client_secret = "$__file{${config.sops.secrets."nuck/authelia/grafana_client_secret".path}}";
+        scopes = "openid profile email groups";
+        auth_url = "https://sso.${domain}/api/oidc/authorization";
+        token_url = "https://sso.${domain}/api/oidc/token";
+        api_url = "https://sso.${domain}/api/oidc/userinfo";
+        use_pkce = true;
+        use_refresh_token = true;
+
+        # Role mapping
+        role_attribute_path = "contains(groups[*], 'admin') && 'Admin' || 'Viewer'";
+
+        # Auto login (optional - comment out if you want login button)
+        # auto_login = true;
+
+        # Allow sign up
+        allow_sign_up = true;
+
+        # TLS settings for internal CA
+        tls_skip_verify_insecure = true;
+      };
+
       analytics = {
         reporting_enabled = false;
         check_for_updates = false;

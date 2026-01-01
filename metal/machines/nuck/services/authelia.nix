@@ -83,8 +83,9 @@ in {
           allowed_origins_from_client_redirect_uris = true;
         };
 
-        # Forgejo OIDC client
+        # OIDC clients
         clients = [
+          # Forgejo OIDC client
           {
             client_id = "forgejo";
             client_name = "Forgejo";
@@ -95,6 +96,23 @@ in {
             redirect_uris = ["https://git.${domain}/user/oauth2/authelia/callback"];
 
             scopes = ["openid" "profile" "groups" "email" "offline_access"];
+            response_types = ["code"];
+            grant_types = ["refresh_token" "authorization_code"];
+            response_modes = ["form_post" "query" "fragment"];
+
+            userinfo_signed_response_alg = "none";
+          }
+          # Grafana OIDC client
+          {
+            client_id = "grafana";
+            client_name = "Grafana";
+            client_secret = "$plaintext$31315a312f1960e80a32d8750517b4827d65fb571a3299d34c2c32a166e0ea92";
+            public = false;
+            authorization_policy = "one_factor";
+
+            redirect_uris = ["https://grafana.${domain}/login/generic_oauth"];
+
+            scopes = ["openid" "profile" "groups" "email"];
             response_types = ["code"];
             grant_types = ["refresh_token" "authorization_code"];
             response_modes = ["form_post" "query" "fragment"];
