@@ -42,7 +42,7 @@ in {
         use_refresh_token = true;
 
         # Role mapping
-        role_attribute_path = "contains(groups[*], 'admin') && 'Admin' || 'Viewer'";
+        role_attribute_path = "contains(groups[*], 'admins') && 'Admin' || 'Viewer'";
 
         # Auto login (optional - comment out if you want login button)
         # auto_login = true;
