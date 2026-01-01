@@ -10,7 +10,7 @@ in {
       jwtSecretFile = config.sops.secrets."nuck/authelia/jwt_secret".path;
       storageEncryptionKeyFile = config.sops.secrets."nuck/authelia/storage_encryption_key".path;
       sessionSecretFile = config.sops.secrets."nuck/authelia/session_secret".path;
-      oidcHmacSecretFile = config.sops.secrets."nuck/authelia/oidc_hmac_secret".path;
+      # oidcHmacSecretFile disabled until OIDC is properly configured
     };
 
     settings = {
