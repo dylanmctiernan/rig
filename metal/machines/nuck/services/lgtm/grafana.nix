@@ -41,8 +41,13 @@ in {
         use_pkce = true;
         use_refresh_token = true;
 
-        # Role mapping
-        role_attribute_path = "contains(groups[*], 'admins') && 'Admin' || 'Viewer'";
+        # Role mapping - users in 'admins' group get Admin role
+        role_attribute_path = "contains(groups[*], 'admins') && 'Admin' || 'Editor'";
+        role_attribute_strict = false;
+
+        # Allow assigning grafana admin role
+        allow_assign_grafana_admin = true;
+        skip_org_role_sync = false;
 
         # Auto login (optional - comment out if you want login button)
         # auto_login = true;
@@ -52,6 +57,13 @@ in {
 
         # TLS settings for internal CA
         tls_skip_verify_insecure = true;
+      };
+
+      # Users settings - auto-assign admin to OAuth users in admins group
+      users = {
+        auto_assign_org = true;
+        auto_assign_org_id = 1;
+        auto_assign_org_role = "Editor";
       };
 
       analytics = {
