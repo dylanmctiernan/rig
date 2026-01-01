@@ -58,9 +58,13 @@ in {
         UPDATE_AVATAR = true;
       };
 
-      # Allow insecure OAuth2 connections (for internal Caddy CA)
+      # Allow insecure connections for internal Caddy CA
       webhook = {
         SKIP_TLS_VERIFY = true;
+      };
+
+      openid = {
+        SKIP_TLS_VERIFY = true;  # Trust internal Caddy CA certificates
       };
     };
 
