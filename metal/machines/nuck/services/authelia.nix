@@ -11,7 +11,6 @@ in {
       storageEncryptionKeyFile = config.sops.secrets."nuck/authelia/storage_encryption_key".path;
       sessionSecretFile = config.sops.secrets."nuck/authelia/session_secret".path;
       oidcHmacSecretFile = config.sops.secrets."nuck/authelia/oidc_hmac_secret".path;
-      oidcIssuerPrivateKeyFile = null;  # Using HMAC instead of RSA
     };
 
     settings = {
@@ -71,17 +70,6 @@ in {
       identity_providers.oidc = {
         enable_client_debug_messages = false;
         enforce_pkce = "public_clients_only";
-
-        # JWKS configuration - using HMAC for token signing
-        # The key is loaded from oidcHmacSecretFile
-        jwks = [
-          {
-            key_id = "main";
-            algorithm = "HS512";
-            use = "sig";
-            key = "{{ secret \"/var/lib/authelia-main/secrets/oidc-hmac\" }}";
-          }
-        ];
 
         lifespans = {
           access_token = "1h";
