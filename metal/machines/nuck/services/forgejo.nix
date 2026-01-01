@@ -57,6 +57,11 @@ in {
         USERNAME = "preferred_username";
         UPDATE_AVATAR = true;
       };
+
+      # Allow insecure OAuth2 connections (for internal Caddy CA)
+      webhook = {
+        SKIP_TLS_VERIFY = true;
+      };
     };
 
     # Note: OAuth2 providers must be added via CLI or web UI:
