@@ -33,8 +33,9 @@ in {
       };
 
       service = {
-        DISABLE_REGISTRATION = true;  # Only allow SSO registration
+        DISABLE_REGISTRATION = false;  # Allow SSO registration via OIDC
         REQUIRE_SIGNIN_VIEW = false;   # Allow public repo viewing
+        ALLOW_ONLY_EXTERNAL_REGISTRATION = true;  # Force OIDC registration
       };
 
       # Enable Actions for CI/CD
@@ -49,9 +50,23 @@ in {
         SAME_SITE = "lax";
       };
 
-      # OpenID Connect (OIDC) configuration will be done via Authelia
-      # OAuth2 configuration is handled through web UI or CLI after deployment
+      # OAuth2 / OIDC configuration for Authelia SSO
+      "oauth2_client" = {
+        ACCOUNT_LINKING = "auto";  # Auto-link accounts by email
+        ENABLE_AUTO_REGISTRATION = true;
+        USERNAME = "preferred_username";
+        UPDATE_AVATAR = true;
+      };
     };
+
+    # Note: OAuth2 providers must be added via CLI or web UI:
+    # forgejo admin auth add-oauth \
+    #   --name authelia \
+    #   --provider openidConnect \
+    #   --key forgejo \
+    #   --secret <client-secret> \
+    #   --auto-discover-url https://sso.${domain}/.well-known/openid-configuration \
+    #   --scopes "openid email profile groups"
   };
 
   # Firewall - Forgejo will be accessed via Caddy reverse proxy
