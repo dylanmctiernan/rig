@@ -9,7 +9,6 @@ in {
     secrets = {
       jwtSecretFile = config.sops.secrets."nuck/authelia/jwt_secret".path;
       storageEncryptionKeyFile = config.sops.secrets."nuck/authelia/storage_encryption_key".path;
-      sessionSecretFile = config.sops.secrets."nuck/authelia/session_secret".path;
       oidcHmacSecretFile = config.sops.secrets."nuck/authelia/oidc_hmac_secret".path;
       oidcIssuerPrivateKeyFile = config.sops.secrets."nuck/authelia/oidc_rsa_private_key".path;
     };
