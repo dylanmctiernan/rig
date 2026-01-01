@@ -73,11 +73,13 @@ in {
         enforce_pkce = "public_clients_only";
 
         # JWKS configuration - using HMAC for token signing
+        # The key is loaded from oidcHmacSecretFile
         jwks = [
           {
             key_id = "main";
             algorithm = "HS512";
             use = "sig";
+            key = "{{ secret \"/var/lib/authelia-main/secrets/oidc-hmac\" }}";
           }
         ];
 
