@@ -49,6 +49,12 @@ in {
         deletion_delay = "2h";
       };
 
+      memberlist = {
+        abort_if_cluster_join_fails = false;
+        bind_port = 7946;
+        join_members = [];
+      };
+
       ingester = {
         ring = {
           instance_addr = "127.0.0.1";
