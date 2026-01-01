@@ -86,65 +86,59 @@ in {
     provision = {
       enable = true;
 
-      datasources.settings = {
-        apiVersion = 1;
-        datasources = [
-          {
-            name = "Loki";
-            type = "loki";
-            access = "proxy";
-            url = "http://127.0.0.1:${toString loki.httpPort}";
-            isDefault = true;
-            jsonData = {
-              maxLines = 1000;
+      datasources.settings.datasources = [
+        {
+          name = "Loki";
+          type = "loki";
+          access = "proxy";
+          url = "http://127.0.0.1:${toString loki.httpPort}";
+          isDefault = true;
+          jsonData = {
+            maxLines = 1000;
+          };
+        }
+        {
+          name = "Tempo";
+          type = "tempo";
+          access = "proxy";
+          url = "http://127.0.0.1:${toString tempo.httpPort}";
+          jsonData = {
+            httpMethod = "GET";
+            tracesToLogsV2 = {
+              datasourceUid = "Loki";
+              spanStartTimeShift = "1h";
+              spanEndTimeShift = "-1h";
+              filterByTraceID = true;
             };
-          }
-          {
-            name = "Tempo";
-            type = "tempo";
-            access = "proxy";
-            url = "http://127.0.0.1:${toString tempo.httpPort}";
-            jsonData = {
-              httpMethod = "GET";
-              tracesToLogsV2 = {
-                datasourceUid = "Loki";
-                spanStartTimeShift = "1h";
-                spanEndTimeShift = "-1h";
-                filterByTraceID = true;
-              };
-            };
-          }
-          {
-            name = "Mimir";
-            type = "prometheus";
-            access = "proxy";
-            url = "http://127.0.0.1:${toString mimir.httpPort}/prometheus";
-            isDefault = false;
-            jsonData = {
-              httpMethod = "POST";
-              prometheusType = "Mimir";
-            };
-          }
-        ];
-      };
+          };
+        }
+        {
+          name = "Mimir";
+          type = "prometheus";
+          access = "proxy";
+          url = "http://127.0.0.1:${toString mimir.httpPort}/prometheus";
+          isDefault = false;
+          jsonData = {
+            httpMethod = "POST";
+            prometheusType = "Mimir";
+          };
+        }
+      ];
 
-      dashboards.settings = {
-        apiVersion = 1;
-        providers = [
-          {
-            name = "default";
-            orgId = 1;
-            folder = "";
-            type = "file";
-            disableDeletion = false;
-            updateIntervalSeconds = 10;
-            allowUiUpdates = true;
-            options = {
-              path = "/var/lib/grafana/dashboards";
-            };
-          }
-        ];
-      };
+      dashboards.settings.providers = [
+        {
+          name = "default";
+          orgId = 1;
+          folder = "";
+          type = "file";
+          disableDeletion = false;
+          updateIntervalSeconds = 10;
+          allowUiUpdates = true;
+          options = {
+            path = "/var/lib/grafana/dashboards";
+          };
+        }
+      ];
     };
   };
 
