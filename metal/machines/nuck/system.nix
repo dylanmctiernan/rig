@@ -36,6 +36,11 @@ in {
         owner = "authelia-main";
         path = "/var/lib/authelia-main/secrets/forgejo-client";
       };
+      "nuck/authelia/oidc_rsa_private_key" = {
+        owner = "authelia-main";
+        path = "/var/lib/authelia-main/secrets/oidc-rsa-key.pem";
+        mode = "0600";
+      };
     };
   };
 
