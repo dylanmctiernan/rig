@@ -11,7 +11,6 @@ in {
       storageEncryptionKeyFile = config.sops.secrets."nuck/authelia/storage_encryption_key".path;
       oidcHmacSecretFile = config.sops.secrets."nuck/authelia/oidc_hmac_secret".path;
       oidcIssuerPrivateKeyFile = config.sops.secrets."nuck/authelia/oidc_rsa_private_key".path;
-      forgejoClientSecret = config.sops.secrets."nuck/authelia/forgejo_client_secret".path;
     };
 
     settings = {
@@ -89,7 +88,7 @@ in {
           {
             client_id = "forgejo";
             client_name = "Forgejo";
-            client_secret = "$plaintext$$${forgejo_client_secret}";
+            client_secret = "$plaintext$b87067421779d30d7ba8a78a4028fe3c0105eb433f16612bb37fc39866f4b43b";
             public = false;
             authorization_policy = "one_factor";
 
