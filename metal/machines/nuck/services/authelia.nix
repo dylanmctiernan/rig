@@ -83,6 +83,13 @@ in {
           allowed_origins_from_client_redirect_uris = true;
         };
 
+        # Claims policies - include groups in ID token for role mapping
+        claims_policies = {
+          default = {
+            id_token = ["groups" "email" "preferred_username" "name"];
+          };
+        };
+
         # OIDC clients
         clients = [
           # Forgejo OIDC client
@@ -92,6 +99,7 @@ in {
             client_secret = "$plaintext$b87067421779d30d7ba8a78a4028fe3c0105eb433f16612bb37fc39866f4b43b";
             public = false;
             authorization_policy = "one_factor";
+            claims_policy = "default";
 
             redirect_uris = ["https://git.${domain}/user/oauth2/authelia/callback"];
 
@@ -109,6 +117,7 @@ in {
             client_secret = "$plaintext$31315a312f1960e80a32d8750517b4827d65fb571a3299d34c2c32a166e0ea92";
             public = false;
             authorization_policy = "one_factor";
+            claims_policy = "default";
 
             redirect_uris = ["https://grafana.${domain}/login/generic_oauth"];
 
