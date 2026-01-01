@@ -92,6 +92,20 @@ in {
         };
       };
 
+      query_scheduler = {
+        ring = {
+          instance_addr = "127.0.0.1";
+          kvstore = {
+            store = "inmemory";
+          };
+        };
+      };
+
+      frontend = {
+        scheduler_address = "127.0.0.1:${toString mimir.grpcPort}";
+        address = "127.0.0.1";
+      };
+
       alertmanager = {
         data_dir = "/var/lib/mimir/alertmanager";
         enable_api = true;
