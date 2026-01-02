@@ -24,6 +24,7 @@ in {
       };
 
       common = {
+        instance_addr = "127.0.0.1";
         ring = {
           instance_addr = "127.0.0.1";
           kvstore = {
@@ -32,6 +33,19 @@ in {
         };
         replication_factor = 1;
         path_prefix = "/var/lib/loki";
+      };
+
+      # Disable query scheduler and query frontend in single-binary mode
+      query_scheduler = {
+        max_outstanding_requests_per_tenant = 100;
+      };
+
+      frontend = {
+        scheduler_address = "";
+      };
+
+      querier = {
+        max_concurrent = 4;
       };
 
       schema_config = {
