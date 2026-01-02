@@ -148,9 +148,7 @@ in {
 
       // Node exporter for system metrics
       prometheus.exporter.unix "local" {
-        enable_collectors = ["processes"]
-        // systemd collector disabled due to D-Bus access issues
-        // systemd metrics available via other exporters if needed
+        enable_collectors = ["systemd", "processes"]
       }
 
       prometheus.scrape "node" {
@@ -174,13 +172,16 @@ in {
   ];
 
   # Add Alloy to systemd-journal group for journal access
-  # Allow D-Bus access for systemd collector
+  # Grant D-Bus access for systemd collector
   systemd.services.alloy = {
     serviceConfig = {
       SupplementaryGroups = [ "systemd-journal" ];
-      # Allow access to D-Bus system bus for systemd metrics
-      PrivateTmp = lib.mkForce false;
-      RestrictAddressFamilies = lib.mkForce [];
+      # Remove systemd hardening that blocks D-Bus access
+      PrivateNetwork = lib.mkForce false;
+      ProtectSystem = lib.mkForce "strict";
+      ProtectHome = lib.mkForce false;
+      # Allow access to /run for D-Bus socket
+      ReadWritePaths = [ "/run/dbus" ];
     };
   };
 }
