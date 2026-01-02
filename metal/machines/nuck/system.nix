@@ -40,11 +40,7 @@ in {
         mode = "0440";
         path = "/var/lib/authelia-main/secrets/grafana-oidc-client-secret";
       };
-      "nuck/authelia/synology_oidc_client_secret" = {
-        owner = "authelia-main";
-        mode = "0400";
-        path = "/var/lib/authelia-main/secrets/synology-oidc-client-secret";
-      };
+
       "nuck/authelia/oidc_rsa_private_key" = {
         owner = "authelia-main";
         path = "/var/lib/authelia-main/secrets/oidc-rsa-key.pem";

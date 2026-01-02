@@ -9,26 +9,7 @@
   loki = commonConfig.lgtm.loki;
   tempo = commonConfig.lgtm.tempo;
   mimir = commonConfig.lgtm.mimir;
-  synology = commonConfig.machines.synology;
-  # SNMP configuration for Synology
-  snmpConfig = pkgs.writeText "snmp-synology.yml" ''
-    auths:
-      public_v2:
-        community: public
-        security_level: noAuthNoPriv
-        auth_protocol: MD5
-        priv_protocol: DES
-        version: 2
 
-    modules:
-      synology:
-        walk:
-          - 1.3.6.1.2.1.1      # System
-          - 1.3.6.1.2.1.2      # Interfaces
-          - 1.3.6.1.2.1.25     # Host Resources
-          - 1.3.6.1.4.1.2021   # UCD-SNMP-MIB
-          - 1.3.6.1.4.1.6574   # Synology
-  '';
 in {
   services.alloy = {
     enable = true;
@@ -183,34 +164,6 @@ in {
         forward_to = [prometheus.remote_write.mimir.receiver]
       }
 
-      // SNMP exporter for Synology NAS metrics
-      prometheus.exporter.snmp "synology" {
-        config_file = "/etc/alloy/snmp-synology.yml"
-        target "synology" {
-          address = "${synology.lanIp}"
-          module  = "synology"
-        }
-      }
-
-      prometheus.scrape "synology_snmp" {
-        targets    = prometheus.exporter.snmp.synology.targets
-        forward_to = [prometheus.remote_write.mimir.receiver]
-        scrape_interval = "60s"
-      }
-
-      // Syslog receiver for Synology logs
-      loki.source.syslog "synology_logs" {
-        listener {
-          address  = "0.0.0.0:${toString synology.syslogPort}"
-          protocol = "tcp"
-          labels   = {
-            job      = "synology-syslog",
-            hostname = "${synology.hostname}",
-          }
-        }
-        forward_to = [loki.write.local.receiver]
-      }
-
       // Remote write to Mimir
       prometheus.remote_write "mimir" {
         endpoint {
@@ -226,25 +179,8 @@ in {
     "d /etc/alloy 0755 root root -"
   ];
 
-  # Copy SNMP config to /etc/alloy
-  systemd.services.alloy-snmp-config = {
-    description = "Copy Alloy SNMP configuration for Synology";
-    wantedBy = [ "multi-user.target" ];
-    before = [ "alloy.service" ];
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-      ExecStart = "${pkgs.coreutils}/bin/cp ${snmpConfig} /etc/alloy/snmp-synology.yml";
-    };
-  };
-
   # Add Alloy to systemd-journal group for journal access
   systemd.services.alloy = {
     serviceConfig.SupplementaryGroups = [ "systemd-journal" ];
-    after = [ "alloy-snmp-config.service" ];
-    requires = [ "alloy-snmp-config.service" ];
   };
-
-  # Open firewall for Synology syslog
-  networking.firewall.allowedTCPPorts = [ synology.syslogPort ];
 }
