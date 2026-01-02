@@ -1,6 +1,7 @@
 {config, ...}: let
   commonConfig = import ../../../common-config.nix;
   domain = commonConfig.network.domain;
+  authelia = commonConfig.infrastructure.authelia;
 in {
   # Authelia - Authentication and authorization server
   services.authelia.instances.main = {
@@ -24,7 +25,7 @@ in {
 
       # Listen on localhost - behind Caddy
       server = {
-        address = "tcp://127.0.0.1:9091";
+        address = "tcp://127.0.0.1:${toString authelia.httpPort}";
         endpoints.authz.forward-auth.implementation = "ForwardAuth";
       };
 
@@ -41,7 +42,7 @@ in {
         ];
       };
 
-      storage.local.path = "/var/lib/authelia-main/db.sqlite3";
+      storage.local.path = "${authelia.dataDir}/db.sqlite3";
 
       # Access control for ${domain}
       access_control = {
@@ -63,7 +64,7 @@ in {
       };
 
       authentication_backend.file = {
-        path = "/var/lib/authelia-main/users.yml";
+        path = "${authelia.dataDir}/users.yml";
       };
 
       # OpenID Connect (OIDC) configuration

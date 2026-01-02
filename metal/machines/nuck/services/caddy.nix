@@ -2,6 +2,12 @@
   commonConfig = import ../../../common-config.nix;
   domain = commonConfig.network.domain;
   hostname = commonConfig.machines.nuck.hostname;
+
+  # Service references
+  authelia = commonConfig.infrastructure.authelia;
+  forgejo = commonConfig.services.forgejo;
+  backrest = commonConfig.services.backrest;
+  grafana = commonConfig.lgtm.grafana;
 in {
   # Caddy web server with ${domain} subdomain routing
   services.caddy = {
@@ -14,12 +20,12 @@ in {
 
     virtualHosts = {
       # Authelia at sso.${domain}
-      "sso.${domain}" = {
+      "${authelia.subdomain}.${domain}" = {
         extraConfig = ''
           # Caddy will auto-generate certs with internal CA
           tls internal
 
-          reverse_proxy localhost:9091
+          reverse_proxy localhost:${toString authelia.httpPort}
 
           # Security headers
           header {
@@ -37,17 +43,17 @@ in {
       };
 
       # Backrest at backup.${domain}
-      "backup.${domain}" = {
+      "${backrest.subdomain}.${domain}" = {
         extraConfig = ''
           tls internal
 
           # Authelia forward auth
-          forward_auth localhost:9091 {
+          forward_auth localhost:${toString authelia.httpPort} {
             uri /api/authz/forward-auth
             copy_headers Remote-User Remote-Groups Remote-Email Remote-Name
           }
 
-          reverse_proxy localhost:9898
+          reverse_proxy localhost:${toString backrest.httpPort}
 
           # Security headers
           header {
@@ -65,11 +71,11 @@ in {
       };
 
       # Forgejo at git.${domain}
-      "git.${domain}" = {
+      "${forgejo.subdomain}.${domain}" = {
         extraConfig = ''
           tls internal
 
-          reverse_proxy localhost:3000
+          reverse_proxy localhost:${toString forgejo.httpPort}
 
           # Security headers
           header {
@@ -87,11 +93,11 @@ in {
       };
 
       # Grafana at grafana.${domain}
-      "grafana.${domain}" = {
+      "${grafana.subdomain}.${domain}" = {
         extraConfig = ''
           tls internal
 
-          reverse_proxy localhost:${toString commonConfig.lgtm.grafana.httpPort}
+          reverse_proxy localhost:${toString grafana.httpPort}
 
           # Security headers
           header {
