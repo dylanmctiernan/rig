@@ -41,11 +41,11 @@ in {
         forward_to = [loki.write.local.receiver]
 
         rule {
-          source_labels = ["__journal__systemd_unit"]
+          source_labels = ["__systemd_unit"]
           target_label  = "unit"
         }
         rule {
-          source_labels = ["__journal_priority_keyword"]
+          source_labels = ["__priority_keyword"]
           target_label  = "level"
         }
       }
