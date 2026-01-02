@@ -22,8 +22,11 @@
     synology = {
       tailscaleIp = "100.114.41.98";  # Synology Tailscale IP
       hostname = "synology";
+      subdomain = "synology";
+      httpPort = 5000;     # Synology DSM HTTP port
+      httpsPort = 5001;    # Synology DSM HTTPS port
       snmpPort = 161;
-      syslogPort = 5514;  # Alloy syslog receiver port
+      syslogPort = 5514;   # Alloy syslog receiver port
     };
   };
 
