@@ -142,37 +142,23 @@ in {
   # Ensure Authelia data directory exists with correct permissions
   systemd.tmpfiles.rules = [
     "d ${authelia.dataDir} 0750 authelia-main authelia-main -"
+    # Create users.yml file directly in /data/authelia using tmpfiles
+    ''f ${authelia.dataDir}/users.yml 0600 authelia-main authelia-main - users:
+  dylan:
+    displayname: "Dylan McTiernan"
+    email: dylan@mctiernan.io
+    password: "$pbkdf2-sha512$310000$c8p78n7pUMln0jzvd4aK4Q$JNRBzwAo0ek5qKn50cFzzvE9RfXStRzS9/P6HVWtgzLsKHD6G0rWJFJ0E8OTZxU9zfPGgznS6RqJWH/3r6Qv3Q"
+    groups:
+      - admins
+''
   ];
 
-  # Create users.yml file declaratively
-  environment.etc."authelia/users.yml" = {
-    text = ''
-      users:
-        dylan:
-          displayname: "Dylan McTiernan"
-          email: dylan@mctiernan.io
-          # Password hash will be set via sops secret
-          # Generate with: authelia crypto hash generate pbkdf2 --password 'yourpassword'
-          password: "$pbkdf2-sha512$310000$c8p78n7pUMln0jzvd4aK4Q$JNRBzwAo0ek5qKn50cFzzvE9RfXStRzS9/P6HVWtgzLsKHD6G0rWJFJ0E8OTZxU9zfPGgznS6RqJWH/3r6Qv3Q"  # changeme
-          groups:
-            - admins
-    '';
-    mode = "0600";
-    user = "authelia-main";
-    group = "authelia-main";
-  };
-
-  # Copy users.yml to data directory in preStart
+  # Override serviceConfig to allow writing to /data directory
   systemd.services.authelia-main = {
-    preStart = ''
-      mkdir -p ${authelia.dataDir}
-      cp -f /etc/authelia/users.yml ${authelia.dataDir}/users.yml
-      chown authelia-main:authelia-main ${authelia.dataDir}/users.yml
-      chmod 0600 ${authelia.dataDir}/users.yml
-    '';
     serviceConfig = {
-      # Allow writing to /data directory
       ReadWritePaths = [ authelia.dataDir ];
+      # Relax some systemd hardening to allow /data access
+      ProtectSystem = "strict";
     };
   };
 }
