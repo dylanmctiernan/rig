@@ -13,6 +13,9 @@ in {
     configuration = {
       auth_enabled = false;
 
+      # Run in single-binary mode (all components in one process)
+      target = "all";
+
       server = {
         http_listen_port = loki.httpPort;
         grpc_listen_port = loki.grpcPort;
