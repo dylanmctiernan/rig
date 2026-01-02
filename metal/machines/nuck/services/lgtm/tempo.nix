@@ -43,7 +43,7 @@ in {
 
       compactor = {
         compaction = {
-          block_retention = "744h"; # 31 days
+          block_retention = "8760h"; # 1 year
         };
       };
 

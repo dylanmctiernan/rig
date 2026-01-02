@@ -48,7 +48,7 @@ in {
         };
         tsdb = {
           dir = "/var/lib/mimir/tsdb";
-          retention_period = "744h"; # 31 days
+          retention_period = "8760h"; # 1 year
         };
       };
 

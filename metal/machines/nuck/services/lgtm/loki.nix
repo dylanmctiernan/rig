@@ -81,7 +81,7 @@ in {
       };
 
       limits_config = {
-        retention_period = "744h"; # 31 days
+        retention_period = "8760h"; # 1 year
         reject_old_samples = true;
         reject_old_samples_max_age = "168h";
         ingestion_rate_mb = 4;
