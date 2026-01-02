@@ -2,7 +2,8 @@
   pkgs,
   ...
 }: let
-  backrestPort = 9898;
+  commonConfig = import ../../../common-config.nix;
+  backrest = commonConfig.services.backrest;
 in {
   # Backrest - Web UI for restic backups
 
@@ -13,7 +14,7 @@ in {
   users.users.backrest = {
     isSystemUser = true;
     group = "backrest";
-    home = "/var/lib/backrest";
+    home = backrest.dataDir;
     createHome = true;
   };
 
@@ -29,16 +30,16 @@ in {
       Type = "simple";
       User = "backrest";
       Group = "backrest";
-      WorkingDirectory = "/var/lib/backrest";
+      WorkingDirectory = backrest.dataDir;
 
       # Environment variables for backrest configuration
       Environment = [
-        "BACKREST_DATA=/var/lib/backrest"
-        "BACKREST_CONFIG=/var/lib/backrest/config.json"
+        "BACKREST_DATA=${backrest.dataDir}"
+        "BACKREST_CONFIG=${backrest.dataDir}/config.json"
         "XDG_CACHE_HOME=/var/lib/backrest/.cache"
       ];
 
-      ExecStart = "${pkgs.backrest}/bin/backrest --bind-address 127.0.0.1:${toString backrestPort}";
+      ExecStart = "${pkgs.backrest}/bin/backrest --bind-address 127.0.0.1:${toString backrest.httpPort}";
 
       Restart = "on-failure";
       RestartSec = "10s";
@@ -48,13 +49,13 @@ in {
       PrivateTmp = true;
       ProtectSystem = "strict";
       ProtectHome = true;
-      ReadWritePaths = ["/var/lib/backrest"];
+      ReadWritePaths = [backrest.dataDir "/var/lib/backrest/.cache"];
     };
   };
 
   # Ensure backrest data directory exists with correct permissions
   systemd.tmpfiles.rules = [
-    "d /var/lib/backrest 0750 backrest backrest -"
+    "d ${backrest.dataDir} 0750 backrest backrest -"
     "d /var/lib/backrest/.cache 0750 backrest backrest -"
   ];
 
