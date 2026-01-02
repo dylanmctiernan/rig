@@ -10,6 +10,11 @@ in {
   services.mimir = {
     enable = true;
 
+    extraFlags = [
+      "-memberlist.bind-addr=127.0.0.1"
+      "-memberlist.advertise-addr=127.0.0.1"
+    ];
+
     configuration = {
       target = "all";
 
@@ -136,14 +141,6 @@ in {
         max_global_series_per_user = 150000;
         max_global_series_per_metric = 20000;
       };
-    };
-  };
-
-  # Override systemd service to set memberlist address via environment
-  systemd.services.mimir = {
-    environment = {
-      MIMIR_MEMBERLIST_BIND_ADDR = "127.0.0.1";
-      MIMIR_MEMBERLIST_ADVERTISE_ADDR = "127.0.0.1";
     };
   };
 
