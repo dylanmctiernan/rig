@@ -32,7 +32,24 @@ in {
         labels         = {
           job = "systemd-journal",
         }
+        relabel_rules = loki.relabel.journal.rules
         forward_to = [loki.write.local.receiver]
+      }
+
+      // Relabel journal logs to extract systemd unit as service label
+      loki.relabel "journal" {
+        rule {
+          source_labels = ["__journal__systemd_unit"]
+          target_label  = "unit"
+        }
+        rule {
+          source_labels = ["__journal__hostname"]
+          target_label  = "hostname"
+        }
+        rule {
+          source_labels = ["__journal_priority"]
+          target_label  = "level"
+        }
       }
 
       // Loki write endpoint
