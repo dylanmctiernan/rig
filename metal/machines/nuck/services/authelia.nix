@@ -119,9 +119,12 @@ in {
             authorization_policy = "one_factor";
             claims_policy = "default";
 
+            # Grafana uses client_secret_post by default
+            token_endpoint_auth_method = "client_secret_post";
+
             redirect_uris = ["https://grafana.${domain}/login/generic_oauth"];
 
-            scopes = ["openid" "profile" "groups" "email"];
+            scopes = ["openid" "profile" "groups" "email" "offline_access"];
             response_types = ["code"];
             grant_types = ["refresh_token" "authorization_code"];
             response_modes = ["form_post" "query" "fragment"];
