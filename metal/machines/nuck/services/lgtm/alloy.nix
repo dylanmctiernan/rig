@@ -39,7 +39,7 @@ in {
         }
       }
 
-      // OTLP receiver for traces
+      // OTLP receiver for traces and logs
       otelcol.receiver.otlp "default" {
         grpc {
           endpoint = "127.0.0.1:${toString tempo.otlpGrpcPort}"
@@ -51,10 +51,11 @@ in {
 
         output {
           traces  = [otelcol.exporter.otlp.tempo.input]
+          logs    = [otelcol.exporter.loki.local.input]
         }
       }
 
-      // OTLP exporter to Tempo
+      // OTLP exporter to Tempo for traces
       otelcol.exporter.otlp "tempo" {
         client {
           endpoint = "127.0.0.1:${toString tempo.grpcPort}"
@@ -62,6 +63,11 @@ in {
             insecure = true
           }
         }
+      }
+
+      // OTLP to Loki exporter for logs
+      otelcol.exporter.loki "local" {
+        forward_to = [loki.write.local.receiver]
       }
 
       // Prometheus scrape config for self-monitoring
