@@ -120,6 +120,12 @@ in {
         extraConfig = ''
           tls internal
 
+          # Authelia forward auth - protects Uptime Kuma with SSO
+          forward_auth localhost:${toString authelia.httpPort} {
+            uri /api/authz/forward-auth
+            copy_headers Remote-User Remote-Groups Remote-Email Remote-Name
+          }
+
           reverse_proxy localhost:${toString uptimeKuma.httpPort}
 
           # Security headers
