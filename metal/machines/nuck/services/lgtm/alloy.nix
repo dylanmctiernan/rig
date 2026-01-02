@@ -243,8 +243,8 @@ in {
           protocol = "tcp"
         }
         labels = {
-          job      = "synology-syslog"
-          hostname = "${synology.hostname}"
+          job      = "synology-syslog",
+          hostname = "${synology.hostname}",
         }
         forward_to = [loki.write.local.receiver]
       }
