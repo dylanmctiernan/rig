@@ -18,7 +18,8 @@
     key="forgejo"
     secret=$(cat /run/secrets/nuck/authelia/forgejo_oidc_client_secret)
 
-    # Use explicit HTTPS endpoints instead of auto-discovery
+    # Use localhost for discovery (to avoid TLS issues) but override with custom HTTPS URLs
+    discover_url="http://localhost:9091/.well-known/openid-configuration"
     auth_url="https://sso.${domain}/api/oidc/authorization"
     token_url="https://sso.${domain}/api/oidc/token"
     profile_url="https://sso.${domain}/api/oidc/userinfo"
@@ -38,7 +39,7 @@
         --provider openidConnect \
         --key "$key" \
         --secret "$secret" \
-        --auto-discover-url "https://sso.${domain}/.well-known/openid-configuration" \
+        --auto-discover-url "$discover_url" \
         --use-custom-urls "true" \
         --custom-auth-url "$auth_url" \
         --custom-token-url "$token_url" \
@@ -50,7 +51,7 @@
       forgejo --config "$config" admin auth update-oauth --id "$id" \
         --key "$key" \
         --secret "$secret" \
-        --auto-discover-url "https://sso.${domain}/.well-known/openid-configuration" \
+        --auto-discover-url "$discover_url" \
         --use-custom-urls "true" \
         --custom-auth-url "$auth_url" \
         --custom-token-url "$token_url" \
