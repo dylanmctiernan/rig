@@ -8,7 +8,8 @@
   domain = commonConfig.network.domain;
   forgejoUpsertScript = pkgs.writeShellScript "forgejo-upsert-oauth" ''
     set -euo pipefail
-    PATH=${pkgs.forgejo}/bin:$PATH
+    # need awk inside PATH as well
+    PATH=${pkgs.forgejo}/bin:${pkgs.gawk}/bin:$PATH
 
     name="authelia"
     discover="https://sso.${domain}/.well-known/openid-configuration"
@@ -16,7 +17,8 @@
     secret=$(cat ${config.sops.secrets."nuck/authelia/forgejo_oidc_client_secret".path})
 
     # Fetch provider ID if it already exists
-    id=$(forgejo admin auth list --type oauth | awk -v n="$name" '$1==n {print $2}')
+    # newer Forgejo CLI no longer supports "--type oauth"
+    id=$(forgejo admin auth list | awk -v n="$name" '$1==n {print $2}')
 
     if [ -z "$id" ]; then
       echo "Creating OAuth provider $name"
