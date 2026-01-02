@@ -5,6 +5,7 @@
 }: let
   commonConfig = import ../../../common-config.nix;
   domain = commonConfig.network.domain;
+  forgejo = commonConfig.services.forgejo;
   forgejoUpsertScript = pkgs.writeShellScript "forgejo-upsert-oauth" ''
     set -euo pipefail
     # need awk inside PATH as well
@@ -53,6 +54,9 @@ in {
   services.forgejo = {
     enable = true;
 
+    # Data directory
+    stateDir = forgejo.dataDir;
+
     # Use SQLite with WAL mode for better performance
     database = {
       type = "sqlite3";
@@ -68,9 +72,9 @@ in {
 
     settings = {
       server = {
-        DOMAIN = "git.${domain}";
-        ROOT_URL = "https://git.${domain}/";
-        HTTP_PORT = 3000;
+        DOMAIN = "${forgejo.subdomain}.${domain}";
+        ROOT_URL = "https://${forgejo.subdomain}.${domain}/";
+        HTTP_PORT = forgejo.httpPort;
         HTTP_ADDR = "127.0.0.1";
         ENABLE_PPROF = true;  # Enable profiling endpoint for metrics
       };
