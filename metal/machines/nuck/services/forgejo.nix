@@ -6,49 +6,6 @@
   commonConfig = import ../../../common-config.nix;
   domain = commonConfig.network.domain;
   forgejo = commonConfig.services.forgejo;
-  forgejoUpsertScript = pkgs.writeShellScript "forgejo-upsert-oauth" ''
-    set -euo pipefail
-    # need awk inside PATH as well
-    PATH=${pkgs.forgejo}/bin:${pkgs.gawk}/bin:$PATH
-
-    name="authelia"
-    key="forgejo"
-    secret=$(cat /run/secrets/nuck/authelia/forgejo_oidc_client_secret)
-
-    # Use HTTPS discovery URL (SSL_CERT_FILE env var points to Caddy CA)
-    discover_url="https://sso.${domain}/.well-known/openid-configuration"
-
-    # Config file location
-    config="${forgejo.stateDir}/custom/conf/app.ini"
-
-    # Fetch provider ID if it already exists
-    # Format: ID<tab>Name<tab>Type<tab>Enabled
-    # Skip header row and match on Name column ($2)
-    id=$(forgejo --config "$config" admin auth list | awk -v n="$name" 'NR>1 && $2==n {print $1}')
-
-    if [ -z "$id" ]; then
-      echo "Creating OAuth provider $name"
-      forgejo --config "$config" admin auth add-oauth \
-        --name "$name" \
-        --provider openidConnect \
-        --key "$key" \
-        --secret "$secret" \
-        --auto-discover-url "$discover_url" \
-        --scopes "openid email profile groups" \
-        --skip-local-2fa
-
-      # Get the ID of the newly created provider
-      id=$(forgejo --config "$config" admin auth list | awk -v n="$name" 'NR>1 && $2==n {print $1}')
-    else
-      echo "Updating OAuth provider $name (id=$id)"
-      forgejo --config "$config" admin auth update-oauth --id "$id" \
-        --key "$key" \
-        --secret "$secret" \
-        --auto-discover-url "$discover_url" \
-        --scopes "openid email profile groups" \
-        --skip-local-2fa
-    fi
-  '';
 in {
   # Forgejo - Self-hosted Git service
   services.forgejo = {
@@ -155,44 +112,6 @@ in {
     environment = {
       SSL_CERT_FILE = "/etc/forgejo/certs/ca-bundle.crt";
     };
-  };
-
-  # Idempotent systemd unit to ensure OAuth provider "authelia" exists
-  systemd.services."forgejo-upsert-oauth" = {
-    description = "Ensure/refresh Forgejo OAuth provider authelia";
-    after       = [ "forgejo.service" "copy-caddy-ca.service" ];
-    requires    = [ "forgejo.service" "copy-caddy-ca.service" ];
-    wantedBy    = [ "multi-user.target" ];
-
-    serviceConfig = {
-      Type            = "oneshot";
-      User            = "forgejo";
-      Group           = "forgejo";
-      WorkingDirectory = forgejo.stateDir;
-
-      ExecStart = "${forgejoUpsertScript}";
-
-      # Capture output
-      StandardOutput = "journal";
-      StandardError = "journal";
-
-      # Hardening flags (relaxed to allow database writes)
-      ReadWritePaths = [ forgejo.stateDir ];
-      ProtectSystem = "strict";
-      ProtectHome = true;
-      PrivateTmp = true;
-      NoNewPrivileges = true;
-
-    };
-
-    environment = {
-      SSL_CERT_FILE = "/etc/forgejo/certs/ca-bundle.crt";
-    };
-
-    restartTriggers = [
-      config.sops.secrets."nuck/authelia/forgejo_oidc_client_secret".path
-      forgejoUpsertScript
-    ];
   };
 
   # Firewall - Forgejo will be accessed via Caddy reverse proxy
