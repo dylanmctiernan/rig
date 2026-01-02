@@ -31,16 +31,14 @@
         --key "$key" \
         --secret "$secret" \
         --auto-discover-url "$discover" \
-        --scopes "openid email profile groups" \
-        --auto-register
+        --scopes "openid email profile groups"
     else
       echo "Updating OAuth provider $name (id=$id)"
       forgejo --config "$config" admin auth update-oauth --id "$id" \
         --key "$key" \
         --secret "$secret" \
         --auto-discover-url "$discover" \
-        --scopes "openid email profile groups" \
-        --auto-register
+        --scopes "openid email profile groups"
     fi
   '';
 in {
