@@ -114,7 +114,8 @@ in {
           {
             client_id = "grafana";
             client_name = "Grafana";
-            client_secret = "$plaintext$__file{${config.sops.secrets."nuck/authelia/grafana_oidc_client_secret".path}}";
+            # Use bcrypt hashed secret for client_secret_basic authentication
+            client_secret = "$2b$05$aFXPGfza2jBL8lSjcySzuu6LvwXmKuVgDmmu8PV2jkeISS2KkMrEC";
             public = false;
             authorization_policy = "one_factor";
             claims_policy = "default";
