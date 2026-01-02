@@ -30,7 +30,7 @@ in {
       default_2fa_method = "totp";
 
       log = {
-        level = "debug";
+        level = "info";
         format = "json";
       };
 
