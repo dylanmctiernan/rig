@@ -54,31 +54,21 @@
     };
 
     # Colmena deployment configuration
-    colmena = let
-      hive = {
-        meta = {
-          nixpkgs = import nixpkgs {system = "x86_64-linux";};
-          specialArgs = {inherit inputs;};
-        };
+    colmena = {
+      meta = {
+        nixpkgs = import nixpkgs {system = "x86_64-linux";};
+        specialArgs = {inherit inputs;};
+      };
 
-        # NixOS host (nuck)
-        nuck = {name, nodes, ...}: {
-          deployment = {
-            targetHost = "nuck";
-            buildOnTarget = true;
-            # SSH over Tailscale, no keys needed
-          };
-          imports = [
-            inputs.determinate.nixosModules.default
-            inputs.sops-nix.nixosModules.sops
-            ./metal/machines/nuck
-          ];
+      # Use the nixosConfigurations for the actual config (avoid duplication)
+      nuck = {name, nodes, ...}: {
+        deployment = {
+          targetHost = "nuck";
+          buildOnTarget = true;
         };
+        imports = self.nixosConfigurations.nuck._module.args.modules;
       };
-    in
-      hive // {
-        processFlake = inputs.colmena.lib.makeHive hive;
-      };
+    };
 
     # Development shell
     devShells = {

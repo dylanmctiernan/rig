@@ -6,6 +6,10 @@ dylbook-plan:
 dylbook-apply:
     sudo darwin-rebuild switch --flake github:dylanmctiernan/rig#dylbook
 
-# Deploy to a specific host using Colmena over Tailscale
-deploy host:
-    colmena apply --on {{ host }}
+# Plan nuck configuration (show what would change without applying)
+nuck-plan:
+    colmena build --on nuck --impure
+
+# Apply nuck configuration (deploy changes)
+nuck-apply:
+    colmena apply --on nuck
