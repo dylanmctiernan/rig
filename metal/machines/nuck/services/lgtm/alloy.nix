@@ -123,6 +123,15 @@ in {
         forward_to = [prometheus.remote_write.mimir.receiver]
       }
 
+      // Forgejo metrics
+      prometheus.scrape "forgejo" {
+        targets = [{
+          __address__ = "127.0.0.1:3000",
+        }]
+        metrics_path = "/metrics"
+        forward_to = [prometheus.remote_write.mimir.receiver]
+      }
+
       // Node exporter for system metrics
       prometheus.exporter.unix "local" {
         // Default settings

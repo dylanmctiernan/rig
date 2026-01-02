@@ -73,6 +73,19 @@ in {
         ROOT_URL = "https://git.${domain}/";
         HTTP_PORT = 3000;
         HTTP_ADDR = "127.0.0.1";
+        ENABLE_PPROF = true;  # Enable profiling endpoint for metrics
+      };
+
+      log = {
+        MODE = "console";  # Log to stdout for journald collection
+        LEVEL = "Info";
+        "logger.router.MODE" = "console";
+        "logger.access.MODE" = "console";
+      };
+
+      metrics = {
+        ENABLED = true;
+        TOKEN = "";  # No authentication for internal metrics endpoint
       };
 
       service = {
