@@ -7,6 +7,10 @@
   commonConfig = import ../../../../common-config.nix;
   tempo = commonConfig.lgtm.tempo;
 in {
+  # Note: NixOS Tempo module does not have a configurable dataDir option
+  # It's hardcoded to /var/lib/tempo via systemd StateDirectory
+  # All paths below must use /var/lib/tempo as the base
+
   services.tempo = {
     enable = true;
 

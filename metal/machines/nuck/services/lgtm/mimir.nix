@@ -7,6 +7,10 @@
   commonConfig = import ../../../../common-config.nix;
   mimir = commonConfig.lgtm.mimir;
 in {
+  # Note: NixOS Mimir module does not have a configurable dataDir option
+  # It's hardcoded to /var/lib/mimir via systemd StateDirectory
+  # All paths below must use /var/lib/mimir as the base
+
   services.mimir = {
     enable = true;
 

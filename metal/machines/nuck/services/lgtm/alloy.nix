@@ -147,7 +147,7 @@ in {
       // Forgejo metrics
       prometheus.scrape "forgejo" {
         targets = [{
-          __address__ = "127.0.0.1:3000",
+          __address__ = "127.0.0.1:${toString commonConfig.services.forgejo.httpPort}",
         }]
         metrics_path = "/metrics"
         forward_to = [prometheus.remote_write.mimir.receiver]
