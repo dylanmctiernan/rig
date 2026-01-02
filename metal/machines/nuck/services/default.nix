@@ -5,6 +5,7 @@
     ./authelia.nix
     ./backrest.nix
     ./forgejo.nix
+    ./uptimekuma.nix
     ./lgtm
   ];
 }
