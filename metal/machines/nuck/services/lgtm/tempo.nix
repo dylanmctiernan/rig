@@ -93,7 +93,10 @@ in {
   ];
 
   # Override systemd service to allow writing to /data/tempo
-  systemd.services.tempo.serviceConfig = {
-    ReadWritePaths = [ tempo.dataDir ];
+  systemd.services.tempo = {
+    after = [ "systemd-tmpfiles-setup.service" ];
+    serviceConfig = {
+      ReadWritePaths = [ tempo.dataDir ];
+    };
   };
 }

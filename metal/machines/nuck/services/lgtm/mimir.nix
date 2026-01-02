@@ -161,7 +161,7 @@ in {
 
   # Ensure mimir starts after network is ready and can write to /data/mimir
   systemd.services.mimir = {
-    after = [ "network-online.target" ];
+    after = [ "network-online.target" "systemd-tmpfiles-setup.service" ];
     wants = [ "network-online.target" ];
     serviceConfig = {
       ReadWritePaths = [ mimir.dataDir ];
