@@ -143,4 +143,29 @@ in {
   systemd.tmpfiles.rules = [
     "d ${authelia.dataDir} 0750 authelia-main authelia-main -"
   ];
+
+  # Create users.yml file declaratively
+  environment.etc."authelia/users.yml" = {
+    text = ''
+      users:
+        dylan:
+          displayname: "Dylan McTiernan"
+          email: dylan@mctiernan.io
+          # Password hash will be set via sops secret
+          # Generate with: authelia crypto hash generate pbkdf2 --password 'yourpassword'
+          password: "$pbkdf2-sha512$310000$c8p78n7pUMln0jzvd4aK4Q$JNRBzwAo0ek5qKn50cFzzvE9RfXStRzS9/P6HVWtgzLsKHD6G0rWJFJ0E8OTZxU9zfPGgznS6RqJWH/3r6Qv3Q"  # changeme
+          groups:
+            - admins
+    '';
+    mode = "0600";
+    user = "authelia-main";
+    group = "authelia-main";
+  };
+
+  # Symlink users.yml to data directory
+  systemd.services.authelia-main = {
+    preStart = ''
+      ln -sf /etc/authelia/users.yml ${authelia.dataDir}/users.yml
+    '';
+  };
 }
