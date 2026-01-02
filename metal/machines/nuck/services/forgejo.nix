@@ -38,8 +38,7 @@
         --provider openidConnect \
         --key "$key" \
         --secret "$secret" \
-        --openid-connect-auto-discovery-url "$auth_url" \
-        --custom-url-mapping \
+        --use-custom-urls "true" \
         --custom-auth-url "$auth_url" \
         --custom-token-url "$token_url" \
         --custom-profile-url "$profile_url" \
@@ -50,8 +49,7 @@
       forgejo --config "$config" admin auth update-oauth --id "$id" \
         --key "$key" \
         --secret "$secret" \
-        --openid-connect-auto-discovery-url "$auth_url" \
-        --custom-url-mapping \
+        --use-custom-urls "true" \
         --custom-auth-url "$auth_url" \
         --custom-token-url "$token_url" \
         --custom-profile-url "$profile_url" \
