@@ -120,7 +120,8 @@ in {
       ProtectHome = true;
       PrivateTmp = true;
       NoNewPrivileges = true;
-      CapabilityBoundingSet = "";
+      # Need read override to access secret owned by authelia-main
+      CapabilityBoundingSet = "CAP_DAC_READ_SEARCH";
     };
 
     restartTriggers = [
