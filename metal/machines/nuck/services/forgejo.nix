@@ -20,8 +20,9 @@
     config="/var/lib/forgejo/custom/conf/app.ini"
 
     # Fetch provider ID if it already exists
-    # newer Forgejo CLI no longer supports "--type oauth"
-    id=$(forgejo --config "$config" admin auth list | awk -v n="$name" '$1==n {print $2}')
+    # Format: ID<tab>Name<tab>Type<tab>Enabled
+    # Skip header row and match on Name column ($2)
+    id=$(forgejo --config "$config" admin auth list | awk -v n="$name" 'NR>1 && $2==n {print $1}')
 
     if [ -z "$id" ]; then
       echo "Creating OAuth provider $name"
