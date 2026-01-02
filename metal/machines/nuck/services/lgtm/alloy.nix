@@ -26,8 +26,20 @@ in {
         format = "json"
       }
 
-      // Relabel journal logs to extract systemd unit as service label
+      // Loki logs receiver - receive logs from systemd journal
+      loki.source.journal "system_logs" {
+        max_age        = "12h"
+        labels         = {
+          job      = "nuck-systemd",
+          hostname = "nuck",
+        }
+        forward_to = [loki.relabel.journal.receiver]
+      }
+
+      // Relabel journal logs to extract systemd unit and priority as labels
       loki.relabel "journal" {
+        forward_to = [loki.write.local.receiver]
+
         rule {
           source_labels = ["__journal__systemd_unit"]
           target_label  = "unit"
@@ -36,17 +48,6 @@ in {
           source_labels = ["__journal_priority_keyword"]
           target_label  = "level"
         }
-      }
-
-      // Loki logs receiver - receive logs from systemd journal
-      loki.source.journal "system_logs" {
-        max_age        = "12h"
-        labels         = {
-          job      = "nuck-systemd",
-          hostname = "nuck",
-        }
-        relabel_rules = loki.relabel.journal.rules
-        forward_to = [loki.write.local.receiver]
       }
 
       // Loki write endpoint
