@@ -9,6 +9,64 @@
   loki = commonConfig.lgtm.loki;
   tempo = commonConfig.lgtm.tempo;
   mimir = commonConfig.lgtm.mimir;
+  synology = commonConfig.machines.synology;
+  # SNMP configuration for Synology
+  snmpConfig = pkgs.writeText "snmp-synology.yml" ''
+    synology:
+      walk:
+        - 1.3.6.1.2.1.1      # System
+        - 1.3.6.1.2.1.25     # Host Resources
+        - 1.3.6.1.4.1.6574   # Synology
+      metrics:
+        - name: sysUpTime
+          oid: 1.3.6.1.2.1.1.3
+          type: gauge
+        - name: ifInOctets
+          oid: 1.3.6.1.2.1.2.2.1.10
+          type: counter
+        - name: ifOutOctets
+          oid: 1.3.6.1.2.1.2.2.1.16
+          type: counter
+        - name: hrStorageSize
+          oid: 1.3.6.1.2.1.25.2.3.1.5
+          type: gauge
+        - name: hrStorageUsed
+          oid: 1.3.6.1.2.1.25.2.3.1.6
+          type: gauge
+        - name: laLoad
+          oid: 1.3.6.1.4.1.2021.10.1.3
+          type: gauge
+        - name: ssCpuUser
+          oid: 1.3.6.1.4.1.2021.11.9.0
+          type: gauge
+        - name: ssCpuSystem
+          oid: 1.3.6.1.4.1.2021.11.10.0
+          type: gauge
+        - name: ssCpuIdle
+          oid: 1.3.6.1.4.1.2021.11.11.0
+          type: gauge
+        - name: memTotalReal
+          oid: 1.3.6.1.4.1.2021.4.5.0
+          type: gauge
+        - name: memAvailReal
+          oid: 1.3.6.1.4.1.2021.4.6.0
+          type: gauge
+        - name: diskIOReads
+          oid: 1.3.6.1.4.1.6574.101.1.1.5
+          type: counter
+        - name: diskIOWrites
+          oid: 1.3.6.1.4.1.6574.101.1.1.6
+          type: counter
+        - name: temperature
+          oid: 1.3.6.1.4.1.6574.1.2.0
+          type: gauge
+        - name: raidStatus
+          oid: 1.3.6.1.4.1.6574.3.1.1.3
+          type: gauge
+      version: 2
+      auth:
+        community: public
+  '';
 in {
   services.alloy = {
     enable = true;
@@ -163,6 +221,34 @@ in {
         forward_to = [prometheus.remote_write.mimir.receiver]
       }
 
+      // SNMP exporter for Synology NAS metrics
+      prometheus.exporter.snmp "synology" {
+        config_file = "/etc/alloy/snmp-synology.yml"
+        target {
+          address = "${synology.tailscaleIp}"
+          module  = "synology"
+        }
+      }
+
+      prometheus.scrape "synology_snmp" {
+        targets    = prometheus.exporter.snmp.synology.targets
+        forward_to = [prometheus.remote_write.mimir.receiver]
+        scrape_interval = "60s"
+      }
+
+      // Syslog receiver for Synology logs
+      loki.source.syslog "synology_logs" {
+        listener {
+          address  = "0.0.0.0:${toString synology.syslogPort}"
+          protocol = "tcp"
+        }
+        labels = {
+          job      = "synology-syslog"
+          hostname = "${synology.hostname}"
+        }
+        forward_to = [loki.write.local.receiver]
+      }
+
       // Remote write to Mimir
       prometheus.remote_write "mimir" {
         endpoint {
@@ -175,8 +261,28 @@ in {
   # Ensure Alloy storage directory exists
   systemd.tmpfiles.rules = [
     "d /var/lib/alloy 0750 alloy alloy -"
+    "d /etc/alloy 0755 root root -"
   ];
 
+  # Copy SNMP config to /etc/alloy
+  systemd.services.alloy-snmp-config = {
+    description = "Copy Alloy SNMP configuration for Synology";
+    wantedBy = [ "multi-user.target" ];
+    before = [ "alloy.service" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      ExecStart = "${pkgs.coreutils}/bin/cp ${snmpConfig} /etc/alloy/snmp-synology.yml";
+    };
+  };
+
   # Add Alloy to systemd-journal group for journal access
-  systemd.services.alloy.serviceConfig.SupplementaryGroups = [ "systemd-journal" ];
+  systemd.services.alloy = {
+    serviceConfig.SupplementaryGroups = [ "systemd-journal" ];
+    after = [ "alloy-snmp-config.service" ];
+    requires = [ "alloy-snmp-config.service" ];
+  };
+
+  # Open firewall for Synology syslog
+  networking.firewall.allowedTCPPorts = [ synology.syslogPort ];
 }

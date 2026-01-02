@@ -19,6 +19,12 @@
       tailscaleIp = "100.114.41.97";
       hostname = "nuck";
     };
+    synology = {
+      tailscaleIp = "100.114.41.98";  # Synology Tailscale IP
+      hostname = "synology";
+      snmpPort = 161;
+      syslogPort = 5514;  # Alloy syslog receiver port
+    };
   };
 
   # Application Services (5000-5099)
