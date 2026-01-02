@@ -85,7 +85,7 @@ in {
       // OTLP exporter to Tempo for traces
       otelcol.exporter.otlp "tempo" {
         client {
-          endpoint = "127.0.0.1:${toString tempo.grpcPort}"
+          endpoint = "127.0.0.1:${toString tempo.otlpGrpcPort}"
           tls {
             insecure = true
           }
