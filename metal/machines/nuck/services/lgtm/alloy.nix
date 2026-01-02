@@ -27,9 +27,12 @@ in {
 
       // Loki logs receiver - receive logs from applications
       loki.source.journal "system_logs" {
-        path          = "/var/log/journal"
         format_as_json = true
-        forward_to    = [loki.write.local.receiver]
+        max_age        = "12h"
+        labels         = {
+          job = "systemd-journal",
+        }
+        forward_to = [loki.write.local.receiver]
       }
 
       // Loki write endpoint
@@ -155,4 +158,7 @@ in {
   systemd.tmpfiles.rules = [
     "d /var/lib/alloy 0750 alloy alloy -"
   ];
+
+  # Add Alloy user to systemd-journal group for journal access
+  users.users.alloy.extraGroups = [ "systemd-journal" ];
 }
