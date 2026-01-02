@@ -33,7 +33,7 @@ in {
         enabled = true;
         name = "Authelia";
         client_id = "grafana";
-        client_secret = "$__file{${config.sops.secrets."nuck/authelia/grafana_oidc_client_secret".path}}";
+        client_secret = "$__file{/run/secrets/nuck/authelia/grafana_oidc_client_secret}";
         scopes = "openid profile email groups";
         auth_url = "https://sso.${domain}/api/oidc/authorization";
         token_url = "https://sso.${domain}/api/oidc/token";
