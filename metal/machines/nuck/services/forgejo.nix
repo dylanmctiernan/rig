@@ -116,16 +116,37 @@ in {
     };
   };
 
+  # Copy Caddy CA cert to a location readable by forgejo
+  systemd.services.copy-caddy-ca = {
+    description = "Copy Caddy CA certificate for Forgejo";
+    after = [ "caddy.service" ];
+    wantedBy = [ "multi-user.target" ];
+
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      ExecStart = pkgs.writeShellScript "copy-caddy-ca" ''
+        mkdir -p /etc/forgejo/certs
+        cp /var/lib/caddy/.local/share/caddy/pki/authorities/local/root.crt /etc/forgejo/certs/caddy-ca.crt
+        chmod 644 /etc/forgejo/certs/caddy-ca.crt
+      '';
+    };
+  };
+
   # Add Caddy CA to system trust store for Forgejo
-  systemd.services.forgejo.environment = {
-    SSL_CERT_FILE = "/var/lib/caddy/.local/share/caddy/pki/authorities/local/root.crt";
+  systemd.services.forgejo = {
+    after = [ "copy-caddy-ca.service" ];
+    requires = [ "copy-caddy-ca.service" ];
+    environment = {
+      SSL_CERT_FILE = "/etc/forgejo/certs/caddy-ca.crt";
+    };
   };
 
   # Idempotent systemd unit to ensure OAuth provider "authelia" exists
   systemd.services."forgejo-upsert-oauth" = {
     description = "Ensure/refresh Forgejo OAuth provider authelia";
-    after       = [ "forgejo.service" ];
-    requires    = [ "forgejo.service" ];
+    after       = [ "forgejo.service" "copy-caddy-ca.service" ];
+    requires    = [ "forgejo.service" "copy-caddy-ca.service" ];
     wantedBy    = [ "multi-user.target" ];
 
     serviceConfig = {
@@ -150,7 +171,7 @@ in {
     };
 
     environment = {
-      SSL_CERT_FILE = "/var/lib/caddy/.local/share/caddy/pki/authorities/local/root.crt";
+      SSL_CERT_FILE = "/etc/forgejo/certs/caddy-ca.crt";
     };
 
     restartTriggers = [
