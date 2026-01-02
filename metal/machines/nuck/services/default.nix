@@ -6,6 +6,7 @@
     ./backrest.nix
     ./forgejo.nix
     ./uptimekuma.nix
+    ./uptimekuma-sync.nix
     ./lgtm
   ];
 }
