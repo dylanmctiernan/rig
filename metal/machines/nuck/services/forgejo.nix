@@ -104,8 +104,8 @@ in {
   # Idempotent systemd unit to ensure OAuth provider "authelia" exists
   systemd.services."forgejo-upsert-oauth" = {
     description = "Ensure/refresh Forgejo OAuth provider authelia";
-    after       = [ "forgejo.service" ];
-    requires    = [ "forgejo.service" ];
+    after       = [ "forgejo.service" "sops-nix.service" ];
+    requires    = [ "forgejo.service" "sops-nix.service" ];
     wantedBy    = [ "multi-user.target" ];
 
     serviceConfig = {
@@ -120,8 +120,7 @@ in {
       ProtectHome = true;
       PrivateTmp = true;
       NoNewPrivileges = true;
-      # Need read override to access secret owned by authelia-main
-      CapabilityBoundingSet = "CAP_DAC_READ_SEARCH";
+
     };
 
     restartTriggers = [
