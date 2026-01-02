@@ -36,14 +36,10 @@ in {
         forward_to = [loki.relabel.journal.receiver]
       }
 
-      // Relabel journal logs to extract systemd unit and priority as labels
+      // Relabel journal logs to extract priority as level label
       loki.relabel "journal" {
         forward_to = [loki.write.local.receiver]
 
-        rule {
-          source_labels = ["__journal__systemd_unit"]
-          target_label  = "unit"
-        }
         rule {
           source_labels = ["__journal_priority_keyword"]
           target_label  = "level"
