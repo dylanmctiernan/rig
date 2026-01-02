@@ -172,7 +172,13 @@ in {
   ];
 
   # Add Alloy to systemd-journal group for journal access
+  # Allow D-Bus access for systemd collector
   systemd.services.alloy = {
-    serviceConfig.SupplementaryGroups = [ "systemd-journal" ];
+    serviceConfig = {
+      SupplementaryGroups = [ "systemd-journal" ];
+      # Allow access to D-Bus system bus for systemd metrics
+      PrivateTmp = lib.mkForce false;
+      RestrictAddressFamilies = lib.mkForce [];
+    };
   };
 }
