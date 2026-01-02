@@ -18,7 +18,7 @@ in {
       default_2fa_method = "totp";
 
       log = {
-        level = "info";
+        level = "debug";
         format = "json";
       };
 
@@ -68,7 +68,7 @@ in {
 
       # OpenID Connect (OIDC) configuration
       identity_providers.oidc = {
-        enable_client_debug_messages = false;
+        enable_client_debug_messages = true;
         enforce_pkce = "public_clients_only";
 
         lifespans = {
