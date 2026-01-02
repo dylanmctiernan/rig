@@ -71,6 +71,13 @@ in {
         enable_client_debug_messages = false;
         enforce_pkce = "public_clients_only";
 
+        # CRITICAL: Set the public issuer URL so OIDC discovery works correctly
+        issuer_certificate_chain = "";
+        issuer_private_key = "";
+
+        # The public URL where Authelia is accessible
+        issuer = "https://sso.${domain}";
+
         lifespans = {
           access_token = "1h";
           authorize_code = "1m";
