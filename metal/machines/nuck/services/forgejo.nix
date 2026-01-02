@@ -38,6 +38,7 @@
         --provider openidConnect \
         --key "$key" \
         --secret "$secret" \
+        --auto-discover-url "https://sso.${domain}/.well-known/openid-configuration" \
         --use-custom-urls "true" \
         --custom-auth-url "$auth_url" \
         --custom-token-url "$token_url" \
@@ -49,6 +50,7 @@
       forgejo --config "$config" admin auth update-oauth --id "$id" \
         --key "$key" \
         --secret "$secret" \
+        --auto-discover-url "https://sso.${domain}/.well-known/openid-configuration" \
         --use-custom-urls "true" \
         --custom-auth-url "$auth_url" \
         --custom-token-url "$token_url" \
