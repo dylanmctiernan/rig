@@ -71,9 +71,6 @@ in {
         enable_client_debug_messages = false;
         enforce_pkce = "public_clients_only";
 
-        # The public URL where Authelia is accessible (fixes localhost:9091 redirects)
-        issuer = "https://sso.${domain}";
-
         lifespans = {
           access_token = "1h";
           authorize_code = "1m";
@@ -99,7 +96,7 @@ in {
           {
             client_id = "forgejo";
             client_name = "Forgejo";
-            client_secret = "$__file{${config.sops.secrets."nuck/authelia/forgejo_oidc_client_secret".path}}";
+            client_secret = "$plaintext$__file{${config.sops.secrets."nuck/authelia/forgejo_oidc_client_secret".path}}";
             public = false;
             authorization_policy = "one_factor";
             claims_policy = "default";
@@ -117,7 +114,7 @@ in {
           {
             client_id = "grafana";
             client_name = "Grafana";
-            client_secret = "$__file{${config.sops.secrets."nuck/authelia/grafana_oidc_client_secret".path}}";
+            client_secret = "$plaintext$__file{${config.sops.secrets."nuck/authelia/grafana_oidc_client_secret".path}}";
             public = false;
             authorization_policy = "one_factor";
             claims_policy = "default";
