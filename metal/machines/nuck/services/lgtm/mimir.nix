@@ -55,6 +55,8 @@ in {
         join_members = [];
         node_name = "nuck-mimir";
         advertise_port = mimir.memberlistPort;
+        instance_addr = "127.0.0.1";
+        instance_interface_names = ["lo"];
       };
 
       distributor = {
