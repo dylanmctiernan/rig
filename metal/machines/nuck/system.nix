@@ -28,13 +28,17 @@ in {
         owner = "authelia-main";
         path = "/var/lib/authelia-main/secrets/oidc-hmac";
       };
-      "nuck/authelia/forgejo_secret" = {
+      "nuck/authelia/forgejo_oidc_client_secret" = {
         owner = "authelia-main";
-        path = "/var/lib/authelia-main/secrets/forgejo-client";
+        group = "forgejo";
+        mode = "0440";
+        path = "/var/lib/authelia-main/secrets/forgejo-oidc-client-secret";
       };
-      "nuck/authelia/grafana_secret" = {
+      "nuck/authelia/grafana_oidc_client_secret" = {
         owner = "authelia-main";
-        path = "/var/lib/authelia-main/secrets/grafana-client";
+        group = "grafana";
+        mode = "0440";
+        path = "/var/lib/authelia-main/secrets/grafana-oidc-client-secret";
       };
       "nuck/authelia/oidc_rsa_private_key" = {
         owner = "authelia-main";

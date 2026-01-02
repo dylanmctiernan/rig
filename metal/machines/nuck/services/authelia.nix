@@ -99,7 +99,7 @@ in {
           {
             client_id = "forgejo";
             client_name = "Forgejo";
-            client_secret = "$__file{${config.sops.secrets."nuck/authelia/forgejo_secret".path}}";
+            client_secret = "$__file{${config.sops.secrets."nuck/authelia/forgejo_oidc_client_secret".path}}";
             public = false;
             authorization_policy = "one_factor";
             claims_policy = "default";
@@ -117,7 +117,7 @@ in {
           {
             client_id = "grafana";
             client_name = "Grafana";
-            client_secret = "$__file{${config.sops.secrets."nuck/authelia/grafana_secret".path}}";
+            client_secret = "$__file{${config.sops.secrets."nuck/authelia/grafana_oidc_client_secret".path}}";
             public = false;
             authorization_policy = "one_factor";
             claims_policy = "default";
