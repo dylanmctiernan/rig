@@ -145,6 +145,25 @@ in {
 
             userinfo_signed_response_alg = "none";
           }
+          # Jellyfin OIDC client
+          {
+            client_id = "jellyfin";
+            client_name = "Jellyfin";
+            # Plain secret: 1FpqLTlCiXEw8Gxl5ayBGMRvD6Efn2BxtZ5CYSTf5KI=
+            client_secret = "$2b$10$sqqdY.dUIvNwdnjWXcN9aO41ZtZ.AaHC2xP.srX/afQsnetM3fEmq";
+            public = false;
+            authorization_policy = "one_factor";
+            claims_policy = "default";
+
+            redirect_uris = ["https://jellyfin.${domain}/sso/OID/redirect/authelia"];
+
+            scopes = ["openid" "profile" "groups" "email"];
+            response_types = ["code"];
+            grant_types = ["authorization_code"];
+            response_modes = ["query"];
+
+            userinfo_signed_response_alg = "none";
+          }
 
         ];
       };
