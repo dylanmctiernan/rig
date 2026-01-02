@@ -14,7 +14,7 @@
     name="authelia"
     discover="https://sso.${domain}/.well-known/openid-configuration"
     key="forgejo"
-    secret=$(cat ${config.sops.secrets."nuck/authelia/forgejo_oidc_client_secret".path})
+    secret=$(cat /run/secrets/nuck/authelia/forgejo_oidc_client_secret)
 
     # Fetch provider ID if it already exists
     # newer Forgejo CLI no longer supports "--type oauth"
