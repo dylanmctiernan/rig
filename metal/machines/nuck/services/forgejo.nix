@@ -112,10 +112,15 @@ in {
 
     serviceConfig = {
       Type            = "oneshot";
-      User            = "root";
+      User            = "forgejo";
+      Group           = "forgejo";
       WorkingDirectory = "/var/lib/forgejo";
 
       ExecStart = "${forgejoUpsertScript}";
+
+      # Capture output
+      StandardOutput = "journal";
+      StandardError = "journal";
 
       # Hardening flags
       ProtectSystem = "strict";
