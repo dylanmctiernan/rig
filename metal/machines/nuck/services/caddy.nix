@@ -155,7 +155,7 @@ in {
             copy_headers Remote-User Remote-Groups Remote-Email Remote-Name
           }
 
-          reverse_proxy https://${synology.tailscaleIp}:${toString synology.httpsPort} {
+          reverse_proxy https://${synology.lanIp}:${toString synology.httpsPort} {
             transport http {
               tls_insecure_skip_verify
             }

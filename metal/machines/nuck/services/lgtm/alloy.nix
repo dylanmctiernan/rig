@@ -187,7 +187,7 @@ in {
       prometheus.exporter.snmp "synology" {
         config_file = "/etc/alloy/snmp-synology.yml"
         target "synology" {
-          address = "${synology.tailscaleIp}"
+          address = "${synology.lanIp}"
           module  = "synology"
         }
       }

@@ -20,7 +20,8 @@
       hostname = "nuck";
     };
     synology = {
-      tailscaleIp = "100.114.41.98";  # Synology Tailscale IP
+      tailscaleIp = "100.98.185.17";  # Synology Tailscale IP
+      lanIp = "192.168.2.41";          # Synology LAN IP (for Caddy reverse proxy)
       hostname = "synology";
       subdomain = "synology";
       httpPort = 5000;     # Synology DSM HTTP port

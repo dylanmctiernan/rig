@@ -117,6 +117,13 @@ in {
     enable = true;
     # Use the persistent auth-key provisioned by sops; consumed once, then ignored
     authKeyFile = config.sops.secrets."nuck/tailscale/auth_key".path;
+
+    # Advertise this machine as a DNS server for the tailnet
+    # Accept DNS queries from other tailscale devices
+    extraUpFlags = [
+      "--advertise-tags=tag:dns"
+      "--accept-dns=false"  # Don't use tailscale's DNS, use our own CoreDNS
+    ];
   };
 
   virtualisation.docker.enable = true;
