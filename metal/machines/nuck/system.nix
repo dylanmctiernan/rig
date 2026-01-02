@@ -28,13 +28,13 @@ in {
         owner = "authelia-main";
         path = "/var/lib/authelia-main/secrets/oidc-hmac";
       };
-      "nuck/authelia/forgejo_client_secret" = {
+      "nuck/authelia/forgejo_secret" = {
         owner = "authelia-main";
         path = "/var/lib/authelia-main/secrets/forgejo-client";
       };
-      "nuck/authelia/grafana_client_secret" = {
-        owner = "grafana";
-        path = "/var/lib/grafana/secrets/client_secret";
+      "nuck/authelia/grafana_secret" = {
+        owner = "authelia-main";
+        path = "/var/lib/authelia-main/secrets/grafana-client";
       };
       "nuck/authelia/oidc_rsa_private_key" = {
         owner = "authelia-main";
