@@ -28,7 +28,6 @@
           - 1.3.6.1.2.1.25     # Host Resources
           - 1.3.6.1.4.1.2021   # UCD-SNMP-MIB
           - 1.3.6.1.4.1.6574   # Synology
-        auth: public_v2
   '';
 in {
   services.alloy = {
