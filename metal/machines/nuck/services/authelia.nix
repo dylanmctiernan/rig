@@ -138,4 +138,9 @@ in {
       };
     };
   };
+
+  # Ensure Authelia data directory exists with correct permissions
+  systemd.tmpfiles.rules = [
+    "d ${authelia.dataDir} 0750 authelia-main authelia-main -"
+  ];
 }
