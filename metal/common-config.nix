@@ -41,8 +41,9 @@
       stateDir = "/var/lib/backrest";
     };
     # Media Stack
+    # Note: Jellyfin uses default port 8096 (NixOS service doesn't expose port option)
     jellyfin = {
-      httpPort = 5003;
+      httpPort = 8096;
       subdomain = "jellyfin";
       stateDir = "/var/lib/jellyfin";
     };

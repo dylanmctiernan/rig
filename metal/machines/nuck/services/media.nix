@@ -14,8 +14,7 @@ in {
     stateDir = "/var/lib/nixarr";
 
     # Jellyfin - Media server for streaming
-    # Note: Jellyfin port is not directly configurable in nixarr module
-    # It uses the NixOS services.jellyfin.port option underneath
+    # Note: Jellyfin uses default port 8096 (not configurable via NixOS options)
     jellyfin = {
       enable = true;
       openFirewall = false; # We use Caddy reverse proxy
@@ -74,9 +73,6 @@ in {
       stateDir = commonConfig.services.bazarr.stateDir;
     };
   };
-
-  # Override Jellyfin port since nixarr doesn't expose it
-  services.jellyfin.port = commonConfig.services.jellyfin.httpPort;
 
   # Only open Transmission peer port for BitTorrent
   networking.firewall.allowedTCPPorts = [
