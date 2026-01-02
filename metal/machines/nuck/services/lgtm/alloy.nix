@@ -39,14 +39,14 @@ in {
         }
       }
 
-      // OTLP receiver for traces and logs
+      // OTLP receiver for traces and logs (on different ports than Tempo)
       otelcol.receiver.otlp "default" {
         grpc {
-          endpoint = "127.0.0.1:${toString tempo.otlpGrpcPort}"
+          endpoint = "127.0.0.1:${toString alloy.otlpGrpcPort}"
         }
 
         http {
-          endpoint = "127.0.0.1:${toString tempo.otlpHttpPort}"
+          endpoint = "127.0.0.1:${toString alloy.otlpHttpPort}"
         }
 
         output {

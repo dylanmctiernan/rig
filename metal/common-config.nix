@@ -43,6 +43,8 @@
     };
     alloy = {
       httpPort = 12345;
+      otlpGrpcPort = 4319;  # Alloy's OTLP receiver (different from Tempo's 4317)
+      otlpHttpPort = 4320;  # Alloy's OTLP HTTP receiver
     };
   };
 }
