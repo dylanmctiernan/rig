@@ -110,7 +110,7 @@ in {
 
     serviceConfig = {
       Type            = "oneshot";
-      User            = "forgejo";
+      User            = "root";
       WorkingDirectory = "/var/lib/forgejo";
 
       ExecStart = "${forgejoUpsertScript}";
