@@ -148,7 +148,9 @@ in {
 
       // Node exporter for system metrics
       prometheus.exporter.unix "local" {
-        enable_collectors = ["systemd", "processes"]
+        enable_collectors = ["processes"]
+        // systemd collector disabled due to D-Bus access issues
+        // systemd metrics available via other exporters if needed
       }
 
       prometheus.scrape "node" {
