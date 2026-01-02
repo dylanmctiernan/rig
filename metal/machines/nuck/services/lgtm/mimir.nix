@@ -30,7 +30,6 @@ in {
             dir = "/var/lib/mimir/data";
           };
         };
-        instance_interface_names = ["lo"];
       };
 
       blocks_storage = {
