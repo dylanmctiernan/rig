@@ -144,4 +144,10 @@ in {
     };
   };
 
+  # Ensure mimir starts after network is ready
+  systemd.services.mimir = {
+    after = [ "network-online.target" ];
+    wants = [ "network-online.target" ];
+  };
+
 }
