@@ -18,8 +18,8 @@
     key="forgejo"
     secret=$(cat /run/secrets/nuck/authelia/forgejo_oidc_client_secret)
 
-    # Use HTTPS discovery URL (TLS verification skipped via Forgejo config)
-    discover_url="https://sso.${domain}/.well-known/openid-configuration"
+    # Use localhost for discovery, then fix endpoints with SQL
+    discover_url="http://localhost:9091/.well-known/openid-configuration"
 
     # Config file location
     config="/var/lib/forgejo/custom/conf/app.ini"
@@ -39,6 +39,9 @@
         --auto-discover-url "$discover_url" \
         --scopes "openid email profile groups" \
         --skip-local-2fa
+
+      # Get the ID of the newly created provider
+      id=$(forgejo --config "$config" admin auth list | awk -v n="$name" 'NR>1 && $2==n {print $1}')
     else
       echo "Updating OAuth provider $name (id=$id)"
       forgejo --config "$config" admin auth update-oauth --id "$id" \
@@ -47,6 +50,16 @@
         --auto-discover-url "$discover_url" \
         --scopes "openid email profile groups" \
         --skip-local-2fa
+    fi
+
+    # Fix localhost URLs to use HTTPS public domain
+    if [ -n "$id" ]; then
+      echo "Fixing OAuth endpoints to use HTTPS"
+      ${pkgs.sqlite}/bin/sqlite3 /var/lib/forgejo/data/forgejo.db <<EOF
+UPDATE login_source
+SET cfg = REPLACE(REPLACE(cfg, 'http://localhost:9091', 'https://sso.${domain}'), '"OpenIDConnectAutoDiscoveryURL":"http://localhost:9091', '"OpenIDConnectAutoDiscoveryURL":"https://sso.${domain}')
+WHERE id=$id;
+EOF
     fi
   '';
 in {
