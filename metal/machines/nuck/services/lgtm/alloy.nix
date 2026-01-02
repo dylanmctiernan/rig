@@ -25,19 +25,10 @@ in {
         format = "json"
       }
 
-      // Loki logs receiver - receive logs from applications
-      loki.source.journal "system_logs" {
-        format_as_json = true
-        max_age        = "12h"
-        labels         = {
-          job = "systemd-journal",
-        }
-        relabel_rules = loki.relabel.journal.rules
-        forward_to = [loki.write.local.receiver]
-      }
-
       // Relabel journal logs to extract systemd unit as service label
       loki.relabel "journal" {
+        forward_to = [loki.write.local.receiver]
+
         rule {
           source_labels = ["__journal__systemd_unit"]
           target_label  = "unit"
@@ -50,6 +41,16 @@ in {
           source_labels = ["__journal_priority"]
           target_label  = "level"
         }
+      }
+
+      // Loki logs receiver - receive logs from applications
+      loki.source.journal "system_logs" {
+        format_as_json = true
+        max_age        = "12h"
+        labels         = {
+          job = "systemd-journal",
+        }
+        forward_to = [loki.relabel.journal.receiver]
       }
 
       // Loki write endpoint
