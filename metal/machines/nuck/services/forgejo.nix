@@ -15,7 +15,9 @@
     export GIT_SSL_NO_VERIFY=true
 
     name="authelia"
-    discover="https://sso.${domain}/.well-known/openid-configuration"
+    # Use localhost to avoid TLS certificate issues with internal CA
+    # The public HTTPS URL will be used by the OIDC flow itself
+    discover="http://localhost:9091/.well-known/openid-configuration"
     key="forgejo"
     secret=$(cat /run/secrets/nuck/authelia/forgejo_oidc_client_secret)
 
