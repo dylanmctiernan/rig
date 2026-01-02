@@ -106,8 +106,8 @@ in {
   # Idempotent systemd unit to ensure OAuth provider "authelia" exists
   systemd.services."forgejo-upsert-oauth" = {
     description = "Ensure/refresh Forgejo OAuth provider authelia";
-    after       = [ "forgejo.service" "sops-nix.service" ];
-    requires    = [ "forgejo.service" "sops-nix.service" ];
+    after       = [ "forgejo.service" ];
+    requires    = [ "forgejo.service" ];
     wantedBy    = [ "multi-user.target" ];
 
     serviceConfig = {

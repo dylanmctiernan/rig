@@ -96,7 +96,8 @@ in {
           {
             client_id = "forgejo";
             client_name = "Forgejo";
-            client_secret = "$plaintext$__file{${config.sops.secrets."nuck/authelia/forgejo_oidc_client_secret".path}}";
+            # Use bcrypt hashed secret for client_secret_post authentication
+            client_secret = "$2b$05$VgS2Sk6rCYGMXnuAc1YvPeDNwzW7/7sYNZsQrJzGhZVIeUbH0MtI2";
             public = false;
             authorization_policy = "one_factor";
             claims_policy = "default";
