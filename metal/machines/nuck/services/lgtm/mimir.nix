@@ -53,10 +53,6 @@ in {
         abort_if_cluster_join_fails = false;
         bind_port = mimir.memberlistPort;
         join_members = [];
-        node_name = "nuck-mimir";
-        advertise_port = mimir.memberlistPort;
-        instance_addr = "127.0.0.1";
-        instance_interface_names = ["lo"];
       };
 
       distributor = {
@@ -140,6 +136,14 @@ in {
         max_global_series_per_user = 150000;
         max_global_series_per_metric = 20000;
       };
+    };
+  };
+
+  # Override systemd service to set memberlist address via environment
+  systemd.services.mimir = {
+    environment = {
+      MIMIR_MEMBERLIST_BIND_ADDR = "127.0.0.1";
+      MIMIR_MEMBERLIST_ADVERTISE_ADDR = "127.0.0.1";
     };
   };
 
