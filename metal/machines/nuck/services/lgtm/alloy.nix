@@ -12,60 +12,23 @@
   synology = commonConfig.machines.synology;
   # SNMP configuration for Synology
   snmpConfig = pkgs.writeText "snmp-synology.yml" ''
-    synology:
-      walk:
-        - 1.3.6.1.2.1.1      # System
-        - 1.3.6.1.2.1.25     # Host Resources
-        - 1.3.6.1.4.1.6574   # Synology
-      metrics:
-        - name: sysUpTime
-          oid: 1.3.6.1.2.1.1.3
-          type: gauge
-        - name: ifInOctets
-          oid: 1.3.6.1.2.1.2.2.1.10
-          type: counter
-        - name: ifOutOctets
-          oid: 1.3.6.1.2.1.2.2.1.16
-          type: counter
-        - name: hrStorageSize
-          oid: 1.3.6.1.2.1.25.2.3.1.5
-          type: gauge
-        - name: hrStorageUsed
-          oid: 1.3.6.1.2.1.25.2.3.1.6
-          type: gauge
-        - name: laLoad
-          oid: 1.3.6.1.4.1.2021.10.1.3
-          type: gauge
-        - name: ssCpuUser
-          oid: 1.3.6.1.4.1.2021.11.9.0
-          type: gauge
-        - name: ssCpuSystem
-          oid: 1.3.6.1.4.1.2021.11.10.0
-          type: gauge
-        - name: ssCpuIdle
-          oid: 1.3.6.1.4.1.2021.11.11.0
-          type: gauge
-        - name: memTotalReal
-          oid: 1.3.6.1.4.1.2021.4.5.0
-          type: gauge
-        - name: memAvailReal
-          oid: 1.3.6.1.4.1.2021.4.6.0
-          type: gauge
-        - name: diskIOReads
-          oid: 1.3.6.1.4.1.6574.101.1.1.5
-          type: counter
-        - name: diskIOWrites
-          oid: 1.3.6.1.4.1.6574.101.1.1.6
-          type: counter
-        - name: temperature
-          oid: 1.3.6.1.4.1.6574.1.2.0
-          type: gauge
-        - name: raidStatus
-          oid: 1.3.6.1.4.1.6574.3.1.1.3
-          type: gauge
-      version: 2
-      auth:
+    auths:
+      public_v2:
         community: public
+        security_level: noAuthNoPriv
+        auth_protocol: MD5
+        priv_protocol: DES
+        version: 2
+
+    modules:
+      synology:
+        walk:
+          - 1.3.6.1.2.1.1      # System
+          - 1.3.6.1.2.1.2      # Interfaces
+          - 1.3.6.1.2.1.25     # Host Resources
+          - 1.3.6.1.4.1.2021   # UCD-SNMP-MIB
+          - 1.3.6.1.4.1.6574   # Synology
+        auth: public_v2
   '';
 in {
   services.alloy = {
