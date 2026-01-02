@@ -170,5 +170,9 @@ in {
       chown authelia-main:authelia-main ${authelia.dataDir}/users.yml
       chmod 0600 ${authelia.dataDir}/users.yml
     '';
+    serviceConfig = {
+      # Allow writing to /data directory
+      ReadWritePaths = [ authelia.dataDir ];
+    };
   };
 }
