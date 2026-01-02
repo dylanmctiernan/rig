@@ -159,7 +159,9 @@ in {
   };
 
   # Idempotent systemd unit to ensure OAuth provider "authelia" exists
+  # TEMPORARILY DISABLED while fixing Authelia configuration
   systemd.services."forgejo-upsert-oauth" = {
+    enable = false;  # Temporarily disabled
     description = "Ensure/refresh Forgejo OAuth provider authelia";
     after       = [ "forgejo.service" "copy-caddy-ca.service" ];
     requires    = [ "forgejo.service" "copy-caddy-ca.service" ];
