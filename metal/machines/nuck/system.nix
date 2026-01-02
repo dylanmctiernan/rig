@@ -45,6 +45,12 @@ in {
         path = "/var/lib/authelia-main/secrets/oidc-rsa-key.pem";
         mode = "0600";
       };
+
+      # Tailscale persistent auth key (single-use, consumed at first bootstrap)
+      "nuck/tailscale/auth_key" = {
+        owner = "root";
+        # default path will be /run/secrets/..., sufficient for tailscale module
+      };
     };
   };
 
@@ -104,6 +110,8 @@ in {
 
   services.tailscale = {
     enable = true;
+    # Use the persistent auth-key provisioned by sops; consumed once, then ignored
+    authKeyFile = config.sops.secrets."nuck/tailscale/auth_key".path;
   };
 
   virtualisation.docker.enable = true;

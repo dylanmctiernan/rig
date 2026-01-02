@@ -53,7 +53,7 @@ in {
           "mix-fast"
         ];
       };
-      initExtra = ''
+      initContent = ''
         eval "$(/opt/homebrew/bin/brew shellenv)"
       '';
     };
@@ -90,16 +90,16 @@ in {
 
     programs.git = {
       enable = true;
-      userName = gitUserName;
-      userEmail = gitUserEmail;
-      signing = {
-        signByDefault = true;
-        key = sshSigningKey;
-      };
-      extraConfig = {
+      settings = {
+        user.name = gitUserName;
+        user.email = gitUserEmail;
         init.defaultBranch = "main";
         gpg.format = "ssh";
         gpg.ssh.allowedSignersFile = "${config.home.homeDirectory}/.ssh/allowed_signers";
+      };
+      signing = {
+        signByDefault = true;
+        key = sshSigningKey;
       };
     };
 
