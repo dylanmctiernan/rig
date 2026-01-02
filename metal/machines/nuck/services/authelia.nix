@@ -145,6 +145,31 @@ in {
 
             userinfo_signed_response_alg = "none";
           }
+          # Synology DSM OIDC client
+          {
+            client_id = "synology-dsm";
+            client_name = "Synology DSM";
+            # Use bcrypt hashed secret for client_secret_post authentication
+            # Plain text: synology-dsm-secret (CHANGE THIS - see instructions below)
+            client_secret = "$2b$05$qvBv5mKJCxPQQynvKxN6Uu3QkxpzOqV8jR.Z5K6yWxGx5L9N5YZFG";
+            public = false;
+            authorization_policy = "one_factor";
+            claims_policy = "default";
+
+            # Synology uses client_secret_post
+            token_endpoint_auth_method = "client_secret_post";
+            require_pkce = false;
+
+            # Redirect to Synology DSM
+            redirect_uris = ["https://synology.${domain}"];
+
+            scopes = ["openid" "profile" "groups" "email"];
+            response_types = ["code"];
+            grant_types = ["authorization_code"];
+
+            access_token_signed_response_alg = "none";
+            userinfo_signed_response_alg = "none";
+          }
         ];
       };
     };
