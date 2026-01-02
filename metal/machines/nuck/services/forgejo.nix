@@ -129,9 +129,9 @@ in {
     };
   };
 
-  # Copy Caddy CA cert to a location readable by forgejo
+  # Create combined CA bundle with system CAs + Caddy CA
   systemd.services.copy-caddy-ca = {
-    description = "Copy Caddy CA certificate for Forgejo";
+    description = "Create combined CA bundle for Forgejo";
     after = [ "caddy.service" ];
     wantedBy = [ "multi-user.target" ];
 
@@ -140,18 +140,20 @@ in {
       RemainAfterExit = true;
       ExecStart = pkgs.writeShellScript "copy-caddy-ca" ''
         mkdir -p /etc/forgejo/certs
-        cp /var/lib/caddy/.local/share/caddy/pki/authorities/local/root.crt /etc/forgejo/certs/caddy-ca.crt
-        chmod 644 /etc/forgejo/certs/caddy-ca.crt
+        # Combine system CA bundle with Caddy CA
+        cat ${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt > /etc/forgejo/certs/ca-bundle.crt
+        cat /var/lib/caddy/.local/share/caddy/pki/authorities/local/root.crt >> /etc/forgejo/certs/ca-bundle.crt
+        chmod 644 /etc/forgejo/certs/ca-bundle.crt
       '';
     };
   };
 
-  # Add Caddy CA to system trust store for Forgejo
+  # Use combined CA bundle for Forgejo
   systemd.services.forgejo = {
     after = [ "copy-caddy-ca.service" ];
     requires = [ "copy-caddy-ca.service" ];
     environment = {
-      SSL_CERT_FILE = "/etc/forgejo/certs/caddy-ca.crt";
+      SSL_CERT_FILE = "/etc/forgejo/certs/ca-bundle.crt";
     };
   };
 
@@ -184,7 +186,7 @@ in {
     };
 
     environment = {
-      SSL_CERT_FILE = "/etc/forgejo/certs/caddy-ca.crt";
+      SSL_CERT_FILE = "/etc/forgejo/certs/ca-bundle.crt";
     };
 
     restartTriggers = [
