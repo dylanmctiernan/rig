@@ -1,0 +1,69 @@
+{...}: let
+  commonConfig = import ../../../common-config.nix;
+in {
+  # NFS mount configuration for Synology NAS media storage
+  #
+  # To use this configuration:
+  # 1. Rename this file to nfs-media.nix (remove .example)
+  # 2. Update the NFS server address and export path below
+  # 3. Add ./nfs-media.nix to services/default.nix imports
+  # 4. Ensure your Synology NAS has NFS enabled and the export configured
+  #
+  # Synology NFS setup:
+  # - Control Panel > File Services > NFS > Enable NFS service
+  # - Control Panel > Shared Folder > Edit your media folder > NFS Permissions
+  # - Add nuck's IP (${commonConfig.machines.nuck.tailscaleIp}) with RW permissions
+  # - Squash: Map all users to admin (or create matching UID/GID)
+  # - Security: sys (Kerberos not needed for local network)
+  #
+  # Recommended folder structure on Synology (in /volume1/media):
+  # /volume1/media/
+  # ├── movies/           # Radarr will manage this
+  # ├── tv/              # Sonarr will manage this
+  # ├── music/           # Lidarr will manage this
+  # ├── downloads/       # Transmission downloads here
+  # └── torrents/        # Transmission working directory
+
+  # Ensure NFS client support is enabled
+  boot.supportedFilesystems = ["nfs"];
+  services.rpcbind.enable = true;
+
+  # Create mount point
+  systemd.tmpfiles.rules = [
+    "d ${commonConfig.machines.nuck.mediaDir} 0755 root root -"
+  ];
+
+  # NFS mount configuration
+  fileSystems."${commonConfig.machines.nuck.mediaDir}" = {
+    device = "YOUR_SYNOLOGY_IP:/volume1/media";  # UPDATE THIS!
+    # Examples:
+    # - "192.168.1.100:/volume1/media"  # Local IP
+    # - "${commonConfig.machines.synology.ip}:/volume1/media"  # If you add synology to common-config
+
+    fsType = "nfs";
+    options = [
+      "nfsvers=4"           # Use NFSv4 (faster and more reliable)
+      "rw"                  # Read-write access
+      "hard"                # Hard mount - wait for server if unavailable (prevents data corruption)
+      "intr"                # Allow interrupting hung operations
+      "noatime"             # Don't update access times (better performance)
+      "rsize=131072"        # Read buffer size (128KB - good for streaming)
+      "wsize=131072"        # Write buffer size (128KB - good for downloads)
+      "timeo=600"           # Timeout in deciseconds (60 seconds)
+      "retrans=2"           # Number of retransmissions before error
+      "_netdev"             # Wait for network before mounting
+      "x-systemd.automount" # Auto-mount on access (lazy mount)
+      "x-systemd.idle-timeout=600" # Unmount after 10 minutes of inactivity (optional)
+    ];
+  };
+
+  # Optional: Create media subdirectories that *arr apps expect
+  # Uncomment after setting up the NFS mount
+  # systemd.tmpfiles.rules = [
+  #   "d ${commonConfig.machines.nuck.mediaDir}/movies 0755 root root -"
+  #   "d ${commonConfig.machines.nuck.mediaDir}/tv 0755 root root -"
+  #   "d ${commonConfig.machines.nuck.mediaDir}/music 0755 root root -"
+  #   "d ${commonConfig.machines.nuck.mediaDir}/downloads 0755 root root -"
+  #   "d ${commonConfig.machines.nuck.mediaDir}/torrents 0755 root root -"
+  # ];
+}

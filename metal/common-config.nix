@@ -18,6 +18,8 @@
     nuck = {
       tailscaleIp = "100.114.41.97";
       hostname = "nuck";
+      # Media storage - NFS mount from Synology NAS
+      mediaDir = "/mnt/media";
     };
   };
 
@@ -37,6 +39,43 @@
       httpPort = 5002;
       subdomain = "backup";
       stateDir = "/var/lib/backrest";
+    };
+    # Media Stack
+    jellyfin = {
+      httpPort = 5003;
+      subdomain = "jellyfin";
+      stateDir = "/var/lib/jellyfin";
+    };
+    transmission = {
+      httpPort = 5004;
+      peerPort = 51413;
+      subdomain = "transmission";
+      stateDir = "/var/lib/transmission";
+    };
+    sonarr = {
+      httpPort = 5005;
+      subdomain = "sonarr";
+      stateDir = "/var/lib/sonarr";
+    };
+    radarr = {
+      httpPort = 5006;
+      subdomain = "radarr";
+      stateDir = "/var/lib/radarr";
+    };
+    lidarr = {
+      httpPort = 5007;
+      subdomain = "lidarr";
+      stateDir = "/var/lib/lidarr";
+    };
+    prowlarr = {
+      httpPort = 5008;
+      subdomain = "prowlarr";
+      stateDir = "/var/lib/prowlarr";
+    };
+    bazarr = {
+      httpPort = 5009;
+      subdomain = "bazarr";
+      stateDir = "/var/lib/bazarr";
     };
   };
 

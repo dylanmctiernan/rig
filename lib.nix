@@ -12,6 +12,9 @@
         # Sops-nix for secrets management
         inputs.sops-nix.nixosModules.sops
 
+        # Nixarr module for media server stack
+        inputs.nixarr.nixosModules.default
+
         # Use the specific machine configuration
         ./metal/machines/${machine}
       ];

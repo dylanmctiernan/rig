@@ -30,6 +30,11 @@
       url = "github:zhaofengli/colmena";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    nixarr = {
+      url = "github:rasmus-kirk/nixarr";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {
@@ -39,6 +44,7 @@
     nix-darwin,
     home-manager,
     colmena,
+    nixarr,
     ...
   } @ inputs: let
     lib = import ./lib.nix {inherit inputs;};

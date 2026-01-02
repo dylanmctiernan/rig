@@ -7,5 +7,7 @@
     ./forgejo.nix
     ./uptimekuma.nix
     ./lgtm
+    ./nfs-media.nix
+    ./media.nix
   ];
 }

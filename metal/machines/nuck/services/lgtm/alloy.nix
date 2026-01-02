@@ -146,6 +146,69 @@ in {
         forward_to = [prometheus.remote_write.mimir.receiver]
       }
 
+      // Jellyfin metrics (if enabled via plugins)
+      prometheus.scrape "jellyfin" {
+        targets = [{
+          __address__ = "127.0.0.1:${toString commonConfig.services.jellyfin.httpPort}",
+        }]
+        metrics_path = "/metrics"
+        forward_to = [prometheus.remote_write.mimir.receiver]
+      }
+
+      // Sonarr metrics
+      prometheus.scrape "sonarr" {
+        targets = [{
+          __address__ = "127.0.0.1:${toString commonConfig.services.sonarr.httpPort}",
+        }]
+        metrics_path = "/metrics"
+        forward_to = [prometheus.remote_write.mimir.receiver]
+      }
+
+      // Radarr metrics
+      prometheus.scrape "radarr" {
+        targets = [{
+          __address__ = "127.0.0.1:${toString commonConfig.services.radarr.httpPort}",
+        }]
+        metrics_path = "/metrics"
+        forward_to = [prometheus.remote_write.mimir.receiver]
+      }
+
+      // Lidarr metrics
+      prometheus.scrape "lidarr" {
+        targets = [{
+          __address__ = "127.0.0.1:${toString commonConfig.services.lidarr.httpPort}",
+        }]
+        metrics_path = "/metrics"
+        forward_to = [prometheus.remote_write.mimir.receiver]
+      }
+
+      // Prowlarr metrics
+      prometheus.scrape "prowlarr" {
+        targets = [{
+          __address__ = "127.0.0.1:${toString commonConfig.services.prowlarr.httpPort}",
+        }]
+        metrics_path = "/metrics"
+        forward_to = [prometheus.remote_write.mimir.receiver]
+      }
+
+      // Bazarr metrics
+      prometheus.scrape "bazarr" {
+        targets = [{
+          __address__ = "127.0.0.1:${toString commonConfig.services.bazarr.httpPort}",
+        }]
+        metrics_path = "/metrics"
+        forward_to = [prometheus.remote_write.mimir.receiver]
+      }
+
+      // Transmission metrics (via transmission-exporter if available)
+      prometheus.scrape "transmission" {
+        targets = [{
+          __address__ = "127.0.0.1:${toString commonConfig.services.transmission.httpPort}",
+        }]
+        metrics_path = "/metrics"
+        forward_to = [prometheus.remote_write.mimir.receiver]
+      }
+
       // Node exporter for system metrics
       // Note: systemd collector disabled - requires D-Bus access that conflicts with systemd hardening
       prometheus.exporter.unix "local" {

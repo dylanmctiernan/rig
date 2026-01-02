@@ -9,6 +9,15 @@
   backrest = commonConfig.services.backrest;
   uptimeKuma = commonConfig.services.uptimeKuma;
   grafana = commonConfig.lgtm.grafana;
+
+  # Media services
+  jellyfin = commonConfig.services.jellyfin;
+  transmission = commonConfig.services.transmission;
+  sonarr = commonConfig.services.sonarr;
+  radarr = commonConfig.services.radarr;
+  lidarr = commonConfig.services.lidarr;
+  prowlarr = commonConfig.services.prowlarr;
+  bazarr = commonConfig.services.bazarr;
 in {
   # Caddy web server with ${domain} subdomain routing
   services.caddy = {
@@ -143,12 +152,208 @@ in {
         '';
       };
 
+      # Jellyfin at jellyfin.${domain}
+      "${jellyfin.subdomain}.${domain}" = {
+        extraConfig = ''
+          tls internal
+
+          # Authelia forward auth
+          forward_auth localhost:${toString authelia.httpPort} {
+            uri /api/authz/forward-auth
+            copy_headers Remote-User Remote-Groups Remote-Email Remote-Name
+          }
+
+          reverse_proxy localhost:${toString jellyfin.httpPort}
+
+          # Security headers
+          header {
+            Strict-Transport-Security "max-age=31536000"
+            X-Frame-Options "SAMEORIGIN"
+            X-Content-Type-Options "nosniff"
+            -Server
+          }
+
+          log {
+            output file /var/log/caddy/jellyfin.${domain}.log
+            format json
+          }
+        '';
+      };
+
+      # Transmission at transmission.${domain}
+      "${transmission.subdomain}.${domain}" = {
+        extraConfig = ''
+          tls internal
+
+          # Authelia forward auth
+          forward_auth localhost:${toString authelia.httpPort} {
+            uri /api/authz/forward-auth
+            copy_headers Remote-User Remote-Groups Remote-Email Remote-Name
+          }
+
+          reverse_proxy localhost:${toString transmission.httpPort}
+
+          # Security headers
+          header {
+            Strict-Transport-Security "max-age=31536000"
+            X-Frame-Options "SAMEORIGIN"
+            X-Content-Type-Options "nosniff"
+            -Server
+          }
+
+          log {
+            output file /var/log/caddy/transmission.${domain}.log
+            format json
+          }
+        '';
+      };
+
+      # Sonarr at sonarr.${domain}
+      "${sonarr.subdomain}.${domain}" = {
+        extraConfig = ''
+          tls internal
+
+          # Authelia forward auth
+          forward_auth localhost:${toString authelia.httpPort} {
+            uri /api/authz/forward-auth
+            copy_headers Remote-User Remote-Groups Remote-Email Remote-Name
+          }
+
+          reverse_proxy localhost:${toString sonarr.httpPort}
+
+          # Security headers
+          header {
+            Strict-Transport-Security "max-age=31536000"
+            X-Frame-Options "SAMEORIGIN"
+            X-Content-Type-Options "nosniff"
+            -Server
+          }
+
+          log {
+            output file /var/log/caddy/sonarr.${domain}.log
+            format json
+          }
+        '';
+      };
+
+      # Radarr at radarr.${domain}
+      "${radarr.subdomain}.${domain}" = {
+        extraConfig = ''
+          tls internal
+
+          # Authelia forward auth
+          forward_auth localhost:${toString authelia.httpPort} {
+            uri /api/authz/forward-auth
+            copy_headers Remote-User Remote-Groups Remote-Email Remote-Name
+          }
+
+          reverse_proxy localhost:${toString radarr.httpPort}
+
+          # Security headers
+          header {
+            Strict-Transport-Security "max-age=31536000"
+            X-Frame-Options "SAMEORIGIN"
+            X-Content-Type-Options "nosniff"
+            -Server
+          }
+
+          log {
+            output file /var/log/caddy/radarr.${domain}.log
+            format json
+          }
+        '';
+      };
+
+      # Lidarr at lidarr.${domain}
+      "${lidarr.subdomain}.${domain}" = {
+        extraConfig = ''
+          tls internal
+
+          # Authelia forward auth
+          forward_auth localhost:${toString authelia.httpPort} {
+            uri /api/authz/forward-auth
+            copy_headers Remote-User Remote-Groups Remote-Email Remote-Name
+          }
+
+          reverse_proxy localhost:${toString lidarr.httpPort}
+
+          # Security headers
+          header {
+            Strict-Transport-Security "max-age=31536000"
+            X-Frame-Options "SAMEORIGIN"
+            X-Content-Type-Options "nosniff"
+            -Server
+          }
+
+          log {
+            output file /var/log/caddy/lidarr.${domain}.log
+            format json
+          }
+        '';
+      };
+
+      # Prowlarr at prowlarr.${domain}
+      "${prowlarr.subdomain}.${domain}" = {
+        extraConfig = ''
+          tls internal
+
+          # Authelia forward auth
+          forward_auth localhost:${toString authelia.httpPort} {
+            uri /api/authz/forward-auth
+            copy_headers Remote-User Remote-Groups Remote-Email Remote-Name
+          }
+
+          reverse_proxy localhost:${toString prowlarr.httpPort}
+
+          # Security headers
+          header {
+            Strict-Transport-Security "max-age=31536000"
+            X-Frame-Options "SAMEORIGIN"
+            X-Content-Type-Options "nosniff"
+            -Server
+          }
+
+          log {
+            output file /var/log/caddy/prowlarr.${domain}.log
+            format json
+          }
+        '';
+      };
+
+      # Bazarr at bazarr.${domain}
+      "${bazarr.subdomain}.${domain}" = {
+        extraConfig = ''
+          tls internal
+
+          # Authelia forward auth
+          forward_auth localhost:${toString authelia.httpPort} {
+            uri /api/authz/forward-auth
+            copy_headers Remote-User Remote-Groups Remote-Email Remote-Name
+          }
+
+          reverse_proxy localhost:${toString bazarr.httpPort}
+
+          # Security headers
+          header {
+            Strict-Transport-Security "max-age=31536000"
+            X-Frame-Options "SAMEORIGIN"
+            X-Content-Type-Options "nosniff"
+            -Server
+          }
+
+          log {
+            output file /var/log/caddy/bazarr.${domain}.log
+            format json
+          }
+        '';
+      };
+
       # Root domain landing page
       "${hostname}.${domain}" = {
         extraConfig = ''
           tls internal
 
-          respond "${domain} Services\n\nAvailable:\n- https://sso.${domain} - Authelia Authentication\n- https://backup.${domain} - Backrest Backup UI\n- https://git.${domain} - Forgejo Git Repository\n- https://grafana.${domain} - Grafana Observability\n- https://status.${domain} - Uptime Kuma Monitoring" 200
+          respond "${domain} Services\n\nAvailable:\n- https://sso.${domain} - Authelia Authentication\n- https://backup.${domain} - Backrest Backup UI\n- https://git.${domain} - Forgejo Git Repository\n- https://grafana.${domain} - Grafana Observability\n- https://status.${domain} - Uptime Kuma Monitoring\n\nMedia Services:\n- https://jellyfin.${domain} - Jellyfin Media Server\n- https://transmission.${domain} - Transmission BitTorrent\n- https://sonarr.${domain} - Sonarr TV Shows\n- https://radarr.${domain} - Radarr Movies\n- https://lidarr.${domain} - Lidarr Music\n- https://prowlarr.${domain} - Prowlarr Indexers\n- https://bazarr.${domain} - Bazarr Subtitles" 200
 
           log {
             output file /var/log/caddy/${hostname}.${domain}.log
