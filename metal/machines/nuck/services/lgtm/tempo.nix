@@ -79,7 +79,7 @@ in {
       overrides = {
         defaults = {
           metrics_generator = {
-            processors = ["service-graphs" "span-metrics"];
+            processors = ["service-graphs" "span-metrics" "local-blocks"];
           };
         };
       };
