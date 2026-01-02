@@ -1,10 +1,7 @@
 {
-  config,
   pkgs,
   ...
 }: let
-  commonConfig = import ../../../common-config.nix;
-  domain = commonConfig.network.domain;
   backrestPort = 9898;
 in {
   # Backrest - Web UI for restic backups

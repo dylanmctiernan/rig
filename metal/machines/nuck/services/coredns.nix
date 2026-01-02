@@ -1,4 +1,4 @@
-{config, ...}: let
+{...}: let
   commonConfig = import ../../../common-config.nix;
   domain = commonConfig.network.domain;
   tailscaleIP = commonConfig.machines.nuck.tailscaleIp;
