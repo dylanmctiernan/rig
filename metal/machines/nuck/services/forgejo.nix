@@ -6,6 +6,38 @@
 }: let
   commonConfig = import ../../../common-config.nix;
   domain = commonConfig.network.domain;
+  forgejoUpsertScript = pkgs.writeShellScript "forgejo-upsert-oauth" ''
+    set -euo pipefail
+    PATH=${pkgs.forgejo}/bin:$PATH
+
+    name="authelia"
+    discover="https://sso.${domain}/.well-known/openid-configuration"
+    key="forgejo"
+    secret=$(cat ${config.sops.secrets."nuck/authelia/forgejo_oidc_client_secret".path})
+
+    # Fetch provider ID if it already exists
+    id=$(forgejo admin auth list --type oauth | awk -v n="$name" '$1==n {print $2}')
+
+    if [ -z "$id" ]; then
+      echo "Creating OAuth provider $name"
+      forgejo admin auth add-oauth \
+        --name "$name" \
+        --provider openidConnect \
+        --key "$key" \
+        --secret "$secret" \
+        --auto-discover-url "$discover" \
+        --scopes "openid email profile groups" \
+        --auto-register
+    else
+      echo "Updating OAuth provider $name (id=$id)"
+      forgejo admin auth update-oauth --id "$id" \
+        --key "$key" \
+        --secret "$secret" \
+        --auto-discover-url "$discover" \
+        --scopes "openid email profile groups" \
+        --auto-register
+    fi
+  '';
 in {
   # Forgejo - Self-hosted Git service
   services.forgejo = {
@@ -67,15 +99,34 @@ in {
         SKIP_TLS_VERIFY = true;  # Trust internal Caddy CA certificates
       };
     };
+  };
 
-    # Note: OAuth2 providers must be added via CLI or web UI:
-    # forgejo admin auth add-oauth \
-    #   --name authelia \
-    #   --provider openidConnect \
-    #   --key forgejo \
-    #   --secret <client-secret> \
-    #   --auto-discover-url https://sso.${domain}/.well-known/openid-configuration \
-    #   --scopes "openid email profile groups"
+  # Idempotent systemd unit to ensure OAuth provider "authelia" exists
+  systemd.services."forgejo-upsert-oauth" = {
+    description = "Ensure/refresh Forgejo OAuth provider authelia";
+    after       = [ "forgejo.service" ];
+    requires    = [ "forgejo.service" ];
+    wantedBy    = [ "multi-user.target" ];
+
+    serviceConfig = {
+      Type            = "oneshot";
+      User            = "forgejo";
+      WorkingDirectory = "/var/lib/forgejo";
+
+      ExecStart = "${forgejoUpsertScript}";
+
+      # Hardening flags
+      ProtectSystem = "strict";
+      ProtectHome = true;
+      PrivateTmp = true;
+      NoNewPrivileges = true;
+      CapabilityBoundingSet = "";
+    };
+
+    restartTriggers = [
+      config.sops.secrets."nuck/authelia/forgejo_oidc_client_secret".path
+      forgejoUpsertScript
+    ];
   };
 
   # Firewall - Forgejo will be accessed via Caddy reverse proxy
