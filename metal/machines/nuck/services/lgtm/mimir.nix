@@ -58,6 +58,7 @@ in {
       ingester = {
         ring = {
           instance_addr = "127.0.0.1";
+          instance_interface_names = ["lo"];  # Use loopback for single-node
           kvstore = {
             store = "inmemory";
           };
