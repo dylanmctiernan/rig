@@ -119,8 +119,8 @@ in {
             authorization_policy = "one_factor";
             claims_policy = "default";
 
-            # Grafana defaults to client_secret_basic
-            token_endpoint_auth_method = "client_secret_basic";
+            # Allow both client_secret_basic (default) and client_secret_post
+            token_endpoint_auth_method = "client_secret_post";
 
             redirect_uris = ["https://grafana.${domain}/login/generic_oauth"];
 

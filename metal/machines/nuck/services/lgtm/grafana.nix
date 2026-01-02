@@ -41,9 +41,6 @@ in {
         use_pkce = true;
         use_refresh_token = true;
 
-        # Use client_secret_post to match Authelia configuration
-        auth_style = "in_params";
-
         # Role mapping - users in 'admins' group get Admin role
         role_attribute_path = "contains(groups[*], 'admins') && 'Admin' || 'Editor'";
         role_attribute_strict = false;
