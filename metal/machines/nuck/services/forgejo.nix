@@ -15,11 +15,13 @@
     export GIT_SSL_NO_VERIFY=true
 
     name="authelia"
-    # Use localhost to avoid TLS certificate issues with internal CA
-    # The public HTTPS URL will be used by the OIDC flow itself
-    discover="http://localhost:9091/.well-known/openid-configuration"
     key="forgejo"
     secret=$(cat /run/secrets/nuck/authelia/forgejo_oidc_client_secret)
+
+    # Use explicit HTTPS endpoints instead of auto-discovery
+    auth_url="https://sso.${domain}/api/oidc/authorization"
+    token_url="https://sso.${domain}/api/oidc/token"
+    profile_url="https://sso.${domain}/api/oidc/userinfo"
 
     # Config file location
     config="/var/lib/forgejo/custom/conf/app.ini"
@@ -36,7 +38,11 @@
         --provider openidConnect \
         --key "$key" \
         --secret "$secret" \
-        --auto-discover-url "$discover" \
+        --openid-connect-auto-discovery-url "$auth_url" \
+        --custom-url-mapping \
+        --custom-auth-url "$auth_url" \
+        --custom-token-url "$token_url" \
+        --custom-profile-url "$profile_url" \
         --scopes "openid email profile groups" \
         --skip-local-2fa
     else
@@ -44,7 +50,11 @@
       forgejo --config "$config" admin auth update-oauth --id "$id" \
         --key "$key" \
         --secret "$secret" \
-        --auto-discover-url "$discover" \
+        --openid-connect-auto-discovery-url "$auth_url" \
+        --custom-url-mapping \
+        --custom-auth-url "$auth_url" \
+        --custom-token-url "$token_url" \
+        --custom-profile-url "$profile_url" \
         --scopes "openid email profile groups" \
         --skip-local-2fa
     fi
