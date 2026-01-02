@@ -11,15 +11,12 @@
     # need awk inside PATH as well
     PATH=${pkgs.forgejo}/bin:${pkgs.gawk}/bin:$PATH
 
-    # Skip TLS verification for internal CA
-    export GIT_SSL_NO_VERIFY=true
-
     name="authelia"
     key="forgejo"
     secret=$(cat /run/secrets/nuck/authelia/forgejo_oidc_client_secret)
 
-    # Use localhost for discovery, then fix endpoints with SQL
-    discover_url="http://localhost:9091/.well-known/openid-configuration"
+    # Use HTTPS discovery URL (SSL_CERT_FILE env var points to Caddy CA)
+    discover_url="https://sso.${domain}/.well-known/openid-configuration"
 
     # Config file location
     config="/var/lib/forgejo/custom/conf/app.ini"
@@ -50,16 +47,6 @@
         --auto-discover-url "$discover_url" \
         --scopes "openid email profile groups" \
         --skip-local-2fa
-    fi
-
-    # Fix localhost URLs to use HTTPS public domain
-    if [ -n "$id" ]; then
-      echo "Fixing OAuth endpoints to use HTTPS"
-      ${pkgs.sqlite}/bin/sqlite3 /var/lib/forgejo/data/forgejo.db <<EOF
-UPDATE login_source
-SET cfg = REPLACE(REPLACE(cfg, 'http://localhost:9091', 'https://sso.${domain}'), '"OpenIDConnectAutoDiscoveryURL":"http://localhost:9091', '"OpenIDConnectAutoDiscoveryURL":"https://sso.${domain}')
-WHERE id=$id;
-EOF
     fi
   '';
 in {
@@ -129,6 +116,11 @@ in {
     };
   };
 
+  # Add Caddy CA to system trust store for Forgejo
+  systemd.services.forgejo.environment = {
+    SSL_CERT_FILE = "/var/lib/caddy/.local/share/caddy/pki/authorities/local/root.crt";
+  };
+
   # Idempotent systemd unit to ensure OAuth provider "authelia" exists
   systemd.services."forgejo-upsert-oauth" = {
     description = "Ensure/refresh Forgejo OAuth provider authelia";
@@ -155,6 +147,10 @@ in {
       PrivateTmp = true;
       NoNewPrivileges = true;
 
+    };
+
+    environment = {
+      SSL_CERT_FILE = "/var/lib/caddy/.local/share/caddy/pki/authorities/local/root.crt";
     };
 
     restartTriggers = [
