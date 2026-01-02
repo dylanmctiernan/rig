@@ -68,10 +68,10 @@ in {
         trace = {
           backend = "local";
           wal = {
-            path = "/var/lib/tempo/wal";  # Ephemeral - rebuilt on restart
+            path = "/var/lib/tempo/wal";
           };
           local = {
-            path = "${tempo.dataDir}/blocks";  # Persistent - trace data
+            path = "/var/lib/tempo/blocks";
           };
         };
       };
@@ -83,20 +83,6 @@ in {
           };
         };
       };
-    };
-  };
-
-  # Create persistent data directory for trace blocks
-  systemd.tmpfiles.rules = [
-    "d ${tempo.dataDir} 0750 tempo tempo -"
-    "d ${tempo.dataDir}/blocks 0750 tempo tempo -"
-  ];
-
-  # Override systemd service to allow writing to /data/tempo
-  systemd.services.tempo = {
-    after = [ "systemd-tmpfiles-setup.service" ];
-    serviceConfig = {
-      ReadWritePaths = [ tempo.dataDir ];
     };
   };
 }

@@ -14,9 +14,6 @@ in {
   services.grafana = {
     enable = true;
 
-    # Use centralized data directory
-    dataDir = grafana.dataDir;
-
     settings = {
       server = {
         http_addr = "127.0.0.1";
@@ -27,8 +24,8 @@ in {
 
       security = {
         admin_user = "admin";
-        admin_password = "$__file{${grafana.dataDir}/admin_password}";
-        secret_key = "$__file{${grafana.dataDir}/secret_key}";
+        admin_password = "$__file{${grafana.stateDir}/admin_password}";
+        secret_key = "$__file{${grafana.stateDir}/secret_key}";
       };
 
       # Authelia OIDC SSO
@@ -141,7 +138,7 @@ in {
           updateIntervalSeconds = 10;
           allowUiUpdates = true;
           options = {
-            path = "${grafana.dataDir}/dashboards";
+            path = "${grafana.stateDir}/dashboards";
           };
         }
       ];
@@ -150,8 +147,7 @@ in {
 
   # Create necessary directories and secrets
   systemd.tmpfiles.rules = [
-    "d ${grafana.dataDir} 0750 grafana grafana -"
-    "d ${grafana.dataDir}/dashboards 0750 grafana grafana -"
+    "d ${grafana.stateDir}/dashboards 0750 grafana grafana -"
   ];
 
   # Generate admin password if it doesn't exist
@@ -164,15 +160,15 @@ in {
       RemainAfterExit = true;
     };
     script = ''
-      if [ ! -f ${grafana.dataDir}/admin_password ]; then
-        ${pkgs.pwgen}/bin/pwgen -s 32 1 > ${grafana.dataDir}/admin_password
-        chown grafana:grafana ${grafana.dataDir}/admin_password
-        chmod 0600 ${grafana.dataDir}/admin_password
+      if [ ! -f ${grafana.stateDir}/admin_password ]; then
+        ${pkgs.pwgen}/bin/pwgen -s 32 1 > ${grafana.stateDir}/admin_password
+        chown grafana:grafana ${grafana.stateDir}/admin_password
+        chmod 0600 ${grafana.stateDir}/admin_password
       fi
-      if [ ! -f ${grafana.dataDir}/secret_key ]; then
-        ${pkgs.pwgen}/bin/pwgen -s 32 1 > ${grafana.dataDir}/secret_key
-        chown grafana:grafana ${grafana.dataDir}/secret_key
-        chmod 0600 ${grafana.dataDir}/secret_key
+      if [ ! -f ${grafana.stateDir}/secret_key ]; then
+        ${pkgs.pwgen}/bin/pwgen -s 32 1 > ${grafana.stateDir}/secret_key
+        chown grafana:grafana ${grafana.stateDir}/secret_key
+        chmod 0600 ${grafana.stateDir}/secret_key
       fi
     '';
   };

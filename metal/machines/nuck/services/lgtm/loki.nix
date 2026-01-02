@@ -10,9 +10,6 @@ in {
   services.loki = {
     enable = true;
 
-    # Use centralized data directory (NixOS module option)
-    dataDir = loki.dataDir;
-
     configuration = {
       auth_enabled = false;
 
@@ -35,7 +32,7 @@ in {
           };
         };
         replication_factor = 1;
-        path_prefix = loki.dataDir;
+        path_prefix = loki.stateDir;
       };
 
       # Disable query scheduler and query frontend in single-binary mode
@@ -66,16 +63,16 @@ in {
 
       storage_config = {
         tsdb_shipper = {
-          active_index_directory = "${loki.dataDir}/tsdb-index";
-          cache_location = "/var/lib/loki/tsdb-cache";  # Ephemeral cache
+          active_index_directory = "${loki.stateDir}/tsdb-index";
+          cache_location = "${loki.stateDir}/tsdb-cache";
         };
         filesystem = {
-          directory = "${loki.dataDir}/chunks";
+          directory = "${loki.stateDir}/chunks";
         };
       };
 
       compactor = {
-        working_directory = "/var/lib/loki/compactor";  # Ephemeral working directory
+        working_directory = "${loki.stateDir}/compactor";
         compaction_interval = "10m";
         retention_enabled = true;
         retention_delete_delay = "2h";
@@ -95,10 +92,10 @@ in {
         storage = {
           type = "local";
           local = {
-            directory = "${loki.dataDir}/rules";
+            directory = "${loki.stateDir}/rules";
           };
         };
-        rule_path = "/var/lib/loki/rules-temp";  # Ephemeral temp directory
+        rule_path = "${loki.stateDir}/rules-temp";
         ring = {
           kvstore = {
             store = "inmemory";
@@ -108,6 +105,6 @@ in {
     };
   };
 
-  # Note: The NixOS Loki module automatically creates the dataDir via systemd StateDirectory
+  # Note: The NixOS Loki module automatically creates the stateDir via systemd StateDirectory
   # Subdirectories (chunks, tsdb-index, rules, etc.) are created by Loki on first run
 }

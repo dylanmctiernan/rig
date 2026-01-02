@@ -19,7 +19,7 @@
     discover_url="https://sso.${domain}/.well-known/openid-configuration"
 
     # Config file location
-    config="/var/lib/forgejo/custom/conf/app.ini"
+    config="${forgejo.stateDir}/custom/conf/app.ini"
 
     # Fetch provider ID if it already exists
     # Format: ID<tab>Name<tab>Type<tab>Enabled
@@ -53,9 +53,6 @@ in {
   # Forgejo - Self-hosted Git service
   services.forgejo = {
     enable = true;
-
-    # Data directory
-    stateDir = forgejo.dataDir;
 
     # Use SQLite with WAL mode for better performance
     database = {
@@ -169,7 +166,7 @@ in {
       Type            = "oneshot";
       User            = "forgejo";
       Group           = "forgejo";
-      WorkingDirectory = "/var/lib/forgejo";
+      WorkingDirectory = forgejo.stateDir;
 
       ExecStart = "${forgejoUpsertScript}";
 
@@ -178,7 +175,7 @@ in {
       StandardError = "journal";
 
       # Hardening flags (relaxed to allow database writes)
-      ReadWritePaths = [ "/var/lib/forgejo" ];
+      ReadWritePaths = [ forgejo.stateDir ];
       ProtectSystem = "strict";
       ProtectHome = true;
       PrivateTmp = true;

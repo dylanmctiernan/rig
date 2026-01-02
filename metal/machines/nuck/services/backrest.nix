@@ -14,7 +14,7 @@ in {
   users.users.backrest = {
     isSystemUser = true;
     group = "backrest";
-    home = backrest.dataDir;
+    home = backrest.stateDir;
     createHome = true;
   };
 
@@ -30,13 +30,13 @@ in {
       Type = "simple";
       User = "backrest";
       Group = "backrest";
-      WorkingDirectory = backrest.dataDir;
+      WorkingDirectory = backrest.stateDir;
 
       # Environment variables for backrest configuration
       Environment = [
-        "BACKREST_DATA=${backrest.dataDir}"
-        "BACKREST_CONFIG=${backrest.dataDir}/config.json"
-        "XDG_CACHE_HOME=/var/lib/backrest/.cache"
+        "BACKREST_DATA=${backrest.stateDir}"
+        "BACKREST_CONFIG=${backrest.stateDir}/config.json"
+        "XDG_CACHE_HOME=${backrest.stateDir}/.cache"
       ];
 
       ExecStart = "${pkgs.backrest}/bin/backrest --bind-address 127.0.0.1:${toString backrest.httpPort}";
@@ -49,15 +49,9 @@ in {
       PrivateTmp = true;
       ProtectSystem = "strict";
       ProtectHome = true;
-      ReadWritePaths = [backrest.dataDir "/var/lib/backrest/.cache"];
+      ReadWritePaths = [backrest.stateDir];
     };
   };
-
-  # Ensure backrest data directory exists with correct permissions
-  systemd.tmpfiles.rules = [
-    "d ${backrest.dataDir} 0750 backrest backrest -"
-    "d /var/lib/backrest/.cache 0750 backrest backrest -"
-  ];
 
   # Firewall - Backrest will be accessed via Caddy reverse proxy
   # No direct external access needed (listens on 127.0.0.1 only)

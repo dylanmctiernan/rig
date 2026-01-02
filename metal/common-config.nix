@@ -21,25 +21,22 @@
     };
   };
 
-  # Base data directory for all persistent application data
-  dataDir = "/data";
-
   # Application Services (5000-5099)
   services = {
     forgejo = {
       httpPort = 5000;
       subdomain = "git";
-      dataDir = "/data/forgejo";
+      stateDir = "/var/lib/forgejo";
     };
     uptimeKuma = {
       httpPort = 5001;
       subdomain = "status";
-      dataDir = "/data/uptime-kuma";
+      stateDir = "/var/lib/uptime-kuma";
     };
     backrest = {
       httpPort = 5002;
       subdomain = "backup";
-      dataDir = "/data/backrest";
+      stateDir = "/var/lib/backrest";
     };
   };
 
@@ -48,10 +45,10 @@
     authelia = {
       httpPort = 5100;
       subdomain = "sso";
-      dataDir = "/data/authelia";
+      stateDir = "/var/lib/authelia-main";
     };
     caddy = {
-      dataDir = "/data/caddy";
+      stateDir = "/var/lib/caddy";
     };
   };
 
@@ -60,31 +57,31 @@
     loki = {
       httpPort = 5200;
       grpcPort = 5300;
-      dataDir = "/data/loki";
+      stateDir = "/var/lib/loki";
     };
     grafana = {
       httpPort = 5201;
       subdomain = "grafana";
-      dataDir = "/data/grafana";
+      stateDir = "/var/lib/grafana";
     };
     tempo = {
       httpPort = 5202;
       grpcPort = 5301;
       otlpGrpcPort = 5400;
       otlpHttpPort = 5401;
-      dataDir = "/data/tempo";
+      stateDir = "/var/lib/tempo";
     };
     mimir = {
       httpPort = 5203;
       grpcPort = 5302;
       memberlistPort = 5500;
-      dataDir = "/data/mimir";
+      stateDir = "/var/lib/mimir";
     };
     alloy = {
       httpPort = 5204;
       otlpGrpcPort = 5402;
       otlpHttpPort = 5403;
-      # No dataDir - ephemeral data only
+      stateDir = "/var/lib/alloy";
     };
   };
 }

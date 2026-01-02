@@ -53,7 +53,7 @@ in {
         ];
       };
 
-      storage.local.path = "${authelia.dataDir}/db.sqlite3";
+      storage.local.path = "${authelia.stateDir}/db.sqlite3";
 
       # Access control for ${domain}
       access_control = {
@@ -71,11 +71,11 @@ in {
       };
 
       notifier.filesystem = {
-        filename = "/var/lib/authelia-main/notifications.txt";
+        filename = "${authelia.stateDir}/notifications.txt";
       };
 
       authentication_backend.file = {
-        path = "${authelia.dataDir}/users.yml";
+        path = "${authelia.stateDir}/users.yml";
       };
 
       # OpenID Connect (OIDC) configuration
@@ -150,22 +150,10 @@ in {
     };
   };
 
-  # Ensure Authelia data directory exists with correct permissions
-  systemd.tmpfiles.rules = [
-    "d ${authelia.dataDir} 0750 authelia-main authelia-main -"
-  ];
-
-  # Copy declarative users.yml to dataDir
-  # preStart runs as the service user (authelia-main), so no need to chown
+  # Copy declarative users.yml to stateDir
+  # preStart runs as the service user (authelia-main)
   systemd.services.authelia-main.preStart = ''
-    cp -f ${usersYml} ${authelia.dataDir}/users.yml
-    chmod 0600 ${authelia.dataDir}/users.yml
+    cp -f ${usersYml} ${authelia.stateDir}/users.yml
+    chmod 0600 ${authelia.stateDir}/users.yml
   '';
-
-  # Override serviceConfig to allow writing to /data directory
-  systemd.services.authelia-main.serviceConfig = {
-    ReadWritePaths = [ authelia.dataDir ];
-    # Relax some systemd hardening to allow /data access
-    ProtectSystem = "strict";
-  };
 }

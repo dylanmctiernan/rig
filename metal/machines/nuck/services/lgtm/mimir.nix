@@ -36,7 +36,7 @@ in {
         storage = {
           backend = "filesystem";
           filesystem = {
-            dir = "${mimir.dataDir}/data";  # Persistent
+            dir = "/var/lib/mimir/data";
           };
         };
       };
@@ -44,16 +44,16 @@ in {
       blocks_storage = {
         backend = "filesystem";
         filesystem = {
-          dir = "${mimir.dataDir}/blocks";  # Persistent
+          dir = "/var/lib/mimir/blocks";
         };
         tsdb = {
-          dir = "${mimir.dataDir}/tsdb";  # Persistent
+          dir = "/var/lib/mimir/tsdb";
           retention_period = "744h"; # 31 days
         };
       };
 
       compactor = {
-        data_dir = "/var/lib/mimir/compactor";  # Ephemeral - working directory
+        data_dir = "/var/lib/mimir/compactor";
         compaction_interval = "30m";
         deletion_delay = "2h";
       };
@@ -96,7 +96,7 @@ in {
       };
 
       ruler = {
-        rule_path = "${mimir.dataDir}/rules";  # Persistent - alerting/recording rules
+        rule_path = "/var/lib/mimir/rules";
         ring = {
           instance_addr = "127.0.0.1";
           kvstore = {
@@ -108,7 +108,7 @@ in {
       ruler_storage = {
         backend = "filesystem";
         filesystem = {
-          dir = "/var/lib/mimir/ruler";  # Ephemeral - ruler working directory
+          dir = "/var/lib/mimir/ruler";
         };
       };
 
@@ -127,7 +127,7 @@ in {
       };
 
       alertmanager = {
-        data_dir = "${mimir.dataDir}/alertmanager";  # Persistent - silences, notification state
+        data_dir = "/var/lib/mimir/alertmanager";
         enable_api = true;
         external_url = "http://127.0.0.1:${toString mimir.httpPort}/alertmanager";
       };
@@ -135,7 +135,7 @@ in {
       alertmanager_storage = {
         backend = "filesystem";
         filesystem = {
-          dir = "${mimir.dataDir}/alertmanager-storage";  # Persistent - alertmanager config
+          dir = "/var/lib/mimir/alertmanager-storage";
         };
       };
 
@@ -148,24 +148,10 @@ in {
     };
   };
 
-  # Create persistent data directories
-  systemd.tmpfiles.rules = [
-    "d ${mimir.dataDir} 0750 mimir mimir -"
-    "d ${mimir.dataDir}/data 0750 mimir mimir -"
-    "d ${mimir.dataDir}/blocks 0750 mimir mimir -"
-    "d ${mimir.dataDir}/tsdb 0750 mimir mimir -"
-    "d ${mimir.dataDir}/rules 0750 mimir mimir -"
-    "d ${mimir.dataDir}/alertmanager 0750 mimir mimir -"
-    "d ${mimir.dataDir}/alertmanager-storage 0750 mimir mimir -"
-  ];
-
-  # Ensure mimir starts after network is ready and can write to /data/mimir
+  # Ensure mimir starts after network is ready
   systemd.services.mimir = {
-    after = [ "network-online.target" "systemd-tmpfiles-setup.service" ];
+    after = [ "network-online.target" ];
     wants = [ "network-online.target" ];
-    serviceConfig = {
-      ReadWritePaths = [ mimir.dataDir ];
-    };
   };
 
 }
