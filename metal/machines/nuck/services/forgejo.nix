@@ -115,6 +115,10 @@ in {
       };
 
       # Allow insecure connections for internal Caddy CA
+      http = {
+        SKIP_TLS_VERIFY = true;  # Skip TLS verification globally for internal CA
+      };
+
       webhook = {
         SKIP_TLS_VERIFY = true;
       };
