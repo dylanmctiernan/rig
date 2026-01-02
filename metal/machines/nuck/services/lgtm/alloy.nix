@@ -159,6 +159,6 @@ in {
     "d /var/lib/alloy 0750 alloy alloy -"
   ];
 
-  # Add Alloy user to systemd-journal group for journal access
-  users.users.alloy.extraGroups = [ "systemd-journal" ];
+  # Add Alloy to systemd-journal group for journal access
+  systemd.services.alloy.serviceConfig.SupplementaryGroups = [ "systemd-journal" ];
 }
