@@ -83,4 +83,5 @@
       otlpHttpPort = 5403;
       stateDir = "/var/lib/alloy";
     };
+  };
 }
