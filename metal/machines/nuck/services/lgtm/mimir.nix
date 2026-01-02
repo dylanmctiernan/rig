@@ -129,16 +129,4 @@ in {
     };
   };
 
-  # Ensure Mimir directories exist
-  systemd.tmpfiles.rules = [
-    "d /var/lib/mimir 0750 mimir mimir -"
-    "d /var/lib/mimir/data 0750 mimir mimir -"
-    "d /var/lib/mimir/blocks 0750 mimir mimir -"
-    "d /var/lib/mimir/tsdb 0750 mimir mimir -"
-    "d /var/lib/mimir/compactor 0750 mimir mimir -"
-    "d /var/lib/mimir/rules 0750 mimir mimir -"
-    "d /var/lib/mimir/ruler 0750 mimir mimir -"
-    "d /var/lib/mimir/alertmanager 0750 mimir mimir -"
-    "d /var/lib/mimir/alertmanager-storage 0750 mimir mimir -"
-  ];
 }
