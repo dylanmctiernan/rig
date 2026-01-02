@@ -41,6 +41,9 @@ in {
         use_pkce = true;
         use_refresh_token = true;
 
+        # Force client_secret_basic authentication (InHeader)
+        auth_style = "InHeader";
+
         # Role mapping - users in 'admins' group get Admin role
         role_attribute_path = "contains(groups[*], 'admins') && 'Admin' || 'Editor'";
         role_attribute_strict = false;
