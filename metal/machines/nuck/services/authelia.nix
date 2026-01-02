@@ -156,16 +156,15 @@ in {
   ];
 
   # Copy declarative users.yml to dataDir
-  systemd.services.authelia-main = {
-    preStart = ''
-      cp -f ${usersYml} ${authelia.dataDir}/users.yml
-      chown authelia-main:authelia-main ${authelia.dataDir}/users.yml
-      chmod 0600 ${authelia.dataDir}/users.yml
-    '';
-    serviceConfig = {
-      ReadWritePaths = [ authelia.dataDir ];
-      # Relax some systemd hardening to allow /data access
-      ProtectSystem = "strict";
-    };
+  # Note: preStart runs as root, allowing us to set ownership
+  systemd.services.authelia-main.preStart = ''
+    install -m 0600 -o authelia-main -g authelia-main ${usersYml} ${authelia.dataDir}/users.yml
+  '';
+
+  # Override serviceConfig to allow writing to /data directory
+  systemd.services.authelia-main.serviceConfig = {
+    ReadWritePaths = [ authelia.dataDir ];
+    # Relax some systemd hardening to allow /data access
+    ProtectSystem = "strict";
   };
 }
