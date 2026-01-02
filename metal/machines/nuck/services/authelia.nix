@@ -144,9 +144,10 @@ in {
     "d ${authelia.dataDir} 0750 authelia-main authelia-main -"
   ];
 
-  # Create users.yml file declaratively in /etc, then copy to dataDir
-  environment.etc."authelia/users.yml" = {
-    text = ''
+  # Create users.yml directly in dataDir via preStart
+  systemd.services.authelia-main = {
+    preStart = ''
+      cat > ${authelia.dataDir}/users.yml <<'EOF'
       users:
         dylan:
           displayname: "Dylan McTiernan"
@@ -154,14 +155,7 @@ in {
           password: "$pbkdf2-sha512$310000$c8p78n7pUMln0jzvd4aK4Q$JNRBzwAo0ek5qKn50cFzzvE9RfXStRzS9/P6HVWtgzLsKHD6G0rWJFJ0E8OTZxU9zfPGgznS6RqJWH/3r6Qv3Q"
           groups:
             - admins
-    '';
-    mode = "0600";
-  };
-
-  # Copy users.yml to dataDir and override serviceConfig
-  systemd.services.authelia-main = {
-    preStart = ''
-      cp -f /etc/authelia/users.yml ${authelia.dataDir}/users.yml
+      EOF
       chown authelia-main:authelia-main ${authelia.dataDir}/users.yml
       chmod 0600 ${authelia.dataDir}/users.yml
     '';
