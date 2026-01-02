@@ -156,7 +156,7 @@ in {
 
       // Node exporter for system metrics
       prometheus.exporter.unix "local" {
-        // Default settings
+        enable_collectors = ["systemd", "processes"]
       }
 
       prometheus.scrape "node" {
