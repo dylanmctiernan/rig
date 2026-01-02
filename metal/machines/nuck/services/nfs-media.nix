@@ -9,11 +9,6 @@ in {
   boot.supportedFilesystems = ["nfs"];
   services.rpcbind.enable = true;
 
-  # Create mount point
-  systemd.tmpfiles.rules = [
-    "d ${commonConfig.machines.nuck.mediaDir} 0755 root root -"
-  ];
-
   # NFS mount configuration
   fileSystems."${commonConfig.machines.nuck.mediaDir}" = {
     # Synology NAS via Tailscale
@@ -36,9 +31,9 @@ in {
     ];
   };
 
-  # Create media subdirectories that *arr apps expect
-  # These will be created after the NFS mount is available
+  # Create mount point and media subdirectories that *arr apps expect
   systemd.tmpfiles.rules = [
+    "d ${commonConfig.machines.nuck.mediaDir} 0755 root root -"
     "d ${commonConfig.machines.nuck.mediaDir}/movies 0755 root root -"
     "d ${commonConfig.machines.nuck.mediaDir}/tv 0755 root root -"
     "d ${commonConfig.machines.nuck.mediaDir}/music 0755 root root -"
