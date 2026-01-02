@@ -156,9 +156,10 @@ in {
   ];
 
   # Copy declarative users.yml to dataDir
-  # Note: preStart runs as root, allowing us to set ownership
+  # preStart runs as the service user (authelia-main), so no need to chown
   systemd.services.authelia-main.preStart = ''
-    install -m 0600 -o authelia-main -g authelia-main ${usersYml} ${authelia.dataDir}/users.yml
+    cp -f ${usersYml} ${authelia.dataDir}/users.yml
+    chmod 0600 ${authelia.dataDir}/users.yml
   '';
 
   # Override serviceConfig to allow writing to /data directory
