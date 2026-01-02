@@ -43,12 +43,12 @@ in {
         }
       }
 
-      // Loki logs receiver - receive logs from applications
+      // Loki logs receiver - receive logs from systemd journal
       loki.source.journal "system_logs" {
         format_as_json = true
         max_age        = "12h"
         labels         = {
-          job = "systemd-journal",
+          job = "nuck-systemd",
         }
         forward_to = [loki.relabel.journal.receiver]
       }
