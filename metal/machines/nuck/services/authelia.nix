@@ -150,8 +150,8 @@ in {
             client_id = "synology-dsm";
             client_name = "Synology DSM";
             # Use bcrypt hashed secret for client_secret_post authentication
-            # Plain text: synology-dsm-secret (CHANGE THIS - see instructions below)
-            client_secret = "$2b$05$qvBv5mKJCxPQQynvKxN6Uu3QkxpzOqV8jR.Z5K6yWxGx5L9N5YZFG";
+            # Plain text stored in SOPS: nuck/authelia/synology_oidc_client_secret
+            client_secret = "$2b$12$54VY4/Ufmjs6BRWgsEjnpOy2K9UGpbvgDsXizaRlFnelDQKJvCpye";
             public = false;
             authorization_policy = "one_factor";
             claims_policy = "default";
