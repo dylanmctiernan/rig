@@ -162,10 +162,13 @@ in {
     group = "authelia-main";
   };
 
-  # Symlink users.yml to data directory
+  # Copy users.yml to data directory in preStart
   systemd.services.authelia-main = {
     preStart = ''
-      ln -sf /etc/authelia/users.yml ${authelia.dataDir}/users.yml
+      mkdir -p ${authelia.dataDir}
+      cp -f /etc/authelia/users.yml ${authelia.dataDir}/users.yml
+      chown authelia-main:authelia-main ${authelia.dataDir}/users.yml
+      chmod 0600 ${authelia.dataDir}/users.yml
     '';
   };
 }
