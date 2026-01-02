@@ -9,7 +9,7 @@
       dylan:
         displayname: "Dylan McTiernan"
         email: dylan@mctiernan.io
-        password: "$pbkdf2-sha512$310000$c8p78n7pUMln0jzvd4aK4Q$JNRBzwAo0ek5qKn50cFzzvE9RfXStRzS9/P6HVWtgzLsKHD6G0rWJFJ0E8OTZxU9zfPGgznS6RqJWH/3r6Qv3Q"
+        password: "$pbkdf2-sha512$310000$j908kQHxWpYtDlVMy/hdlQ$nqYc/mw0gDvcCd7/0ZG8h2jXm/XWYx4oPs.99DbHjbPFoV.SZpX8DC1Xx5gZRM7Dk6vXO0m72ztCbuRF//mjog"
         groups:
           - admins
   '';
