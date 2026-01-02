@@ -37,7 +37,7 @@ in {
     ; A records for services
     ${hostname}   IN A ${tailscaleIP}
     sso           IN A ${tailscaleIP}
-    *.${domain}.  IN A ${tailscaleIP}
+    *             IN A ${tailscaleIP}
   '';
 
   # Firewall - Open DNS ports
