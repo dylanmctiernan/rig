@@ -179,9 +179,11 @@ in {
       # Remove systemd hardening that blocks D-Bus access
       PrivateNetwork = lib.mkForce false;
       ProtectSystem = lib.mkForce "strict";
-      ProtectHome = lib.mkForce false;
+      ProtectHome = lib.mkForce "read-only";
+      # Disable most sandboxing for D-Bus access
+      PrivateDevices = lib.mkForce false;
       # Allow access to /run for D-Bus socket
-      ReadWritePaths = [ "/run/dbus" ];
+      ReadWritePaths = [ "/run/dbus" "/run/systemd" ];
     };
   };
 }
