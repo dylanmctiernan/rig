@@ -82,12 +82,4 @@ in {
     };
   };
 
-  # Ensure Tempo directories exist
-  systemd.tmpfiles.rules = [
-    "d /var/lib/tempo 0750 tempo tempo -"
-    "d /var/lib/tempo/blocks 0750 tempo tempo -"
-    "d /var/lib/tempo/wal 0750 tempo tempo -"
-    "d /var/lib/tempo/generator 0750 tempo tempo -"
-    "d /var/lib/tempo/generator/wal 0750 tempo tempo -"
-  ];
 }
