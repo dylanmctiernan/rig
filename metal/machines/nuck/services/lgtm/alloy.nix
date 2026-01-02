@@ -39,7 +39,7 @@ in {
         }
       }
 
-      // OTLP receiver for traces and logs (on different ports than Tempo)
+      // OTLP receiver for traces, logs, and metrics
       otelcol.receiver.otlp "default" {
         grpc {
           endpoint = "127.0.0.1:${toString alloy.otlpGrpcPort}"
@@ -52,7 +52,20 @@ in {
         output {
           traces  = [otelcol.exporter.otlp.tempo.input]
           logs    = [otelcol.exporter.loki.local.input]
+          metrics = [otelcol.processor.batch.default.input]
         }
+      }
+
+      // Batch processor for metrics (best practice for performance)
+      otelcol.processor.batch "default" {
+        output {
+          metrics = [otelcol.exporter.prometheus.mimir.input]
+        }
+      }
+
+      // Convert OTLP metrics to Prometheus format
+      otelcol.exporter.prometheus "mimir" {
+        forward_to = [prometheus.remote_write.mimir.receiver]
       }
 
       // OTLP exporter to Tempo for traces
