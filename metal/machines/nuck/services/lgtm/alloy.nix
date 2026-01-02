@@ -224,7 +224,7 @@ in {
       // SNMP exporter for Synology NAS metrics
       prometheus.exporter.snmp "synology" {
         config_file = "/etc/alloy/snmp-synology.yml"
-        target {
+        target "synology" {
           address = "${synology.tailscaleIp}"
           module  = "synology"
         }
@@ -241,10 +241,10 @@ in {
         listener {
           address  = "0.0.0.0:${toString synology.syslogPort}"
           protocol = "tcp"
-        }
-        labels = {
-          job      = "synology-syslog",
-          hostname = "${synology.hostname}",
+          labels   = {
+            job      = "synology-syslog",
+            hostname = "${synology.hostname}",
+          }
         }
         forward_to = [loki.write.local.receiver]
       }
