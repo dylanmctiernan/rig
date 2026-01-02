@@ -16,13 +16,16 @@
     key="forgejo"
     secret=$(cat /run/secrets/nuck/authelia/forgejo_oidc_client_secret)
 
+    # Config file location
+    config="/var/lib/forgejo/custom/conf/app.ini"
+
     # Fetch provider ID if it already exists
     # newer Forgejo CLI no longer supports "--type oauth"
-    id=$(forgejo admin auth list | awk -v n="$name" '$1==n {print $2}')
+    id=$(forgejo --config "$config" admin auth list | awk -v n="$name" '$1==n {print $2}')
 
     if [ -z "$id" ]; then
       echo "Creating OAuth provider $name"
-      forgejo admin auth add-oauth \
+      forgejo --config "$config" admin auth add-oauth \
         --name "$name" \
         --provider openidConnect \
         --key "$key" \
@@ -32,7 +35,7 @@
         --auto-register
     else
       echo "Updating OAuth provider $name (id=$id)"
-      forgejo admin auth update-oauth --id "$id" \
+      forgejo --config "$config" admin auth update-oauth --id "$id" \
         --key "$key" \
         --secret "$secret" \
         --auto-discover-url "$discover" \
