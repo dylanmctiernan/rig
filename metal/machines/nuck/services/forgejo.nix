@@ -124,7 +124,8 @@ in {
       StandardOutput = "journal";
       StandardError = "journal";
 
-      # Hardening flags
+      # Hardening flags (relaxed to allow database writes)
+      ReadWritePaths = [ "/var/lib/forgejo" ];
       ProtectSystem = "strict";
       ProtectHome = true;
       PrivateTmp = true;
