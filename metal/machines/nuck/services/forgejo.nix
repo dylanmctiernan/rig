@@ -11,6 +11,9 @@
     # need awk inside PATH as well
     PATH=${pkgs.forgejo}/bin:${pkgs.gawk}/bin:$PATH
 
+    # Skip TLS verification for internal CA
+    export GIT_SSL_NO_VERIFY=true
+
     name="authelia"
     discover="https://sso.${domain}/.well-known/openid-configuration"
     key="forgejo"
@@ -32,14 +35,16 @@
         --key "$key" \
         --secret "$secret" \
         --auto-discover-url "$discover" \
-        --scopes "openid email profile groups"
+        --scopes "openid email profile groups" \
+        --skip-local-2fa
     else
       echo "Updating OAuth provider $name (id=$id)"
       forgejo --config "$config" admin auth update-oauth --id "$id" \
         --key "$key" \
         --secret "$secret" \
         --auto-discover-url "$discover" \
-        --scopes "openid email profile groups"
+        --scopes "openid email profile groups" \
+        --skip-local-2fa
     fi
   '';
 in {
