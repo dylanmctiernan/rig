@@ -170,4 +170,11 @@ in {
       fi
     '';
   };
+
+  # Ensure grafana service can read the OIDC secret (owned by authelia-main:grafana)
+  systemd.services.grafana = {
+    serviceConfig = {
+      SupplementaryGroups = [ "grafana" ];
+    };
+  };
 }
