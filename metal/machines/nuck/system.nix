@@ -67,6 +67,12 @@ in
       "exportarr/radarr_api_key" = { };
       "exportarr/lidarr_api_key" = { };
       "exportarr/prowlarr_api_key" = { };
+
+      # Pinchflat Phoenix secret key base
+      "pinchflat/secret_key_base" = {
+        owner = "pinchflat";
+        mode = "0400";
+      };
     };
   };
 

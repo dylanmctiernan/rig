@@ -155,6 +155,9 @@ in
         "TZ=America/New_York"
       ];
 
+      # Load SECRET_KEY_BASE from sops secret (must be in KEY=VALUE format)
+      EnvironmentFile = config.sops.secrets."pinchflat/secret_key_base".path;
+
       ExecStart = "${pkgs.pinchflat}/bin/pinchflat start";
 
       Restart = "on-failure";
