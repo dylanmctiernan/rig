@@ -63,9 +63,6 @@ in
         # Limit speeds to reduce connection churn
         speed-limit-up = 100; # 100 KB/s upload limit
         speed-limit-up-enabled = true;
-
-        # Encryption to reduce bad peer connections
-        encryption = 2; # Require encryption
       };
     };
 
