@@ -3,14 +3,22 @@
   pkgs,
   lib,
   ...
-}: let
+}:
+let
   commonConfig = import ../../../../common-config.nix;
   domain = commonConfig.network.domain;
   grafana = commonConfig.lgtm.grafana;
   loki = commonConfig.lgtm.loki;
   tempo = commonConfig.lgtm.tempo;
   mimir = commonConfig.lgtm.mimir;
-in {
+
+  # Exportarr dashboard from upstream, patched to use our Mimir datasource
+  exportarrDashboard = pkgs.fetchurl {
+    url = "https://raw.githubusercontent.com/onedr0p/exportarr/master/examples/grafana/dashboard2.json";
+    sha256 = "0sgry76hl5qp9fnz9picmyns5b59kyvn7m41zx2vgspfad85ypmh";
+  };
+in
+{
   services.grafana = {
     enable = true;
 
@@ -141,6 +149,18 @@ in {
             path = "${grafana.stateDir}/dashboards";
           };
         }
+        {
+          name = "exportarr";
+          orgId = 1;
+          folder = "Exportarr";
+          type = "file";
+          disableDeletion = false;
+          updateIntervalSeconds = 60;
+          allowUiUpdates = false;
+          options = {
+            path = "${grafana.stateDir}/dashboards/exportarr";
+          };
+        }
       ];
     };
   };
@@ -148,7 +168,27 @@ in {
   # Create necessary directories and secrets
   systemd.tmpfiles.rules = [
     "d ${grafana.stateDir}/dashboards 0750 grafana grafana -"
+    "d ${grafana.stateDir}/dashboards/exportarr 0750 grafana grafana -"
   ];
+
+  # Copy and patch exportarr dashboard to use Mimir datasource
+  systemd.services.grafana-provision-exportarr = {
+    description = "Provision exportarr Grafana dashboard";
+    wantedBy = [ "multi-user.target" ];
+    before = [ "grafana.service" ];
+    after = [ "grafana-init-secrets.service" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+    };
+    script = ''
+      # Patch the dashboard to use our Mimir datasource by name
+      ${pkgs.gnused}/bin/sed 's/"type": "prometheus"/"type": "prometheus", "uid": "Mimir"/g' \
+        ${exportarrDashboard} > ${grafana.stateDir}/dashboards/exportarr/media.json
+      chown grafana:grafana ${grafana.stateDir}/dashboards/exportarr/media.json
+      chmod 0640 ${grafana.stateDir}/dashboards/exportarr/media.json
+    '';
+  };
 
   # Generate admin password if it doesn't exist
   systemd.services.grafana-init-secrets = {
