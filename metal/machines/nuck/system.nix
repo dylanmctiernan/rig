@@ -150,40 +150,11 @@ in {
 
   nixpkgs.config.allowUnfree = true;
 
-  # Overlay to use Transmission 4.1.0-beta.4 which fixes RPC freezing at torrent completion
+  # TODO: Upgrade to Transmission 4.1.0 when it's in nixpkgs stable
+  # This fixes RPC freezing at torrent completion due to "unrequested piece" message flood
   # See: https://github.com/transmission/transmission/issues/6983
   # Fix: https://github.com/transmission/transmission/pull/7866
-  nixpkgs.overlays = [
-    (final: prev: {
-      transmission_4 = prev.transmission_4.overrideAttrs (old: rec {
-        version = "4.1.0-beta.4";
-        src = prev.fetchFromGitHub {
-          owner = "transmission";
-          repo = "transmission";
-          rev = "4.1.0-beta.4";
-          hash = "sha256-nC++57FftFgXg9pN9VNTsurBJIzEr06k2511kWdsIBk=";
-        };
-        # Clear patches from 4.0.6 that don't apply to 4.1.0-beta.4
-        patches = [];
-        # Override postPatch - the gettext substituteInPlace pattern changed in 4.1.0
-        postPatch = ''
-          # Clean third-party libraries to ensure system ones are used.
-          pushd third-party
-          for f in *; do
-              if [[ ! $f =~ googletest|wildmat|fast_float|wide-integer|jsonsl ]]; then
-                  rm -r "$f"
-              fi
-          done
-          popd
-          rm -f \
-            cmake/FindFmt.cmake \
-            cmake/FindUtfCpp.cmake
-          # Upstream uses different config file name.
-          substituteInPlace CMakeLists.txt --replace-quiet 'find_package(UtfCpp)' 'find_package(utf8cpp)'
-        '';
-      });
-    })
-  ];
+  # For now, using conservative peer limits in media.nix to mitigate the issue
 
   nixpkgs.hostPlatform = "x86_64-linux";
 
