@@ -165,6 +165,22 @@ in {
         };
         # Clear patches from 4.0.6 that don't apply to 4.1.0-beta.4
         patches = [];
+        # Override postPatch - the gettext substituteInPlace pattern changed in 4.1.0
+        postPatch = ''
+          # Clean third-party libraries to ensure system ones are used.
+          pushd third-party
+          for f in *; do
+              if [[ ! $f =~ googletest|wildmat|fast_float|wide-integer|jsonsl ]]; then
+                  rm -r "$f"
+              fi
+          done
+          popd
+          rm -f \
+            cmake/FindFmt.cmake \
+            cmake/FindUtfCpp.cmake
+          # Upstream uses different config file name.
+          substituteInPlace CMakeLists.txt --replace-quiet 'find_package(UtfCpp)' 'find_package(utf8cpp)'
+        '';
       });
     })
   ];
