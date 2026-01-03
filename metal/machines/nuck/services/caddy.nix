@@ -12,6 +12,7 @@
 
   # Media services
   jellyfin = commonConfig.services.jellyfin;
+  jellyseerr = commonConfig.services.jellyseerr;
   transmission = commonConfig.services.transmission;
   sonarr = commonConfig.services.sonarr;
   radarr = commonConfig.services.radarr;
@@ -348,12 +349,40 @@ in {
         '';
       };
 
+      # Jellyseerr at requests.${domain}
+      "${jellyseerr.subdomain}.${domain}" = {
+        extraConfig = ''
+          tls internal
+
+          # Authelia forward auth
+          forward_auth localhost:${toString authelia.httpPort} {
+            uri /api/authz/forward-auth
+            copy_headers Remote-User Remote-Groups Remote-Email Remote-Name
+          }
+
+          reverse_proxy localhost:${toString jellyseerr.httpPort}
+
+          # Security headers
+          header {
+            Strict-Transport-Security "max-age=31536000"
+            X-Frame-Options "SAMEORIGIN"
+            X-Content-Type-Options "nosniff"
+            -Server
+          }
+
+          log {
+            output file /var/log/caddy/requests.${domain}.log
+            format json
+          }
+        '';
+      };
+
       # Root domain landing page
       "${hostname}.${domain}" = {
         extraConfig = ''
           tls internal
 
-          respond "${domain} Services\n\nAvailable:\n- https://sso.${domain} - Authelia Authentication\n- https://backup.${domain} - Backrest Backup UI\n- https://git.${domain} - Forgejo Git Repository\n- https://grafana.${domain} - Grafana Observability\n- https://status.${domain} - Uptime Kuma Monitoring\n\nMedia Services:\n- https://jellyfin.${domain} - Jellyfin Media Server\n- https://transmission.${domain} - Transmission BitTorrent\n- https://sonarr.${domain} - Sonarr TV Shows\n- https://radarr.${domain} - Radarr Movies\n- https://lidarr.${domain} - Lidarr Music\n- https://prowlarr.${domain} - Prowlarr Indexers\n- https://bazarr.${domain} - Bazarr Subtitles" 200
+          respond "${domain} Services\n\nAvailable:\n- https://sso.${domain} - Authelia Authentication\n- https://backup.${domain} - Backrest Backup UI\n- https://git.${domain} - Forgejo Git Repository\n- https://grafana.${domain} - Grafana Observability\n- https://status.${domain} - Uptime Kuma Monitoring\n\nMedia Services:\n- https://jellyfin.${domain} - Jellyfin Media Server\n- https://requests.${domain} - Jellyseerr Media Requests\n- https://transmission.${domain} - Transmission BitTorrent\n- https://sonarr.${domain} - Sonarr TV Shows\n- https://radarr.${domain} - Radarr Movies\n- https://lidarr.${domain} - Lidarr Music\n- https://prowlarr.${domain} - Prowlarr Indexers\n- https://bazarr.${domain} - Bazarr Subtitles" 200
 
           log {
             output file /var/log/caddy/${hostname}.${domain}.log

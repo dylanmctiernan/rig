@@ -78,6 +78,11 @@
       subdomain = "bazarr";
       stateDir = "/var/lib/bazarr";
     };
+    jellyseerr = {
+      httpPort = 5010;
+      subdomain = "requests";
+      stateDir = "/var/lib/jellyseerr";
+    };
   };
 
   # Infrastructure Services (5100-5199)

@@ -84,6 +84,14 @@ in {
       port = commonConfig.services.bazarr.httpPort;
       stateDir = commonConfig.services.bazarr.stateDir;
     };
+
+    # Jellyseerr - Media request management
+    jellyseerr = {
+      enable = true;
+      openFirewall = false;
+      port = commonConfig.services.jellyseerr.httpPort;
+      stateDir = commonConfig.services.jellyseerr.stateDir;
+    };
   };
 
   # Only open Transmission peer port for BitTorrent
