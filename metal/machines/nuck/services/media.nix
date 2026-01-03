@@ -43,9 +43,9 @@ in {
         rpc-host-whitelist = "transmission.mac.lab";
         rpc-host-whitelist-enabled = true;
 
-        # Very aggressive limits to prevent RPC blocking
-        peer-limit-global = 20;          # Max peers total (default 200)
-        peer-limit-per-torrent = 10;     # Max peers per torrent (default 50)
+        # Conservative limits to prevent RPC blocking (testing threshold)
+        peer-limit-global = 40;          # Max peers total (default 200)
+        peer-limit-per-torrent = 20;     # Max peers per torrent (default 50)
         download-queue-size = 1;         # Only 1 concurrent download
         seed-queue-size = 1;             # Only 1 concurrent seed
         download-queue-enabled = true;
