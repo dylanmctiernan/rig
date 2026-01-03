@@ -31,6 +31,12 @@ in {
 
       # VPN configuration - disabled for now as requested
       vpn.enable = false;
+
+      # Extra settings for reverse proxy access
+      extraSettings = {
+        rpc-host-whitelist = "transmission.mac.lab";
+        rpc-host-whitelist-enabled = true;
+      };
     };
 
     # Sonarr - TV show management
