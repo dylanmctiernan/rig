@@ -3,13 +3,21 @@
   pkgs,
   lib,
   ...
-}: let
+}:
+let
   commonConfig = import ../../../../common-config.nix;
   mimir = commonConfig.lgtm.mimir;
-in {
+in
+{
   # Note: NixOS Mimir module does not have a configurable dataDir option
   # It's hardcoded to /var/lib/mimir via systemd StateDirectory
   # All paths below must use /var/lib/mimir as the base
+
+  # Ensure mimir starts after network is fully online to avoid boot race conditions
+  systemd.services.mimir = {
+    after = [ "network-online.target" ];
+    wants = [ "network-online.target" ];
+  };
 
   services.mimir = {
     enable = true;
@@ -61,13 +69,13 @@ in {
       memberlist = {
         abort_if_cluster_join_fails = false;
         bind_port = mimir.memberlistPort;
-        join_members = [];
+        join_members = [ ];
       };
 
       distributor = {
         ring = {
           instance_addr = "127.0.0.1";
-          instance_interface_names = ["lo"];  # Use loopback for single-node
+          instance_interface_names = [ "lo" ]; # Use loopback for single-node
           kvstore = {
             store = "inmemory";
           };
@@ -77,7 +85,7 @@ in {
       ingester = {
         ring = {
           instance_addr = "127.0.0.1";
-          instance_interface_names = ["lo"];  # Use loopback for single-node
+          instance_interface_names = [ "lo" ]; # Use loopback for single-node
           kvstore = {
             store = "inmemory";
           };

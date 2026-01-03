@@ -3,13 +3,21 @@
   pkgs,
   lib,
   ...
-}: let
+}:
+let
   commonConfig = import ../../../../common-config.nix;
   tempo = commonConfig.lgtm.tempo;
-in {
+in
+{
   # Note: NixOS Tempo module does not have a configurable dataDir option
   # It's hardcoded to /var/lib/tempo via systemd StateDirectory
   # All paths below must use /var/lib/tempo as the base
+
+  # Ensure tempo starts after network is fully online to avoid boot race conditions
+  systemd.services.tempo = {
+    after = [ "network-online.target" ];
+    wants = [ "network-online.target" ];
+  };
 
   services.tempo = {
     enable = true;
@@ -79,7 +87,11 @@ in {
       overrides = {
         defaults = {
           metrics_generator = {
-            processors = ["service-graphs" "span-metrics" "local-blocks"];
+            processors = [
+              "service-graphs"
+              "span-metrics"
+              "local-blocks"
+            ];
           };
         };
       };

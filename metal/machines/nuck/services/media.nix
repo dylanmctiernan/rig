@@ -121,6 +121,18 @@ in
 
   # Transmission peer port not needed on host firewall - traffic goes through VPN namespace
 
+  # WireGuard VPN service can fail at boot if endpoint isn't reachable yet - add restart policy
+  systemd.services.wg = {
+    serviceConfig = {
+      Restart = "on-failure";
+      RestartSec = "10s";
+    };
+    unitConfig = {
+      StartLimitIntervalSec = "300";
+      StartLimitBurst = "10";
+    };
+  };
+
   # Grant Jellyfin access to GPU for hardware transcoding (Intel Quick Sync)
   users.users.jellyfin.extraGroups = [
     "video"
