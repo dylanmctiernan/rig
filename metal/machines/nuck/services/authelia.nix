@@ -158,7 +158,11 @@ in {
             authorization_policy = "one_factor";
             claims_policy = "default";
 
-            redirect_uris = ["https://jellyfin.${domain}/sso/OID/redirect/authelia"];
+            # Both HTTP and HTTPS redirect URIs - Jellyfin behind reverse proxy may send HTTP
+            redirect_uris = [
+              "https://jellyfin.${domain}/sso/OID/redirect/authelia"
+              "http://jellyfin.${domain}/sso/OID/redirect/authelia"
+            ];
 
             scopes = ["openid" "profile" "groups" "email"];
             response_types = ["code"];
