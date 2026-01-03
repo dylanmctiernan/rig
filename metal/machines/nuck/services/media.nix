@@ -63,6 +63,10 @@ in
         # Limit speeds to reduce connection churn
         speed-limit-up = 100; # 100 KB/s upload limit
         speed-limit-up-enabled = true;
+
+        # Remove torrents after seeding completes (ratio of 0 = immediate)
+        ratio-limit = 0;
+        ratio-limit-enabled = true;
       };
     };
 
