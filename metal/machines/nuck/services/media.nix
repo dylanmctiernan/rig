@@ -43,11 +43,11 @@ in {
         rpc-host-whitelist = "transmission.mac.lab";
         rpc-host-whitelist-enabled = true;
 
-        # Aggressively limit connections to prevent RPC blocking
-        peer-limit-global = 50;          # Max peers total (default 200)
-        peer-limit-per-torrent = 20;     # Max peers per torrent (default 50)
-        download-queue-size = 2;         # Max concurrent downloads (default 5)
-        seed-queue-size = 2;             # Max concurrent seeds (default 10)
+        # Very aggressive limits to prevent RPC blocking
+        peer-limit-global = 20;          # Max peers total (default 200)
+        peer-limit-per-torrent = 10;     # Max peers per torrent (default 50)
+        download-queue-size = 1;         # Only 1 concurrent download
+        seed-queue-size = 1;             # Only 1 concurrent seed
         download-queue-enabled = true;
         seed-queue-enabled = true;
 
@@ -58,9 +58,12 @@ in {
         scrape-paused-torrents-enabled = false;
         port-forwarding-enabled = false;
 
-        # Limit upload to reduce outbound connection churn
-        speed-limit-up = 500;            # 500 KB/s upload limit
+        # Limit speeds to reduce connection churn
+        speed-limit-up = 100;            # 100 KB/s upload limit
         speed-limit-up-enabled = true;
+
+        # Encryption to reduce bad peer connections
+        encryption = 2;                  # Require encryption
       };
     };
 
