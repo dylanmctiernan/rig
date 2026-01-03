@@ -62,18 +62,11 @@ in
       };
 
       # Exportarr API keys for *arr apps metrics
-      "exportarr/sonarr_api_key" = {
-        owner = "exportarr-sonarr-exporter";
-      };
-      "exportarr/radarr_api_key" = {
-        owner = "exportarr-radarr-exporter";
-      };
-      "exportarr/lidarr_api_key" = {
-        owner = "exportarr-lidarr-exporter";
-      };
-      "exportarr/prowlarr_api_key" = {
-        owner = "exportarr-prowlarr-exporter";
-      };
+      # Using root as owner since exportarr runs as root by default when reading apiKeyFile
+      "exportarr/sonarr_api_key" = { };
+      "exportarr/radarr_api_key" = { };
+      "exportarr/lidarr_api_key" = { };
+      "exportarr/prowlarr_api_key" = { };
     };
   };
 
