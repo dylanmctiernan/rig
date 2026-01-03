@@ -63,16 +63,16 @@ in
 
       # Exportarr API keys for *arr apps metrics
       "exportarr/sonarr_api_key" = {
-        owner = "exportarr-sonarr";
+        owner = "exportarr-sonarr-exporter";
       };
       "exportarr/radarr_api_key" = {
-        owner = "exportarr-radarr";
+        owner = "exportarr-radarr-exporter";
       };
       "exportarr/lidarr_api_key" = {
-        owner = "exportarr-lidarr";
+        owner = "exportarr-lidarr-exporter";
       };
       "exportarr/prowlarr_api_key" = {
-        owner = "exportarr-prowlarr";
+        owner = "exportarr-prowlarr-exporter";
       };
     };
   };
