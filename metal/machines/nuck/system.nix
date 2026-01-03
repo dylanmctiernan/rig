@@ -163,6 +163,8 @@ in {
           rev = "4.1.0-beta.4";
           hash = "sha256-nC++57FftFgXg9pN9VNTsurBJIzEr06k2511kWdsIBk=";
         };
+        # Clear patches from 4.0.6 that don't apply to 4.1.0-beta.4
+        patches = [];
       });
     })
   ];
