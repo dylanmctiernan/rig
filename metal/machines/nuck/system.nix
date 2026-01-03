@@ -128,11 +128,6 @@ in {
 
   nixpkgs.hostPlatform = "x86_64-linux";
 
-  # Trust Caddy's internal CA for local HTTPS
-  security.pki.certificateFiles = [
-    "/var/lib/caddy/.local/share/caddy/pki/authorities/local/root.crt"
-  ];
-
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
   # on your system were taken. It‘s perfectly fine and recommended to leave
