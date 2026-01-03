@@ -50,6 +50,12 @@ in {
         seed-queue-size = 5;            # Max concurrent seeds (default 10)
         download-queue-enabled = true;
         seed-queue-enabled = true;
+
+        # Reduce tracker/DHT load to prevent RPC blocking
+        dht-enabled = false;             # Disable DHT (uses trackers only)
+        lpd-enabled = false;             # Disable local peer discovery
+        pex-enabled = false;             # Disable peer exchange
+        scrape-paused-torrents-enabled = false;
       };
     };
 
