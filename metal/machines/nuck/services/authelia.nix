@@ -1,4 +1,5 @@
-{config, pkgs, ...}: let
+{ config, pkgs, ... }:
+let
   commonConfig = import ../../../common-config.nix;
   domain = commonConfig.network.domain;
   authelia = commonConfig.infrastructure.authelia;
@@ -13,7 +14,8 @@
         groups:
           - admins
   '';
-in {
+in
+{
   # Authelia - Authentication and authorization server
   services.authelia.instances.main = {
     enable = true;
@@ -94,14 +96,24 @@ in {
         };
 
         cors = {
-          endpoints = ["authorization" "token" "revocation" "introspection"];
+          endpoints = [
+            "authorization"
+            "token"
+            "revocation"
+            "introspection"
+          ];
           allowed_origins_from_client_redirect_uris = true;
         };
 
         # Claims policies - include groups in ID token for role mapping
         claims_policies = {
           default = {
-            id_token = ["groups" "email" "preferred_username" "name"];
+            id_token = [
+              "groups"
+              "email"
+              "preferred_username"
+              "name"
+            ];
           };
         };
 
@@ -117,12 +129,25 @@ in {
             authorization_policy = "one_factor";
             claims_policy = "default";
 
-            redirect_uris = ["https://git.${domain}/user/oauth2/authelia/callback"];
+            redirect_uris = [ "https://git.${domain}/user/oauth2/authelia/callback" ];
 
-            scopes = ["openid" "profile" "groups" "email" "offline_access"];
-            response_types = ["code"];
-            grant_types = ["refresh_token" "authorization_code"];
-            response_modes = ["form_post" "query" "fragment"];
+            scopes = [
+              "openid"
+              "profile"
+              "groups"
+              "email"
+              "offline_access"
+            ];
+            response_types = [ "code" ];
+            grant_types = [
+              "refresh_token"
+              "authorization_code"
+            ];
+            response_modes = [
+              "form_post"
+              "query"
+              "fragment"
+            ];
 
             userinfo_signed_response_alg = "none";
           }
@@ -139,12 +164,25 @@ in {
             # Match Grafana's default authentication method
             token_endpoint_auth_method = "client_secret_basic";
 
-            redirect_uris = ["https://grafana.${domain}/login/generic_oauth"];
+            redirect_uris = [ "https://grafana.${domain}/login/generic_oauth" ];
 
-            scopes = ["openid" "profile" "groups" "email" "offline_access"];
-            response_types = ["code"];
-            grant_types = ["refresh_token" "authorization_code"];
-            response_modes = ["form_post" "query" "fragment"];
+            scopes = [
+              "openid"
+              "profile"
+              "groups"
+              "email"
+              "offline_access"
+            ];
+            response_types = [ "code" ];
+            grant_types = [
+              "refresh_token"
+              "authorization_code"
+            ];
+            response_modes = [
+              "form_post"
+              "query"
+              "fragment"
+            ];
 
             userinfo_signed_response_alg = "none";
           }
@@ -164,13 +202,17 @@ in {
             # Both HTTP and HTTPS redirect URIs - Jellyfin behind reverse proxy may send HTTP
             redirect_uris = [
               "https://jellyfin.${domain}/sso/OID/redirect/authelia"
-              "http://jellyfin.${domain}/sso/OID/redirect/authelia"
             ];
 
-            scopes = ["openid" "profile" "groups" "email"];
-            response_types = ["code"];
-            grant_types = ["authorization_code"];
-            response_modes = ["query"];
+            scopes = [
+              "openid"
+              "profile"
+              "groups"
+              "email"
+            ];
+            response_types = [ "code" ];
+            grant_types = [ "authorization_code" ];
+            response_modes = [ "query" ];
 
             userinfo_signed_response_alg = "none";
           }
@@ -187,12 +229,17 @@ in {
             token_endpoint_auth_method = "client_secret_post";
             require_pkce = false;
 
-            redirect_uris = ["https://requests.${domain}/login?provider=authelia&callback=true"];
+            redirect_uris = [ "https://requests.${domain}/login?provider=authelia&callback=true" ];
 
-            scopes = ["openid" "profile" "groups" "email"];
-            response_types = ["code"];
-            grant_types = ["authorization_code"];
-            response_modes = ["query"];
+            scopes = [
+              "openid"
+              "profile"
+              "groups"
+              "email"
+            ];
+            response_types = [ "code" ];
+            grant_types = [ "authorization_code" ];
+            response_modes = [ "query" ];
 
             userinfo_signed_response_alg = "none";
           }
