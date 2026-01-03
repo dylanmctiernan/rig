@@ -151,6 +151,8 @@ in
 
       Environment = [
         "PORT=${toString commonConfig.services.pinchflat.httpPort}"
+        "CONFIG_PATH=${commonConfig.services.pinchflat.stateDir}"
+        "MEDIA_PATH=${commonConfig.machines.nuck.mediaDir}/youtube"
         "ENABLE_PROMETHEUS=true"
         "TZ=America/New_York"
       ];
