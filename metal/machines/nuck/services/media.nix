@@ -35,6 +35,9 @@ in {
       peerPort = commonConfig.services.transmission.peerPort;
       stateDir = commonConfig.services.transmission.stateDir;
 
+      # Enable flood ui
+      flood.enable = true;
+
       # Route Transmission through Mullvad VPN
       vpn.enable = true;
 
