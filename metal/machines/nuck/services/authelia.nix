@@ -83,6 +83,12 @@ in {
         enable_client_debug_messages = true;
         enforce_pkce = "public_clients_only";
 
+        # Enable Pushed Authorization Requests (PAR) for Jellyfin
+        pushed_authorizations = {
+          enforce = false;  # Don't require all clients to use PAR
+          lifespan = "5m";
+        };
+
         lifespans = {
           access_token = "1h";
           authorize_code = "1m";
