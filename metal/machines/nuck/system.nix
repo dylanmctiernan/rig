@@ -150,6 +150,23 @@ in {
 
   nixpkgs.config.allowUnfree = true;
 
+  # Overlay to use Transmission 4.1.0-beta.4 which fixes RPC freezing at torrent completion
+  # See: https://github.com/transmission/transmission/issues/6983
+  # Fix: https://github.com/transmission/transmission/pull/7866
+  nixpkgs.overlays = [
+    (final: prev: {
+      transmission_4 = prev.transmission_4.overrideAttrs (old: rec {
+        version = "4.1.0-beta.4";
+        src = prev.fetchFromGitHub {
+          owner = "transmission";
+          repo = "transmission";
+          rev = "4.1.0-beta.4";
+          hash = "sha256-nC++57FftFgXg9pN9VNTsurBJIzEr06k2511kWdsIBk=";
+        };
+      });
+    })
+  ];
+
   nixpkgs.hostPlatform = "x86_64-linux";
 
   # This value determines the NixOS release from which the default
