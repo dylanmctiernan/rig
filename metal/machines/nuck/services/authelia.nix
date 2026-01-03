@@ -158,6 +158,9 @@ in {
             authorization_policy = "one_factor";
             claims_policy = "default";
 
+            # Jellyfin SSO plugin uses client_secret_post
+            token_endpoint_auth_method = "client_secret_post";
+
             # Both HTTP and HTTPS redirect URIs - Jellyfin behind reverse proxy may send HTTP
             redirect_uris = [
               "https://jellyfin.${domain}/sso/OID/redirect/authelia"
