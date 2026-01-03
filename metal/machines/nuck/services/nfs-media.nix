@@ -41,5 +41,6 @@ in
     "d ${commonConfig.machines.nuck.mediaDir}/music 0755 root root -"
     "d ${commonConfig.machines.nuck.mediaDir}/downloads 0755 root root -"
     "d ${commonConfig.machines.nuck.mediaDir}/torrents 0755 root root -"
+    "d ${commonConfig.machines.nuck.mediaDir}/youtube 0755 root root -"
   ];
 }

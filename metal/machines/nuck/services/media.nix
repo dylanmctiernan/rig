@@ -1,4 +1,4 @@
-{ config, ... }:
+{ config, pkgs, ... }:
 let
   commonConfig = import ../../../common-config.nix;
 in
@@ -119,4 +119,56 @@ in
     "video"
     "render"
   ];
+
+  # Pinchflat - YouTube content downloader
+  # Downloads YouTube videos from channels/playlists on a schedule
+  # Documentation: https://github.com/kieraneglin/pinchflat
+
+  environment.systemPackages = [ pkgs.pinchflat ];
+
+  users.users.pinchflat = {
+    isSystemUser = true;
+    group = "pinchflat";
+    home = commonConfig.services.pinchflat.stateDir;
+    createHome = true;
+  };
+
+  users.groups.pinchflat = { };
+
+  systemd.services.pinchflat = {
+    description = "Pinchflat - YouTube content downloader";
+    after = [
+      "network.target"
+      "mnt-media.mount"
+    ];
+    wantedBy = [ "multi-user.target" ];
+
+    serviceConfig = {
+      Type = "simple";
+      User = "pinchflat";
+      Group = "pinchflat";
+      WorkingDirectory = commonConfig.services.pinchflat.stateDir;
+
+      Environment = [
+        "PORT=${toString commonConfig.services.pinchflat.httpPort}"
+        "ENABLE_PROMETHEUS=true"
+        "TZ=America/New_York"
+      ];
+
+      ExecStart = "${pkgs.pinchflat}/bin/pinchflat";
+
+      Restart = "on-failure";
+      RestartSec = "10s";
+
+      # Security hardening
+      NoNewPrivileges = true;
+      PrivateTmp = true;
+      ProtectSystem = "strict";
+      ProtectHome = true;
+      ReadWritePaths = [
+        commonConfig.services.pinchflat.stateDir
+        "${commonConfig.machines.nuck.mediaDir}/youtube"
+      ];
+    };
+  };
 }

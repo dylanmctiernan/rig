@@ -83,6 +83,11 @@
       subdomain = "requests";
       stateDir = "/var/lib/jellyseerr";
     };
+    pinchflat = {
+      httpPort = 5011;
+      subdomain = "pinchflat";
+      stateDir = "/var/lib/pinchflat";
+    };
     # Exportarr metrics exporters (5020-5029)
     exportarr = {
       sonarrPort = 5020;

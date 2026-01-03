@@ -193,6 +193,15 @@ in
         job_name = "prowlarr"
       }
 
+      // Pinchflat metrics
+      prometheus.scrape "pinchflat" {
+        targets = [{
+          __address__ = "127.0.0.1:${toString commonConfig.services.pinchflat.httpPort}",
+        }]
+        metrics_path = "/metrics"
+        forward_to = [prometheus.remote_write.mimir.receiver]
+      }
+
       // Node exporter for system metrics
       // Note: systemd collector disabled - requires D-Bus access that conflicts with systemd hardening
       prometheus.exporter.unix "local" {

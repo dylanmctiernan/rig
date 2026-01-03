@@ -1,4 +1,5 @@
-{...}: let
+{ ... }:
+let
   commonConfig = import ../../../common-config.nix;
   domain = commonConfig.network.domain;
   hostname = commonConfig.machines.nuck.hostname;
@@ -12,6 +13,7 @@
 
   # Media services
   jellyfin = commonConfig.services.jellyfin;
+  pinchflat = commonConfig.services.pinchflat;
   jellyseerr = commonConfig.services.jellyseerr;
   transmission = commonConfig.services.transmission;
   sonarr = commonConfig.services.sonarr;
@@ -19,7 +21,8 @@
   lidarr = commonConfig.services.lidarr;
   prowlarr = commonConfig.services.prowlarr;
   bazarr = commonConfig.services.bazarr;
-in {
+in
+{
   # Caddy web server with ${domain} subdomain routing
   services.caddy = {
     enable = true;
@@ -349,6 +352,34 @@ in {
         '';
       };
 
+      # Pinchflat at pinchflat.${domain}
+      "${pinchflat.subdomain}.${domain}" = {
+        extraConfig = ''
+          tls internal
+
+          # Authelia forward auth
+          forward_auth localhost:${toString authelia.httpPort} {
+            uri /api/authz/forward-auth
+            copy_headers Remote-User Remote-Groups Remote-Email Remote-Name
+          }
+
+          reverse_proxy localhost:${toString pinchflat.httpPort}
+
+          # Security headers
+          header {
+            Strict-Transport-Security "max-age=31536000"
+            X-Frame-Options "SAMEORIGIN"
+            X-Content-Type-Options "nosniff"
+            -Server
+          }
+
+          log {
+            output file /var/log/caddy/pinchflat.${domain}.log
+            format json
+          }
+        '';
+      };
+
       # Jellyseerr at requests.${domain}
       # No Authelia forward auth - Jellyseerr uses OIDC for authentication
       "${jellyseerr.subdomain}.${domain}" = {
@@ -375,14 +406,15 @@ in {
       # Root domain landing page
       "${hostname}.${domain}" = {
         extraConfig = ''
-          tls internal
+                    tls internal
 
-          respond "${domain} Services\n\nAvailable:\n- https://sso.${domain} - Authelia Authentication\n- https://backup.${domain} - Backrest Backup UI\n- https://git.${domain} - Forgejo Git Repository\n- https://grafana.${domain} - Grafana Observability\n- https://status.${domain} - Uptime Kuma Monitoring\n\nMedia Services:\n- https://jellyfin.${domain} - Jellyfin Media Server\n- https://requests.${domain} - Jellyseerr Media Requests\n- https://transmission.${domain} - Transmission BitTorrent\n- https://sonarr.${domain} - Sonarr TV Shows\n- https://radarr.${domain} - Radarr Movies\n- https://lidarr.${domain} - Lidarr Music\n- https://prowlarr.${domain} - Prowlarr Indexers\n- https://bazarr.${domain} - Bazarr Subtitles" 200
+                    respond "${domain} Services\n\nAvailable:\n- https://sso.${domain} - Authelia Authentication\n- https://backup.${domain} - Backrest Backup UI\n- https://git.${domain} - Forgejo Git Repository\n- https://grafana.${domain} - Grafana Observability\n- https://status.${domain} - Uptime Kuma Monitoring\n\nMedia Services:\n- https://jellyfin.${domain} - Jellyfin Media Server\n- https://requests.${domain} - Jellyseerr Media Requests\n- https://transmission.${domain} - Transmission BitTorrent\n- https://sonarr.${domain} - Sonarr TV Shows\n- https://radarr.${domain} - Radarr Movies\n- https://lidarr.${domain} - Lidarr Music\n- https://prowlarr.${domain} - Prowlarr Indexers\n- https://bazarr.${domain} - Bazarr Subtitles
+          - https://pinchflat.${domain} - Pinchflat YouTube" 200
 
-          log {
-            output file /var/log/caddy/${hostname}.${domain}.log
-            format json
-          }
+                    log {
+                      output file /var/log/caddy/${hostname}.${domain}.log
+                      format json
+                    }
         '';
       };
     };
@@ -394,5 +426,5 @@ in {
   ];
 
   # Firewall - Open HTTPS port
-  networking.firewall.allowedTCPPorts = [443];
+  networking.firewall.allowedTCPPorts = [ 443 ];
 }
