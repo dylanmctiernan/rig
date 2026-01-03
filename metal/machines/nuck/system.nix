@@ -124,6 +124,24 @@ in {
 
   virtualisation.docker.enable = true;
 
+  # Trust Caddy's local CA for internal TLS
+  # This is the Caddy Local Authority root cert generated on 2024-12-05, valid until 2034-10-14
+  security.pki.certificates = [
+    ''
+      -----BEGIN CERTIFICATE-----
+      MIIBpDCCAUqgAwIBAgIRANDbrkj64zTtU/NxK8CTgOcwCgYIKoZIzj0EAwIwMDEu
+      MCwGA1UEAxMlQ2FkZHkgTG9jYWwgQXV0aG9yaXR5IC0gMjAyNCBFQ0MgUm9vdDAe
+      Fw0yNDEyMDUyMjI3NTlaFw0zNDEwMTQyMjI3NTlaMDAxLjAsBgNVBAMTJUNhZGR5
+      IExvY2FsIEF1dGhvcml0eSAtIDIwMjQgRUNDIFJvb3QwWTATBgcqhkjOPQIBBggq
+      hkjOPQMBBwNCAAS2Oo6hUBVKungtXigb+abpjBNxFEI4HsoIU8GAVKv+393dkvqs
+      0Z6BhozR67O6DoxgNQ1/Ookc/9SCOiiBnNPxo0UwQzAOBgNVHQ8BAf8EBAMCAQYw
+      EgYDVR0TAQH/BAgwBgEB/wIBATAdBgNVHQ4EFgQUpHuEie34t1AQs2FLSVtN+df1
+      GkswCgYIKoZIzj0EAwIDSAAwRQIgase+EfFpJrQUmeXA8r0JXUELIiV5Qnwnansw
+      /t5fhr0CIQDY2jlAx4pH3/x5GsB86h4YsvRhBIO6QhkXc8oz3mNHTg==
+      -----END CERTIFICATE-----
+    ''
+  ];
+
   nixpkgs.config.allowUnfree = true;
 
   nixpkgs.hostPlatform = "x86_64-linux";
