@@ -47,9 +47,9 @@ in {
         rpc-host-whitelist-enabled = true;
 
         # Conservative limits to prevent RPC blocking (testing threshold)
-        peer-limit-global = 40;          # Max peers total (default 200)
+        peer-limit-global = 50;          # Max peers total (default 200)
         peer-limit-per-torrent = 20;     # Max peers per torrent (default 50)
-        download-queue-size = 1;         # Only 1 concurrent download
+        download-queue-size = 5;         # Only 1 concurrent download
         seed-queue-size = 1;             # Only 1 concurrent seed
         download-queue-enabled = true;
         seed-queue-enabled = true;
