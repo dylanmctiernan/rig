@@ -38,10 +38,18 @@ in {
       # Route Transmission through Mullvad VPN
       vpn.enable = true;
 
-      # Extra settings for reverse proxy access
+      # Extra settings for reverse proxy access and performance
       extraSettings = {
         rpc-host-whitelist = "transmission.mac.lab";
         rpc-host-whitelist-enabled = true;
+
+        # Limit connections to prevent RPC from becoming unresponsive
+        peer-limit-global = 100;        # Max peers total (default 200)
+        peer-limit-per-torrent = 30;    # Max peers per torrent (default 50)
+        download-queue-size = 3;        # Max concurrent downloads (default 5)
+        seed-queue-size = 5;            # Max concurrent seeds (default 10)
+        download-queue-enabled = true;
+        seed-queue-enabled = true;
       };
     };
 
