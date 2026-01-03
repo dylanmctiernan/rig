@@ -5,9 +5,11 @@
   config,
   pkgs,
   ...
-}: let
+}:
+let
   commonConfig = import ../../common-config.nix;
-in {
+in
+{
   # Sops secrets configuration
   sops = {
     defaultSopsFile = ../../../secrets.yaml;
@@ -58,6 +60,20 @@ in {
         owner = "root";
         mode = "0600";
       };
+
+      # Exportarr API keys for *arr apps metrics
+      "exportarr/sonarr_api_key" = {
+        owner = "exportarr-sonarr";
+      };
+      "exportarr/radarr_api_key" = {
+        owner = "exportarr-radarr";
+      };
+      "exportarr/lidarr_api_key" = {
+        owner = "exportarr-lidarr";
+      };
+      "exportarr/prowlarr_api_key" = {
+        owner = "exportarr-prowlarr";
+      };
     };
   };
 
@@ -76,7 +92,10 @@ in {
   # Users
   users.users.dylan = {
     isNormalUser = true;
-    extraGroups = ["wheel" "docker"];
+    extraGroups = [
+      "wheel"
+      "docker"
+    ];
     openssh.authorizedKeys.keys = [
       commonConfig.dylan.sshPublicKey
     ];
@@ -110,8 +129,8 @@ in {
   # Firewall configuration
   networking.firewall = {
     enable = true;
-    trustedInterfaces = ["tailscale0"];
-    allowedUDPPorts = [config.services.tailscale.port];
+    trustedInterfaces = [ "tailscale0" ];
+    allowedUDPPorts = [ config.services.tailscale.port ];
     # SSH is allowed via services.openssh.openFirewall
   };
 
@@ -124,7 +143,7 @@ in {
     # Accept DNS queries from other tailscale devices
     extraUpFlags = [
       "--advertise-tags=tag:dns"
-      "--accept-dns=false"  # Don't use tailscale's DNS, use our own CoreDNS
+      "--accept-dns=false" # Don't use tailscale's DNS, use our own CoreDNS
     ];
   };
 

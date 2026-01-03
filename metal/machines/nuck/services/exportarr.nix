@@ -51,23 +51,4 @@ in
     };
   };
 
-  # Secrets for API keys
-  sops.secrets = {
-    "exportarr/sonarr_api_key" = {
-      sopsFile = ../../../secrets.yaml;
-      owner = "exportarr-sonarr";
-    };
-    "exportarr/radarr_api_key" = {
-      sopsFile = ../../../secrets.yaml;
-      owner = "exportarr-radarr";
-    };
-    "exportarr/lidarr_api_key" = {
-      sopsFile = ../../../secrets.yaml;
-      owner = "exportarr-lidarr";
-    };
-    "exportarr/prowlarr_api_key" = {
-      sopsFile = ../../../secrets.yaml;
-      owner = "exportarr-prowlarr";
-    };
-  };
 }
