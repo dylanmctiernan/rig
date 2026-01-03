@@ -52,6 +52,12 @@ in {
         owner = "root";
         # default path will be /run/secrets/..., sufficient for tailscale module
       };
+
+      # Mullvad VPN WireGuard config for transmission
+      "mullvad/wg_conf" = {
+        owner = "root";
+        mode = "0600";
+      };
     };
   };
 

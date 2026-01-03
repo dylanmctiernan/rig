@@ -7,6 +7,12 @@ in {
   nixarr = {
     enable = true;
 
+    # Mullvad VPN for Transmission
+    vpn = {
+      enable = true;
+      wgConf = config.sops.secrets."mullvad/wg_conf".path;
+    };
+
     # Media root - points to NFS mount from Synology NAS
     mediaDir = commonConfig.machines.nuck.mediaDir;
 
@@ -29,8 +35,8 @@ in {
       peerPort = commonConfig.services.transmission.peerPort;
       stateDir = commonConfig.services.transmission.stateDir;
 
-      # VPN configuration - disabled for now as requested
-      vpn.enable = false;
+      # Route Transmission through Mullvad VPN
+      vpn.enable = true;
 
       # Extra settings for reverse proxy access
       extraSettings = {
