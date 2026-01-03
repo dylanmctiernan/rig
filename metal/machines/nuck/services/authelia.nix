@@ -158,8 +158,8 @@ in {
             authorization_policy = "one_factor";
             claims_policy = "default";
 
-            # Jellyfin SSO plugin uses client_secret_basic (default HTTP Basic auth)
-            token_endpoint_auth_method = "client_secret_basic";
+            # Jellyfin SSO plugin uses different auth methods for different endpoints
+            token_endpoint_auth_method = "client_secret_post";
             pushed_authorization_request_endpoint_auth_method = "client_secret_basic";
 
             # Both HTTP and HTTPS redirect URIs - Jellyfin behind reverse proxy may send HTTP
