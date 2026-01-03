@@ -160,6 +160,8 @@ in
       # Load SECRET_KEY_BASE from sops secret (must be in KEY=VALUE format)
       EnvironmentFile = config.sops.secrets."pinchflat/secret_key_base".path;
 
+      # Run database migrations before starting (idempotent)
+      ExecStartPre = "${pkgs.pinchflat}/bin/pinchflat eval 'Pinchflat.Release.migrate'";
       ExecStart = "${pkgs.pinchflat}/bin/pinchflat start";
 
       Restart = "on-failure";
