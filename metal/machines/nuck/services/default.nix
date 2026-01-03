@@ -1,4 +1,5 @@
-{...}: {
+{ ... }:
+{
   imports = [
     ./coredns.nix
     ./caddy.nix
@@ -9,5 +10,6 @@
     ./lgtm
     ./nfs-media.nix
     ./media.nix
+    ./exportarr.nix
   ];
 }

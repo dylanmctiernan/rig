@@ -3,14 +3,16 @@
   pkgs,
   lib,
   ...
-}: let
+}:
+let
   commonConfig = import ../../../../common-config.nix;
   alloy = commonConfig.lgtm.alloy;
   loki = commonConfig.lgtm.loki;
   tempo = commonConfig.lgtm.tempo;
   mimir = commonConfig.lgtm.mimir;
 
-in {
+in
+{
   services.alloy = {
     enable = true;
 
@@ -155,58 +157,40 @@ in {
         forward_to = [prometheus.remote_write.mimir.receiver]
       }
 
-      // Sonarr metrics
+      // Sonarr metrics via exportarr
       prometheus.scrape "sonarr" {
         targets = [{
-          __address__ = "127.0.0.1:${toString commonConfig.services.sonarr.httpPort}",
+          __address__ = "127.0.0.1:${toString commonConfig.services.exportarr.sonarrPort}",
         }]
-        metrics_path = "/metrics"
         forward_to = [prometheus.remote_write.mimir.receiver]
+        job_name = "sonarr"
       }
 
-      // Radarr metrics
+      // Radarr metrics via exportarr
       prometheus.scrape "radarr" {
         targets = [{
-          __address__ = "127.0.0.1:${toString commonConfig.services.radarr.httpPort}",
+          __address__ = "127.0.0.1:${toString commonConfig.services.exportarr.radarrPort}",
         }]
-        metrics_path = "/metrics"
         forward_to = [prometheus.remote_write.mimir.receiver]
+        job_name = "radarr"
       }
 
-      // Lidarr metrics
+      // Lidarr metrics via exportarr
       prometheus.scrape "lidarr" {
         targets = [{
-          __address__ = "127.0.0.1:${toString commonConfig.services.lidarr.httpPort}",
+          __address__ = "127.0.0.1:${toString commonConfig.services.exportarr.lidarrPort}",
         }]
-        metrics_path = "/metrics"
         forward_to = [prometheus.remote_write.mimir.receiver]
+        job_name = "lidarr"
       }
 
-      // Prowlarr metrics
+      // Prowlarr metrics via exportarr
       prometheus.scrape "prowlarr" {
         targets = [{
-          __address__ = "127.0.0.1:${toString commonConfig.services.prowlarr.httpPort}",
+          __address__ = "127.0.0.1:${toString commonConfig.services.exportarr.prowlarrPort}",
         }]
-        metrics_path = "/metrics"
         forward_to = [prometheus.remote_write.mimir.receiver]
-      }
-
-      // Bazarr metrics
-      prometheus.scrape "bazarr" {
-        targets = [{
-          __address__ = "127.0.0.1:${toString commonConfig.services.bazarr.httpPort}",
-        }]
-        metrics_path = "/metrics"
-        forward_to = [prometheus.remote_write.mimir.receiver]
-      }
-
-      // Transmission metrics (via transmission-exporter if available)
-      prometheus.scrape "transmission" {
-        targets = [{
-          __address__ = "127.0.0.1:${toString commonConfig.services.transmission.httpPort}",
-        }]
-        metrics_path = "/metrics"
-        forward_to = [prometheus.remote_write.mimir.receiver]
+        job_name = "prowlarr"
       }
 
       // Node exporter for system metrics

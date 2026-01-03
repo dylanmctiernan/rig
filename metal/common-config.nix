@@ -83,6 +83,13 @@
       subdomain = "requests";
       stateDir = "/var/lib/jellyseerr";
     };
+    # Exportarr metrics exporters (5020-5029)
+    exportarr = {
+      sonarrPort = 5020;
+      radarrPort = 5021;
+      lidarrPort = 5022;
+      prowlarrPort = 5023;
+    };
   };
 
   # Infrastructure Services (5100-5199)
