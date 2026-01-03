@@ -1,6 +1,8 @@
-{config, ...}: let
+{ config, ... }:
+let
   commonConfig = import ../../../common-config.nix;
-in {
+in
+{
   # Nixarr media server stack configuration
   # Documentation: https://nixarr.com/
 
@@ -35,9 +37,6 @@ in {
       peerPort = commonConfig.services.transmission.peerPort;
       stateDir = commonConfig.services.transmission.stateDir;
 
-      # Enable flood ui
-      flood.enable = true;
-
       # Route Transmission through Mullvad VPN
       vpn.enable = true;
 
@@ -47,10 +46,10 @@ in {
         rpc-host-whitelist-enabled = true;
 
         # Conservative limits to prevent RPC blocking (testing threshold)
-        peer-limit-global = 200;          # Max peers total (default 200)
-        peer-limit-per-torrent = 50;     # Max peers per torrent (default 50)
-        download-queue-size = 5;         # Only 1 concurrent download
-        seed-queue-size = 1;             # Only 1 concurrent seed
+        peer-limit-global = 200; # Max peers total (default 200)
+        peer-limit-per-torrent = 50; # Max peers per torrent (default 50)
+        download-queue-size = 5; # Only 1 concurrent download
+        seed-queue-size = 1; # Only 1 concurrent seed
         download-queue-enabled = true;
         seed-queue-enabled = true;
 
@@ -62,11 +61,11 @@ in {
         port-forwarding-enabled = false;
 
         # Limit speeds to reduce connection churn
-        speed-limit-up = 100;            # 100 KB/s upload limit
+        speed-limit-up = 100; # 100 KB/s upload limit
         speed-limit-up-enabled = true;
 
         # Encryption to reduce bad peer connections
-        encryption = 2;                  # Require encryption
+        encryption = 2; # Require encryption
       };
     };
 
