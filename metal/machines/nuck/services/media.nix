@@ -55,8 +55,8 @@ in {
         seed-queue-enabled = true;
 
         # Disable all peer discovery - trackers only
-        dht-enabled = false;
-        lpd-enabled = false;
+        dht-enabled = true;
+        lpd-enabled = true;
         pex-enabled = false;
         scrape-paused-torrents-enabled = false;
         port-forwarding-enabled = false;
