@@ -116,4 +116,10 @@ in
   };
 
   # Transmission peer port not needed on host firewall - traffic goes through VPN namespace
+
+  # Grant Jellyfin access to GPU for hardware transcoding (Intel Quick Sync)
+  users.users.jellyfin.extraGroups = [
+    "video"
+    "render"
+  ];
 }
