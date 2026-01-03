@@ -350,15 +350,10 @@ in {
       };
 
       # Jellyseerr at requests.${domain}
+      # No Authelia forward auth - Jellyseerr uses OIDC for authentication
       "${jellyseerr.subdomain}.${domain}" = {
         extraConfig = ''
           tls internal
-
-          # Authelia forward auth
-          forward_auth localhost:${toString authelia.httpPort} {
-            uri /api/authz/forward-auth
-            copy_headers Remote-User Remote-Groups Remote-Email Remote-Name
-          }
 
           reverse_proxy localhost:${toString jellyseerr.httpPort}
 

@@ -174,6 +174,28 @@ in {
 
             userinfo_signed_response_alg = "none";
           }
+          # Jellyseerr OIDC client
+          {
+            client_id = "jellyseerr";
+            client_name = "Jellyseerr";
+            # Plain secret: 1zniEhFT8PPiciv2b2OT0s2GGU78wFiF/PtSIXH4Xi8=
+            client_secret = "$2y$10$PZdy6slvTiDRLnyf5yuWL.B3ZmHwfyd/KOkw6tMrhLKqvlM7oXY2i";
+            public = false;
+            authorization_policy = "one_factor";
+            claims_policy = "default";
+
+            token_endpoint_auth_method = "client_secret_post";
+            require_pkce = false;
+
+            redirect_uris = ["https://requests.${domain}/login?provider=authelia&callback=true"];
+
+            scopes = ["openid" "profile" "groups" "email"];
+            response_types = ["code"];
+            grant_types = ["authorization_code"];
+            response_modes = ["query"];
+
+            userinfo_signed_response_alg = "none";
+          }
 
         ];
       };
