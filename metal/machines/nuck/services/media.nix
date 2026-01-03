@@ -155,7 +155,7 @@ in
         "TZ=America/New_York"
       ];
 
-      ExecStart = "${pkgs.pinchflat}/bin/pinchflat";
+      ExecStart = "${pkgs.pinchflat}/bin/pinchflat start";
 
       Restart = "on-failure";
       RestartSec = "10s";
