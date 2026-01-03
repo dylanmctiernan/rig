@@ -43,19 +43,24 @@ in {
         rpc-host-whitelist = "transmission.mac.lab";
         rpc-host-whitelist-enabled = true;
 
-        # Limit connections to prevent RPC from becoming unresponsive
-        peer-limit-global = 100;        # Max peers total (default 200)
-        peer-limit-per-torrent = 30;    # Max peers per torrent (default 50)
-        download-queue-size = 3;        # Max concurrent downloads (default 5)
-        seed-queue-size = 5;            # Max concurrent seeds (default 10)
+        # Aggressively limit connections to prevent RPC blocking
+        peer-limit-global = 50;          # Max peers total (default 200)
+        peer-limit-per-torrent = 20;     # Max peers per torrent (default 50)
+        download-queue-size = 2;         # Max concurrent downloads (default 5)
+        seed-queue-size = 2;             # Max concurrent seeds (default 10)
         download-queue-enabled = true;
         seed-queue-enabled = true;
 
-        # Reduce tracker/DHT load to prevent RPC blocking
-        dht-enabled = false;             # Disable DHT (uses trackers only)
-        lpd-enabled = false;             # Disable local peer discovery
-        pex-enabled = false;             # Disable peer exchange
+        # Disable all peer discovery - trackers only
+        dht-enabled = false;
+        lpd-enabled = false;
+        pex-enabled = false;
         scrape-paused-torrents-enabled = false;
+        port-forwarding-enabled = false;
+
+        # Limit upload to reduce outbound connection churn
+        speed-limit-up = 500;            # 500 KB/s upload limit
+        speed-limit-up-enabled = true;
       };
     };
 
@@ -108,11 +113,5 @@ in {
     };
   };
 
-  # Only open Transmission peer port for BitTorrent
-  networking.firewall.allowedTCPPorts = [
-    commonConfig.services.transmission.peerPort
-  ];
-  networking.firewall.allowedUDPPorts = [
-    commonConfig.services.transmission.peerPort
-  ];
+  # Transmission peer port not needed on host firewall - traffic goes through VPN namespace
 }
