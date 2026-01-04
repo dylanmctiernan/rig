@@ -150,6 +150,7 @@ in
       WorkingDirectory = commonConfig.services.pinchflat.stateDir;
 
       Environment = [
+        "PHX_SERVER=true"
         "PORT=${toString commonConfig.services.pinchflat.httpPort}"
         "CONFIG_PATH=${commonConfig.services.pinchflat.stateDir}"
         "MEDIA_PATH=${commonConfig.machines.nuck.mediaDir}/youtube"
