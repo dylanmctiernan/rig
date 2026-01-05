@@ -1,6 +1,6 @@
 rec {
   people.dylan = {
-    username = "dylan";
+    host.username = "dylan";
     host.hashedPassword = "$6$r8oR.kCfQebQKt6Z$8rYD.A1BjBLLwkaDOk.U1hURaUfqy5JGqXSlZDZCKc6dFZrJ1OAihMqrBXz0W0lZ6YZlFNW1PMbIkezx.CvKA/";
 
     git.name = "Dylan McTiernan";

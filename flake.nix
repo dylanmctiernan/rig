@@ -48,7 +48,7 @@
       deploy = {
         nodes.nuck = {
           hostname = vars.machines.nuck.lanIp;
-          sshUser = vars.people.dylan.username;
+          sshUser = vars.people.dylan.host.username;
           remoteBuild = true;
           profiles.system = {
             user = "root";
