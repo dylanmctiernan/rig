@@ -49,6 +49,17 @@ in
     fd
   ];
 
+  # mDNS for .local resolution
+  services.avahi = {
+    enable = true;
+    nssmdns4 = true;
+    publish = {
+      enable = true;
+      addresses = true;
+      workstation = true;
+    };
+  };
+
   # SSH configuration (LAN only - not exposed to internet)
   services.openssh = {
     enable = true;
