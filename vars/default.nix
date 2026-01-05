@@ -1,7 +1,7 @@
 rec {
   people.dylan = {
     host.username = "dylan";
-    host.hashedPassword = "$6$r8oR.kCfQebQKt6Z$8rYD.A1BjBLLwkaDOk.U1hURaUfqy5JGqXSlZDZCKc6dFZrJ1OAihMqrBXz0W0lZ6YZlFNW1PMbIkezx.CvKA/";
+    # host.hashedPassword = "";
 
     git.name = "Dylan McTiernan";
     git.email = "dylan@mctiernan.io";
@@ -13,7 +13,6 @@ rec {
   machines.nuck = {
     hostName = "nuck";
     lanIp = "192.168.2.10";
-    hostKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIODNVgWjUqXpHUa3I4hqe8S1txz3X2ADrWVe5KcnVF2g";
   };
   machines.synology = {
     lanIp = "192.168.2.11";
@@ -29,9 +28,20 @@ rec {
     ];
   };
 
+  paths.data = "/data";
+
+  services.caddy = {
+    name = "caddy";
+    image = "caddy:2.10.2@sha256:dedfbbeb703b2ce9ff4a98fc06aa9c7c7d9a42f0b7d778738c1dd3ef11dcc767";
+    dataDir = "${paths.data}/caddy";
+    host = machines.nuck;
+  };
+
   services.kanidm = {
     name = "kanidm";
+    image = "kanidm/server:1.8.5@sha256:55af50cf02909ff8f62d3a083870e697a47658c2dac94598dc5dbeb7de5955f3";
     port = 8443;
+    dataDir = "${paths.data}/kanidm";
     subdomain = "auth";
     host = machines.nuck;
     fqdn = "${services.kanidm.subdomain}.${networks.tld}";

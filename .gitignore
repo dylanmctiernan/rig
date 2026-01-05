@@ -20,6 +20,7 @@ terraform.rc
 *.key
 *.pem
 secrets.yaml
+tmp/
 
 # Allow sops-encrypted secrets (these are safe to commit)
 !**/secrets.yaml

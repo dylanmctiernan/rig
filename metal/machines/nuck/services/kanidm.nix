@@ -1,49 +1,49 @@
 { vars, pkgs, ... }:
 let
-  kanidmPort = vars.services.kanidm.port;
-  dataDir = "/data/kanidm";
+  cfg = vars.services.kanidm;
 
   kanidmConfig = pkgs.writeText "server.toml" ''
-    domain = "${vars.services.kanidm.fqdn}"
-    origin = "https://${vars.services.kanidm.fqdn}"
+    version = "2"
+
+    domain = "${cfg.fqdn}"
+    origin = "https://${cfg.fqdn}"
     bindaddress = "0.0.0.0:8443"
     db_path = "/data/kanidm.db"
     tls_chain = "/data/certs/chain.pem"
     tls_key = "/data/certs/key.pem"
+
+    # Trust X-Forwarded-For headers from Caddy reverse proxy (Podman network)
+    [http_client_address_info]
+    x-forward-for = ["10.88.0.0/16"]
   '';
 in
 {
-  # Ensure data directory and generate self-signed certs
   systemd.tmpfiles.rules = [
-    "d ${dataDir} 0750 root root -"
-    "d ${dataDir}/certs 0750 root root -"
+    "d ${cfg.dataDir} 0750 root root -"
+    "d ${cfg.dataDir}/certs 0750 root root -"
   ];
 
-  # Generate self-signed certs if they don't exist
-  systemd.services.kanidm-certs = {
-    description = "Generate Kanidm self-signed certificates";
-    wantedBy = [ "podman-kanidm.service" ];
-    before = [ "podman-kanidm.service" ];
+  systemd.services."${cfg.name}-certs" = {
+    description = "Generate ${cfg.name} self-signed certificates";
+    wantedBy = [ "podman-${cfg.name}.service" ];
+    before = [ "podman-${cfg.name}.service" ];
+    path = [ pkgs.podman ];
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = true;
     };
     script = ''
-      if [ ! -f ${dataDir}/certs/key.pem ]; then
-        ${pkgs.openssl}/bin/openssl req -x509 -newkey rsa:4096 \
-          -keyout ${dataDir}/certs/key.pem \
-          -out ${dataDir}/certs/chain.pem \
-          -days 365 -nodes \
-          -subj "/CN=${vars.services.kanidm.fqdn}"
+      if [ ! -f ${cfg.dataDir}/certs/key.pem ]; then
+        podman run --rm -v ${cfg.dataDir}:/data:Z ${cfg.image} kanidmd cert-generate
       fi
     '';
   };
 
-  virtualisation.oci-containers.containers.kanidm = {
-    image = "kanidm/server:latest";
-    ports = [ "127.0.0.1:${toString kanidmPort}:8443" ];
+  virtualisation.oci-containers.containers.${cfg.name} = {
+    image = cfg.image;
+    ports = [ "${toString cfg.port}:8443" ];
     volumes = [
-      "${dataDir}:/data"
+      "${cfg.dataDir}:/data"
       "${kanidmConfig}:/data/server.toml:ro"
     ];
   };
