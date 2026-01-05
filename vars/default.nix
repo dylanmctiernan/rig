@@ -12,6 +12,7 @@ rec {
   machines.nuck = {
     hostName = "nuck";
     lanIp = "192.168.2.10";
+    hostKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIODNVgWjUqXpHUa3I4hqe8S1txz3X2ADrWVe5KcnVF2g";
   };
   machines.synology = {
     lanIp = "192.168.2.11";
