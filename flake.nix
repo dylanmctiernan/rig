@@ -16,6 +16,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    deploy-rs = {
+      url = "github:serokell/deploy-rs";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -24,10 +28,14 @@
       nixpkgs,
       determinate,
       sops-nix,
+      deploy-rs,
       ...
     }@inputs:
+    let
+      vars = import ./vars;
+    in
     {
-      nixosConfigurations.nuck = inputs.nixpkgs.lib.nixosSystem {
+      nixosConfigurations.nuck = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit inputs; };
 
         modules = [
@@ -37,5 +45,17 @@
         ];
       };
 
+      deploy = {
+        nodes.nuck = {
+          hostname = vars.machines.nuck.lanIp;
+          profiles.system = {
+            user = "root";
+            sshUser = "dylan";
+            path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.nuck;
+          };
+        };
+      };
+
+      checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
     };
 }
