@@ -7,7 +7,7 @@
   ...
 }:
 let
-  vars = import ../../../config;
+  vars = import ../../../vars;
 in
 {
 
