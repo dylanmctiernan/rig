@@ -49,6 +49,9 @@ in
     fd
   ];
 
+  environment.variables.EDITOR = "nvim";
+  environment.variables.VISUAL = "nvim";
+
   # mDNS for .local resolution
   services.avahi = {
     enable = true;
