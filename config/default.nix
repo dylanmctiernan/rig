@@ -1,5 +1,4 @@
-{ self }:
-{
+rec {
   people.dylan = {
     host.hashedPassword = "$6$r8oR.kCfQebQKt6Z$8rYD.A1BjBLLwkaDOk.U1hURaUfqy5JGqXSlZDZCKc6dFZrJ1OAihMqrBXz0W0lZ6YZlFNW1PMbIkezx.CvKA/";
 
@@ -23,8 +22,8 @@
     subnet = "192.168.2.0/24";
 
     machines = [
-      self.machines.nuck
-      self.machines.synology
+      machines.nuck
+      machines.synology
     ];
   };
 
@@ -32,8 +31,7 @@
     name = "kanidm";
     port = 8443;
     subdomain = "auth";
-    host = self.machines.nuck;
-    fqdn = "${self.services.kanidm.subdomain}.${self.networks.tld}";
+    host = machines.nuck;
+    fqdn = "${services.kanidm.subdomain}.${networks.tld}";
   };
-
 }
