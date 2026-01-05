@@ -7,7 +7,11 @@
   ...
 }:
 let
-  config = import ../../../config;
+  vars =
+    let
+      c = import ../../../config;
+    in
+    c { self = c; };
 in
 {
 
@@ -16,7 +20,7 @@ in
   boot.loader.efi.canTouchEfiVariables = true;
 
   # Core OS settings
-  networking.hostName = config.machines.nuck.hostname;
+  networking.hostName = vars.machines.nuck.hostName;
   time.timeZone = "America/Toronto";
   i18n.defaultLocale = "en_US.UTF-8";
   console.keyMap = "dvorak-programmer";
@@ -29,7 +33,7 @@ in
       "docker"
     ];
     openssh.authorizedKeys.keys = [
-      config.people.dylan.ssh.publicKey
+      vars.people.dylan.ssh.publicKey
     ];
   };
 
