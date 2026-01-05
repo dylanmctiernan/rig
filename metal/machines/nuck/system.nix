@@ -69,18 +69,6 @@ in
     openFirewall = true;
   };
 
-  # Known SSH host keys for outbound connections
-  programs.ssh.knownHosts = {
-    nuck = {
-      hostNames = [
-        vars.machines.nuck.hostName
-        "${vars.machines.nuck.hostName}.local"
-        vars.machines.nuck.lanIp
-      ];
-      publicKey = vars.machines.nuck.hostKey;
-    };
-  };
-
   # Firewall configuration
   networking.firewall = {
     enable = true;
