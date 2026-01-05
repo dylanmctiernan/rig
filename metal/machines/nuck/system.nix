@@ -26,7 +26,7 @@ in
     isNormalUser = true;
     extraGroups = [
       "wheel"
-      "docker"
+      "podman"
     ];
     openssh.authorizedKeys.keys = [
       vars.people.dylan.ssh.publicKey
@@ -75,7 +75,13 @@ in
     # SSH is allowed via services.openssh.openFirewall
   };
 
-  virtualisation.docker.enable = true;
+  # Containers
+  virtualisation.podman = {
+    enable = true;
+    dockerCompat = true;
+    defaultNetwork.settings.dns_enabled = true;
+  };
+  virtualisation.oci-containers.backend = "podman";
 
   nixpkgs.config.allowUnfree = true;
   nixpkgs.hostPlatform = "x86_64-linux";
