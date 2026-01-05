@@ -49,6 +49,7 @@
         nodes.nuck = {
           hostname = vars.machines.nuck.lanIp;
           sshUser = "dylan";
+          remoteBuild = true;
           profiles.system = {
             user = "root";
             sudo = "sudo -u";
