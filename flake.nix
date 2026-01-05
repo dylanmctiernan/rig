@@ -19,14 +19,20 @@
   };
 
   outputs =
-    { self, nixpkgs }@inputs:
+    {
+      self,
+      nixpkgs,
+      determinate,
+      sops-nix,
+      ...
+    }@inputs:
     {
       nixosConfigurations.nuck = inputs.nixpkgs.lib.nixosSystem {
         specialArgs = { inherit inputs; };
 
         modules = [
-          inputs.determinate.nixosModules.default
-          inputs.sops-nix.nixosModules.sops
+          determinate.nixosModules.default
+          sops-nix.nixosModules.sops
           ./metal/machines/nuck
         ];
       };
