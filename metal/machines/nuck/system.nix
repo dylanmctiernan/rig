@@ -73,8 +73,8 @@ in
   programs.ssh.knownHosts = {
     nuck = {
       hostNames = [
-        "nuck"
-        "nuck.local"
+        vars.machines.nuck.hostName
+        "${vars.machines.nuck.hostName}.local"
         vars.machines.nuck.lanIp
       ];
       publicKey = vars.machines.nuck.hostKey;
