@@ -22,7 +22,7 @@ in
   console.keyMap = "dvorak-programmer";
 
   # Users
-  users.users.dylan = {
+  users.users.${vars.people.dylan.username} = {
     isNormalUser = true;
     extraGroups = [
       "wheel"
