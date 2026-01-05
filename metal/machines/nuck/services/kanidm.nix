@@ -1,6 +1,13 @@
-{ vars, pkgs, ... }:
+{
+  vars,
+  pkgs,
+  config,
+  ...
+}:
 let
   cfg = vars.services.kanidm;
+  containerBackend = config.virtualisation.oci-containers.backend;
+  containerServiceName = "${containerBackend}-${cfg.name}";
 
   kanidmConfig = pkgs.writeText "server.toml" ''
     version = "2"
@@ -23,20 +30,39 @@ in
     "d ${cfg.dataDir}/certs 0750 root root -"
   ];
 
-  systemd.services."${cfg.name}-certs" = {
-    description = "Generate ${cfg.name} self-signed certificates";
-    wantedBy = [ "podman-${cfg.name}.service" ];
-    before = [ "podman-${cfg.name}.service" ];
-    path = [ pkgs.podman ];
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-    };
+  # Generate certs on first boot if they don't exist
+  systemd.services."${cfg.name}-certs-bootstrap" = {
+    description = "Bootstrap ${cfg.name} self-signed certificates";
+    wantedBy = [ "${containerServiceName}.service" ];
+    before = [ "${containerServiceName}.service" ];
+    path = [ pkgs.${containerBackend} ];
+    serviceConfig.Type = "oneshot";
     script = ''
-      if [ ! -f ${cfg.dataDir}/certs/key.pem ]; then
-        podman run --rm -v ${cfg.dataDir}:/data:Z ${cfg.image} kanidmd cert-generate
+      if [ -z "$(ls -A ${cfg.dataDir}/certs)" ]; then
+        ${containerBackend} run --rm -v ${cfg.dataDir}:/data:Z -v ${kanidmConfig}:/data/server.toml:ro ${cfg.image} kanidmd cert-generate
       fi
     '';
+  };
+
+  # Daily cert regeneration (separate service to avoid deadlock with before/restart)
+  systemd.services."${cfg.name}-certs-renew" = {
+    description = "Renew ${cfg.name} certificates and restart";
+    path = [ pkgs.${containerBackend} ];
+    serviceConfig.Type = "oneshot";
+    script = ''
+      rm -f ${cfg.dataDir}/certs/*.pem
+      ${containerBackend} run --rm -v ${cfg.dataDir}:/data:Z -v ${kanidmConfig}:/data/server.toml:ro ${cfg.image} kanidmd cert-generate
+      systemctl restart ${containerServiceName}
+    '';
+  };
+
+  systemd.timers."${cfg.name}-certs-renew" = {
+    description = "Daily ${cfg.name} certificate renewal";
+    wantedBy = [ "timers.target" ];
+    timerConfig = {
+      OnCalendar = "daily";
+      Persistent = true;
+    };
   };
 
   virtualisation.oci-containers.containers.${cfg.name} = {
