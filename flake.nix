@@ -17,7 +17,7 @@
     };
 
     deploy-rs = {
-      url = "github:serokell/deploy-rs";
+      url = "github:szlend/deploy-rs/fix-show-derivation-parsing";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -59,5 +59,16 @@
       };
 
       checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
+
+      apps = {
+        aarch64-darwin.deploy-rs = {
+          type = "app";
+          program = "${deploy-rs.packages.aarch64-darwin.default}/bin/deploy";
+        };
+        x86_64-linux.deploy-rs = {
+          type = "app";
+          program = "${deploy-rs.packages.x86_64-linux.default}/bin/deploy";
+        };
+      };
     };
 }
