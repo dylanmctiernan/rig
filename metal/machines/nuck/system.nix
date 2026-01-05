@@ -7,7 +7,7 @@
   ...
 }:
 let
-  config = import ../../config;
+  config = import ../../../config;
 in
 {
 
