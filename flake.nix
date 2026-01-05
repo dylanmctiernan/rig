@@ -48,9 +48,10 @@
       deploy = {
         nodes.nuck = {
           hostname = vars.machines.nuck.lanIp;
+          sshUser = "dylan";
           profiles.system = {
             user = "root";
-            sshUser = "dylan";
+            sudo = "sudo -u";
             path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.nuck;
           };
         };
