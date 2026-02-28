@@ -1,0 +1,23 @@
+# sops-nix configuration
+# https://github.com/Mic92/sops-nix
+
+keys:
+  # Dylan's personal key
+  - &dylan age1zad7eg8lp979svnz7txp678kknsxlk9kq9zm0lrg0dw5k3y09ulqwjxw0y
+  # Recovery key (store securely offline)
+  - &recovery age1fsygr7pn7ax9xq8ev7w95shwmhky6jn7qvr3ffvx8pgq3pa6rs4smndjm8
+
+creation_rules:
+  # Default rule - encrypt with both keys
+  - path_regex: secrets/.*\.yaml$
+    key_groups:
+      - age:
+          - *dylan
+          - *recovery
+
+  # Machine-specific secrets
+  - path_regex: metal/machines/.*/secrets\.yaml$
+    key_groups:
+      - age:
+          - *dylan
+          - *recovery

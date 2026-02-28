@@ -16,6 +16,16 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    nix-darwin = {
+      url = "github:LnL7/nix-darwin/master";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    home-manager = {
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     deploy-rs = {
       url = "github:szlend/deploy-rs/fix-show-derivation-parsing";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -28,6 +38,8 @@
       nixpkgs,
       determinate,
       sops-nix,
+      nix-darwin,
+      home-manager,
       deploy-rs,
       ...
     }@inputs:
@@ -42,6 +54,15 @@
           determinate.nixosModules.default
           sops-nix.nixosModules.sops
           ./metal/machines/nuck
+        ];
+      };
+
+      darwinConfigurations.dylbook = nix-darwin.lib.darwinSystem {
+        specialArgs = { inherit inputs; };
+
+        modules = [
+          home-manager.darwinModules.home-manager
+          ./metal/machines/dylbook
         ];
       };
 

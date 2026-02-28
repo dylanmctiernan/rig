@@ -28,3 +28,4 @@ tmp/
 
 # Intellij
 .idea
+vars/secrets.yaml

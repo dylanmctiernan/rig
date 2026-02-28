@@ -7,7 +7,7 @@ rec {
     git.email = "dylan@mctiernan.io";
 
     ssh.publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIE9aV63mII6UUHP9Shz6zMmGIlAd752I7LzgMTEshkYN dylan@mctiernan.io";
-    ssh.privateKey = "";
+    ssh.privateKeyFile = "";
   };
 
   machines.nuck = {
