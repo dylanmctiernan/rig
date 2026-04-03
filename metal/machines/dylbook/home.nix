@@ -176,7 +176,7 @@ in
         nodejs_22
         pnpm
         bun
-        claude-code
+        # claude-code  # temporarily disabled - nixpkgs version 2.1.88 yanked from npm
         beam28Packages.elixir_1_20
         beam28Packages.erlang
         python3
